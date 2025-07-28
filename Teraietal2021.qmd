@@ -1,0 +1,45 @@
+---
+title: "Reproducibility study: Effects of Learning Direction in Retrieval Practice on EFL Vocabulary Learning"
+subtitle: "Based on data from Terai et al. (2021)"
+author: "Hannah Boxleitner, Beyhan Aliy"
+date: last-modified
+format:
+  html:
+    number-sections: true
+    embed-resources: true
+    fig-dpi: 300
+---
+
+# Introducing the study
+
+# Retrieving the author's data
+
+# Importing the data
+
+```{r}
+#| label: setup
+#| include: false
+
+# This chunk loads necessary libraries and prepares the data for analysis.
+# It is hidden in the final output but is essential for the code to run.
+
+# Load libraries
+library(here)
+library(tidyverse)
+
+```
+
+```{r}
+VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
+VocabularyA_L2production <- read.csv(file = here("data", "vocaA_L2pro_20210313.csv"))
+VocabularyB_L1production <- read.csv(file = here("data", "vocaB_L1pro_20210313.csv"))
+VocabularyB_L2production <- read.csv(file = here("data", "vocaB_L2pro_20210313.csv"))
+```
+
+# Descriptive statistics
+
+# Effects of Learning Condition (Research Question 1)
+
+# Effects of Learning Directions and L2 Proficiency (Research Question 2)
+
+# Conclusion
