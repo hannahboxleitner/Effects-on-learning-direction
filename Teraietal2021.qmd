@@ -12,7 +12,7 @@ format:
 
 # Chapter overview?
 
-The analyses are based on data published in:
+This chapter is based on data published in:
 
 -   Terai, Masato, Junko Yamashita, and Kelly E. Pasich. 2021. EFFECTS OF LEARNING DIRECTION IN RETRIEVAL PRACTICE ON EFL VOCABULARY LEARNING. Studies in Second Language Acquisition 43(5): 1116–1137. <https://doi.org/10.1017/S0272263121000346>.
 
