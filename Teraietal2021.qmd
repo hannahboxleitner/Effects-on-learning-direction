@@ -1,7 +1,7 @@
 ---
 title: "Reproducibility study: Effects of Learning Direction in Retrieval Practice on EFL Vocabulary Learning"
 subtitle: "Based on data from Terai et al. (2021)"
-author: "Hannah Boxleitner, Beyhan Aliy"
+authors: "Hannah Boxleitner, Beyhan Aliy"
 date: last-modified
 format:
   html:
@@ -10,24 +10,43 @@ format:
     fig-dpi: 300
 ---
 
+# Chapter overview?
+
+The analyses are based on data published in:
+
+-   Terai, Masato, Junko Yamashita, and Kelly E. Pasich. 2021. EFFECTS OF LEARNING DIRECTION IN RETRIEVAL PRACTICE ON EFL VOCABULARY LEARNING. Studies in Second Language Acquisition 43(5): 1116–1137. <https://doi.org/10.1017/S0272263121000346>.
+
 # Introducing the study
 
-# Retrieving the author's data
+In this chapter, we attempt to reproduce the results of a linguistics study by Terai et al. (2021). The study focuses on learning directions in pair-associated vocabulary learning: L2 to L1, where L2 words are used as stimuli and responses are given in L1, vs. L1 to L2. Opposed to studying practices, where both a target and the answer are simultaneously presented, pair-associated learning includes *retrieval*. Retrieval is defined as the process of accessing stored information and plays a crucial role in retaining a learned word in memory **(p. 1116-1117 - Literaturangabe?)**. Previous findings regarding the efficacy of the two types of learning directions are inconsistent. The study focuses on the relationship between L2 proficiency and the effectiveness of the two learning directions in paired-associate learning in L2 vocabulary acquisition, and follows two research questions: 1. Which learning direction is more effective for vocabulary acquisition, L1 to L2 learning or L2 to L1 learning? 2. How does L2 proficiency influence the effects of L2 to L1 and L1 to L2 learning?
+
+Therefore, the authors established the hypotheses that there is no significant difference between the two learning directions and that the effect of learning direction depends on the learner’s L2 proficiency **(p. 1121-1122).**
+
+# Retrieving the authors' data
+
+We will use the authors' original data for our reproduction, which they have made openly accessible on IRIS, a free database for language research:
+
+-   [Terai, M., Yamashita, J. & Pasich, K. E. (2021). Effects of Learning Direction in Retrieval Practice on EFL Vocabulary Learning. Studies in Second Language Acquisition. 43(5). 1116–1137)](https://www.iris-database.org/search/?s_publicationAPAInlineReference=Terai%20et%20al.%20(2021))
+
+In this particular case, you cannot just access the data, but also the authors' R code. Our further reproduction will use this R code to investigate and interpret the statistical analysis and results presented in the paper.
 
 # Importing the data
 
+Before importing the dataset and starting on our project, we need to load all the packages that we will need. Some of these packages may have to installed first **(maybe include textbook reference 13.10)**.
+
 ```{r}
 #| label: setup
-#| include: false
+#| warning: false
 
-# This chunk loads necessary libraries and prepares the data for analysis.
-# It is hidden in the final output but is essential for the code to run.
+# This chunk loads necessary libraries.
 
 # Load libraries
 library(here)
 library(tidyverse)
 
 ```
+
+Next, we can import the data. In contrast to the authors' approach in their code, we used the here package for importing the data. This package creates paths relative to the top-level directory and therefore makes it easier to reference files regardless of how they are organized inside a project.
 
 ```{r}
 VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
