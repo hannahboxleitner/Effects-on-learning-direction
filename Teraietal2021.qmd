@@ -57,8 +57,38 @@ VocabularyB_L2production <- read.csv(file = here("data", "vocaB_L2pro_20210313.c
 
 # Descriptive statistics
 
+
+
 # Effects of Learning Condition (Research Question 1)
+```{r}
+##Test Type & Learning Direction
+library(lme4) ##leading required package:Matrix
+
+library(effects)
+library(emmeans)
+library(phia)
+
+```
 
 # Effects of Learning Directions and L2 Proficiency (Research Question 2)
+
+To answer the second research question: How does L2 proficiency influence the effects of L2 to L1 and L1 to L2 learning? (Hypothesis: effect of learning direction depends on learner's L2 proficiency)...
+```{r}
+##L1 Production test
+
+dat1<-read.csv("dataset1_ssla_20210313.csv", header=T)
+
+dat1.L1<-filter(dat1, Test=="L1 Production")
+
+#Make the categorical factors factorial
+dat1.L1$Condition<-as.factor(dat1.L1$Condition)
+  
+#Change coding
+c<-contr.treatment(2)
+my.coding<-matrix(rep(1/2,2,ncol=1))
+my.simple<-c-my.coding
+print(my.simple)
+
+```
 
 # Conclusion
