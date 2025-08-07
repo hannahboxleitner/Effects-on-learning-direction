@@ -10,13 +10,13 @@ format:
     fig-dpi: 300
 ---
 
-# Chapter overview?
+# Chapter overview
 
 This chapter is based on data published in:
 
 -   Terai, Masato, Junko Yamashita, and Kelly E. Pasich. 2021. EFFECTS OF LEARNING DIRECTION IN RETRIEVAL PRACTICE ON EFL VOCABULARY LEARNING. Studies in Second Language Acquisition 43(5): 1116–1137. <https://doi.org/10.1017/S0272263121000346>.
 
-This chapter will introduce the application of R in Second Language Acquisition research, using data from Terai et al. (2021). We will go through the entire data analysis pipeline, from importing the data (chapter ???) to running logistic regression models and visualizing results with it. By the end of this chapter, students should(will?) understand how to conduct and interpret mixed-effects logistics regression models in R for experimental data.
+This chapter will introduce the application of R in Second Language Acquisition research, using data from Terai et al. (2021). We will go through the entire data analysis pipeline, from importing the data (chapter ???) to running logistic regression models and visualizing results with it. By the end of this chapter, it should become clear how to conduct and interpret mixed-effects logistics regression models in R for experimental data.
 
 # Introducing the study
 
@@ -66,14 +66,14 @@ VocabularyB_L1production <- read.csv(file = here("data", "vocaB_L1pro_20210313.c
 VocabularyB_L2production <- read.csv(file = here("data", "vocaB_L2pro_20210313.csv"))
 
 
-#First we will load the datast
+#First we will load the dataset
 dat<-read.csv("dataset1_ssla_20210313.csv", header=T)
 
-#Then, we need to convert the categorial variables we have to factors, this is done with the code (?) as.factor()
+#Then, we need to convert the categorial variables we have to factors using the function as.factor()
 dat$Test<-as.factor(dat$Test)
 dat$Condition<-as.factor(dat$Condition)
 
-#Next we will contrast the coding (-0.5 vs +0.5) for categorical predictors
+#Next, we will contrast the coding (-0.5 vs. +0.5) for categorical predictors
 c<-contr.treatment(2)
 my.coding<-matrix(rep(1/2,2,ncol=1))
 my.simple<-c-my.coding
@@ -82,10 +82,10 @@ print(my.simple)
 contrasts(dat$Test)<-my.simple
 contrasts(dat$Condition)<-my.simple
 
-#And next standardize vocabulary scores (centered and scaled)
+#And standardize vocabulary scores (centered and scaled)
 dat$s.vocab<-scale(dat$Vocab)
 
-##All this sents up the dataset for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression. Scaling the vocabulary scores helps with interaction terms.
+##All these steps set up the dataset for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression. Scaling the vocabulary scores helps with interaction terms.
 ```
 
 # Descriptive statistics
