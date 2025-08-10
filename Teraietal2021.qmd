@@ -64,10 +64,9 @@ VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.c
 VocabularyA_L2production <- read.csv(file = here("data", "vocaA_L2pro_20210313.csv"))
 VocabularyB_L1production <- read.csv(file = here("data", "vocaB_L1pro_20210313.csv"))
 VocabularyB_L2production <- read.csv(file = here("data", "vocaB_L2pro_20210313.csv"))
-
-
-#First we will load the dataset
-dat<-read.csv("dataset1_ssla_20210313.csv", header=T)
+                                     
+#First, we will load the dataset
+dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"))
 
 #Then, we need to convert the categorial variables we have to factors using the function as.factor()
 dat$Test<-as.factor(dat$Test)
