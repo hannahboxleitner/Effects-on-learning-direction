@@ -65,9 +65,8 @@ VocabularyA_L2production <- read.csv(file = here("data", "vocaA_L2pro_20210313.c
 VocabularyB_L1production <- read.csv(file = here("data", "vocaB_L1pro_20210313.csv"))
 VocabularyB_L2production <- read.csv(file = here("data", "vocaB_L2pro_20210313.csv"))
 
-
 #First we will load the dataset
-dat<-read.csv("dataset1_ssla_20210313.csv", header=T)
+dat<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
 #Then, we need to convert the categorial variables we have to factors using the function as.factor()
 dat$Test<-as.factor(dat$Test)
@@ -129,7 +128,7 @@ To answer the second research question: How does L2 proficiency influence the ef
 ```{r}
 ##L1 Production test
 
-dat1<-read.csv("dataset1_ssla_20210313.csv", header=T)
+dat1<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
 dat1.L1<-filter(dat1, Test=="L1 Production")
 
