@@ -101,10 +101,17 @@ dat$s.vocab<-scale(dat$Vocab)
 
 #First we install and load the packages we need, these seem to be from an older Rstudio version but they still work just fine!
 
+<<<<<<< Updated upstream
 install.packages("lme4", discrepancies = TRUE)
 install.packages("effects", discrepancies = TRUE)
 install.packages("emmeans", discrepancies = TRUE)
 install.packages("phia", discrepancies = TRUE)
+=======
+## install.packages("lme4", discrepancies = TRUE)
+## install.packages("effects", discrepancies = TRUE)
+## install.packages("emmeans", discrepancies = TRUE)
+## install.packages("phia", discrepancies = TRUE)
+>>>>>>> Stashed changes
 library(lme4) ##leading required package:Matrix
 library(effects)
 library(emmeans)
@@ -124,22 +131,79 @@ summary(fit1)
 
 # Effects of Learning Directions and L2 Proficiency (Research Question 2)
 
+<<<<<<< Updated upstream
 To answer the second research question: How does L2 proficiency influence the effects of L2 to L1 and L1 to L2 learning? (Hypothesis: effect of learning direction depends on Learner's L2 proficiency)...
+=======
+To answer the second research question: How does L2 proficiency influence the effects of L2 to L1 and L1 to L2 learning? (Hypothesis: effect of learning direction depends on Learner's L2 proficiency) two models were applied to explore the influence of L2 proficiency on the two types of learning.
+
+The paper reports that the advantage flips by proficiency level (lower-proficiency learners tend to benefit more from L2->L1, higher proficiency from L1->L2).
+
+The packages that are used here include dplyr for the function filter(), lme4 for the function glmer(), effects for the function allEffects(), and phia, for the function testInteractions().
+>>>>>>> Stashed changes
 ```{r}
 ##L1 Production test
 
+## With a second model the scores of the L1 production test were analyzed. This seccond model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127).
+
+##First, for clarity, we load the data with the name dat1 -> L1 production:
 dat1<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
+##With the filter(...) function we only keep the rows for the L1 Production posttests, because we will analyze this test separately from the L2 production test.
 dat1.L1<-filter(dat1, Test=="L1 Production")
 
-#Make the categorical factors factorial
+#Make the categorical factors factorial: this means qualitative data is encoded into numeric data so that we can work with it and use the data for statistical analysis.. "condition" also encodes learning direction.
 dat1.L1$Condition<-as.factor(dat1.L1$Condition)
   
-#Change coding
+#In the next step we change our coding so the variables are correct and not still working with the data from previous tests. 
 c<-contr.treatment(2)
 my.coding<-matrix(rep(1/2,2,ncol=1))
 my.simple<-c-my.coding
 print(my.simple)
+#contr.treatment(2) starts with treatment coding(?) for a 2-level factor, and then the next two lines subtract a column of 0.5s, creating a simple (meaning centered) contrast:
+##  2
+## 0.5
+##-0.5
+
+##makes main effects easier to interpret and reduces collinearity in interaction models (so wie ich es verstanden habe????)
+contrasts(dat1.L1$Condition)<-my.simple
+
+#Scaling the Score: Here Vocab scores (L2 proficiency measures) are converted to z-scores
+dat1.L1$vocab<-scale(dat1.L1$Vocab)
+
+#without interaction ERKLÄREN NOCH?? 
+fit2<-glmer(Answer~s.vocab+Condition+(1|ID)+(1|ItemID), family=binomial, data=dat1.L1, glmerontrol(optimizer="bobyqa"))
+summary(fit2)
+
+
+options(digits=7)
+AIC(fit2)
+#This command prints AIC, a fit index (the lower the better)
+
+
+fit2.1<-glmer(Answer~s.vocab*Condition+(1|ID)+(1|ItemID), 
+              family=binomial, data=dat1.L1, 
+              glmerControl(optimizer="bobyqa"))
+summary(fit2.1)
+##addition of s.vocab:Condition which directly tests RQ2: Does the effect of learning direction depend on L2 proficiency? -> here s.vocab:Condition2 is negative and significant (-0.367, p=.009)
+
+confint(fit2.1)
+
+AIC(fit2.1)
+anova(fit2,fit2.1)
+##Model comparison: AIC is lower for the interaction model; the LR test is significant, so the interaction model fits better???
+
+##Visualization of the interaction:
+plot(allEffects(fit2.1), multiline=T, ci.style="bands",
+    xlab="Vocabulary Size", ylab="Accuracy Rate",
+    main="L1 Production", lty=c(1,2),
+    rescale.axis=F, ylim = c(0,1), colors="black", asp=1)
+
+
+
+##Repeat entire process for L2 Production Test
+##withut Interaction I think
+##hilfe
+
 
 ##Warning und FEHLER weil ich glaub ich die Daten nicht richtig abgespeichert habe, ich ändere das noch + ich muss hiervor das ganze Zeug (Codierung) einfügen bevor alles klappt glaube ich
 
