@@ -102,10 +102,10 @@ dat$s.vocab<-scale(dat$Vocab)
 #First we install and load the packages we need, these seem to be from an older Rstudio version but they still work just fine!
 
 <<<<<<< Updated upstream
-install.packages("lme4", discrepancies = TRUE)
-install.packages("effects", discrepancies = TRUE)
-install.packages("emmeans", discrepancies = TRUE)
-install.packages("phia", discrepancies = TRUE)
+## install.packages("lme4", discrepancies = TRUE)
+## install.packages("effects", discrepancies = TRUE)
+## install.packages("emmeans", discrepancies = TRUE)
+## install.packages("phia", discrepancies = TRUE)
 =======
 ## install.packages("lme4", discrepancies = TRUE)
 ## install.packages("effects", discrepancies = TRUE)
@@ -143,35 +143,50 @@ The packages that are used here include dplyr for the function filter(), lme4 fo
 ```{r}
 ##L1 Production test
 
-## With a second model the scores of the L1 production test were analyzed. This seccond model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127).
+## With a second model the scores of the L1 production test were analyzed. This seccond model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127). Here the authors analyzed the data with interaction and without interaction, to find out the AIC, p and z scores there are a few steps we need to take. 
 
 ##First, for clarity, we load the data with the name dat1 -> L1 production:
 dat1<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
-##With the filter(...) function we only keep the rows for the L1 Production posttests, because we will analyze this test separately from the L2 production test.
+
+##With the filter(...) function, provided by the dplyr package, we only keep the rows for the L1 Production posttests, because we will analyze this test separately from the L2 production test. Meaning, the function is mainly used to subset rows in a data frame based on our specified conditions, (L1 production Test)
 dat1.L1<-filter(dat1, Test=="L1 Production")
 
-#Make the categorical factors factorial: this means qualitative data is encoded into numeric data so that we can work with it and use the data for statistical analysis.. "condition" also encodes learning direction.
+#Make the categorical factors factorial: this means qualitative data is encoded into numeric data so that we can work with it and use the data for statistical analysis.. "condition" also encodes learning direction. The as.factor() function is used to convert a vector into a factor, which is a data type specifically designed for categorical data. It is essential to use factors for statistical data analysis such as an ANOVA or a regression which we will be doing in a later step. At this point, we need factors for a summary of our data.
 dat1.L1$Condition<-as.factor(dat1.L1$Condition)
   
 #In the next step we change our coding so the variables are correct and not still working with the data from previous tests. 
+#The function contr.treatment() is used to create contrast matrices for categorical variables in regression models. It is the default contrast coding method in R for unordered factors. This way a baseline/reference level is assigned and then it compares all the other levels to this baseline/reference.
 c<-contr.treatment(2)
+
+#The matrix() function creates matrices, which are two-dimensioal data structures where all elements must be of the same type (numeric, character, logical...). ncol=1 is the Number of columns.
 my.coding<-matrix(rep(1/2,2,ncol=1))
+
+#In this next step... 
 my.simple<-c-my.coding
+
+#The print() function can be used to display the value of an object or expression in the console. It can be customized for different object classes. In our case it prints out what we have assigned to my.simple, this shows...? Our Matrix??
 print(my.simple)
-#contr.treatment(2) starts with treatment coding(?) for a 2-level factor, and then the next two lines subtract a column of 0.5s, creating a simple (meaning centered) contrast:
 ##  2
 ## 0.5
 ##-0.5
 
+#contr.treatment(2) starts with treatment coding(?) for a 2-level factor, and then the next two lines subtract a column of 0.5s, creating a simple (meaning centered) contrast:
+
+``` 
+
+```{r}
 ##makes main effects easier to interpret and reduces collinearity in interaction models (so wie ich es verstanden habe????)
+#The function contrasts() in R specifies or even retrieves the contrast coding for a variable.
+#Contrast coding is essential when working with linear models, as this can determine how how levels of a factor are represented as numeric dummy variables.
+#A contrast in R is a combination of variables that allows comparison of different treatments.. (Explain more? Understand??)
 contrasts(dat1.L1$Condition)<-my.simple
 
-#Scaling the Score: Here Vocab scores (L2 proficiency measures) are converted to z-scores
+#Scaling the Score: Here Vocab scores (L2 proficiency measures) are converted to z-scores. The scale() function standardizes or normalizes data. It centers or scales the columns of our numeric matric/data frame. (EXPLAIN MORE)
 dat1.L1$vocab<-scale(dat1.L1$Vocab)
 
-#without interaction ERKLÄREN NOCH?? 
-fit2<-glmer(Answer~s.vocab+Condition+(1|ID)+(1|ItemID), family=binomial, data=dat1.L1, glmerontrol(optimizer="bobyqa"))
+#The glmer() function is provided by the lme4() package that we installed and activated (? anderes Wort ?) earlier. We use this function to fit Generalized Linear Mixed Effects Models (GLMMs). These models are extensions of generalized linear models (GLMs) that include random effects and thus allow the modeling of hierarchical or grouped data.
+fit2<-glmer(Answer~s.vocab+Condition+(1|ID)+(1|ItemID),family=binomial, data=dat1.L1, glmerControl(optimizer="bobyqa"))
 summary(fit2)
 
 
@@ -179,7 +194,9 @@ options(digits=7)
 AIC(fit2)
 #This command prints AIC, a fit index (the lower the better)
 
+```
 
+```{r}
 fit2.1<-glmer(Answer~s.vocab*Condition+(1|ID)+(1|ItemID), 
               family=binomial, data=dat1.L1, 
               glmerControl(optimizer="bobyqa"))
@@ -192,6 +209,9 @@ AIC(fit2.1)
 anova(fit2,fit2.1)
 ##Model comparison: AIC is lower for the interaction model; the LR test is significant, so the interaction model fits better???
 
+```
+
+```{r}
 ##Visualization of the interaction:
 plot(allEffects(fit2.1), multiline=T, ci.style="bands",
     xlab="Vocabulary Size", ylab="Accuracy Rate",
@@ -207,7 +227,9 @@ plot(allEffects(fit2.1), multiline=T, ci.style="bands",
 
 ##Warning und FEHLER weil ich glaub ich die Daten nicht richtig abgespeichert habe, ich ändere das noch + ich muss hiervor das ganze Zeug (Codierung) einfügen bevor alles klappt glaube ich
 
+
 ```
+
 
 # Conclusion
 
