@@ -471,10 +471,6 @@ summary(fit1)
 
 To answer the second research question: How does L2 proficiency
 influence the effects of L2 to L1 and L1 to L2 learning? (Hypothesis:
-<<<<<<< Updated upstream
-effect of learning direction depends on Learner's L2 proficiency)...
-
-=======
 effect of learning direction depends on Learner's L2 proficiency) two
 models were applied to explore the influence of L2 proficiency on the
 two types of learning.
@@ -491,7 +487,6 @@ and phia, for the function testInteractions().
 
 ## With a second model the scores of the L1 production test were analyzed. This seccond model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127). Here the authors analyzed the data with interaction and without interaction, to find out the AIC, p and z scores there are a few steps we need to take.
 
->>>>>>> Stashed changes
 ```{r}
 ##L1 Production test
 
@@ -499,8 +494,7 @@ dat1<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
 dat1.L1<-filter(dat1, Test=="L1 Production")
 
-<<<<<<< Updated upstream
-=======
+
 #Make the categorical factors factorial: this means qualitative data is encoded into numeric data so that we can work with it and use the data for statistical analysis.. "condition" also encodes learning direction. The as.factor() function is used to convert a vector into a factor, which is a data type specifically designed for categorical data. It is essential to use factors for statistical data analysis such as an ANOVA or a regression which we will be doing in a later step. At this point, we need factors for a summary of our data.
 dat1.L1$Condition<-as.factor(dat1.L1$Condition)
 
@@ -594,7 +588,7 @@ dat2<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"))
 
 dat2.L2<-filter(dat2, Test=="L2 Production")
 
->>>>>>> Stashed changes
+
 #Make the categorical factors factorial
 dat1.L1$Condition<-as.factor(dat1.L1$Condition)
   
