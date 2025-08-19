@@ -472,6 +472,7 @@ summary(fit1)
 To answer the second research question: How does L2 proficiency
 influence the effects of L2 to L1 and L1 to L2 learning? (Hypothesis:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 effect of learning direction depends on Learner's L2 proficiency)...
 
 =======
@@ -479,6 +480,12 @@ effect of learning direction depends on Learner's L2 proficiency) two
 models were applied to explore the influence of L2 proficiency on the
 two types of learning.
 
+=======
+effect of learning direction depends on Learner's L2 proficiency) two
+models were applied to explore the influence of L2 proficiency on the
+two types of learning.
+
+>>>>>>> Stashed changes
 The paper reports that the advantage flips by proficiency level
 (lower-proficiency learners tend to benefit more from L2-\>L1, higher
 proficiency from L1-\>L2).
@@ -491,6 +498,9 @@ and phia, for the function testInteractions().
 
 ## With a second model the scores of the L1 production test were analyzed. This seccond model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127). Here the authors analyzed the data with interaction and without interaction, to find out the AIC, p and z scores there are a few steps we need to take.
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 ```{r}
 ##L1 Production test
