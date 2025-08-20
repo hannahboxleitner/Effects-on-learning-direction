@@ -423,20 +423,6 @@ kable(descriptive_stats_tests_trimmed,
 #Interpretation: *We want to associate the results of our analysis here with the interpretation in the study. As we can see in the results of the reliability analysis, which are also displayed in a clean table in the paper (see p.1126), alpha coefficients range from .73 to .84, showing adequate reliability of all the tests. On the same page in the paper (see Table 4), the descriptive statistics of the two types of post-tests provided here are summarized in a table.*
 ```
 
-```{r}
----
-title: "Example"
-format:
-  html:
-    df-print: kable
----
-
-## example kable
-
-
-mtcars |> head()
-dim(mtcars)
-```
 
 # Effects of Learning Condition (Research Question 1)
 
