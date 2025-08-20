@@ -392,14 +392,14 @@ beeswarm(L2pro,add=T)
 ```{r}
 # Summarized results of descriptive statistics
 
-# In this chunk, we want to create tables that display the summarized results of descriptive statistics, similar to the tables used in the paper (p. 1126).
+# In this chunk, we want to create tables that display the summarized results of descriptive statistics, similar to the table used in the paper (p. 1126).
 
 # First, we need to load the knitr and kableExtra packages.
 
 library(knitr)
 library(kableExtra)
 
-# Next, we want to assign a variable that contains the scores for both data sets (L1 and L2 production) and use the describe() function to get all the important measurements.
+# Next, we want to assign a variable that contains the scores for both data sets (L1 and L2 production) and use the describe() function to get all the important measures.
 
 descriptive_stats_tests <- data.frame(L1pro, L2pro) |> 
   describe()
@@ -411,7 +411,7 @@ descriptive_stats_tests_trimmed <- descriptive_stats_tests |>
 
 rownames(descriptive_stats_tests_trimmed) <- c("L2 → L1 (L1pro)", "L1 → L2 (L1pro)", "L2 → L1 (L2pro)", "L1 → L2 (L2pro)")
 
-# Now we want to display the results in a clean, formatted table.
+# Now we want to display the results in a clean, formatted table using the kable() function.
 
 kable(descriptive_stats_tests_trimmed, 
       caption = "Descriptive Statistics for Test Scores",
@@ -420,9 +420,58 @@ kable(descriptive_stats_tests_trimmed,
   kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 
-#Interpretation: *We want to associate the results of our analysis here with the interpretation in the study. As we can see in the results of the reliability analysis, which are also displayed in a clean table in the paper (see p.1126), alpha coefficients range from .73 to .84, showing adequate reliability of all the tests. On the same page in the paper (see Table 4), the descriptive statistics of the two types of post-tests provided here are summarized in a table.*
+# Now we have a table that summarizes the descriptive statistics of the two types of post-tests, where the measures of scores in the two production tests can be easily compared. In the L1 production test, scores were shown to be generally higher than in L2 production test.
 ```
 
+```{r}
+# In this chunk, we want to summarize results of the reliability testing and reproduce a table similar to the one in the paper (p. 1126).
+
+alpha_A_L1 <- alpha(VocabularyA_L1production[,-1], warnings=FALSE)
+alpha_A_L2 <- alpha(VocabularyA_L2production[,-1], warnings=FALSE)
+alpha_B_L1 <- alpha(VocabularyB_L1production[,-1], warnings=FALSE)
+alpha_B_L2 <- alpha(VocabularyB_L2production[,-1], warnings=FALSE)
+
+
+
+alpha_table <- data.frame(
+  Vocabulary = c("Vocabulary A", "Vocabulary B"),
+  
+  Alpha_L1 = c(
+    sprintf("%.2f", alpha_A_L1$total$raw_alpha),
+    sprintf("%.2f", alpha_B_L1$total$raw_alpha)
+  ),
+  CI_L1 = c(
+    sprintf("[%.2f - %.2f]", alpha_A_L1$feldt$lower.ci, alpha_A_L1$feldt$upper.ci),
+    sprintf("[%.2f - %.2f]", alpha_B_L1$feldt$lower.ci, alpha_B_L1$feldt$upper.ci)
+  ),
+  
+  Alpha_L2 = c(
+    sprintf("%.2f", alpha_A_L2$total$raw_alpha),
+    sprintf("%.2f", alpha_B_L2$total$raw_alpha)
+  ),
+  CI_L2 = c(
+    sprintf("[%.2f - %.2f]", alpha_A_L2$feldt$lower.ci, alpha_A_L2$feldt$upper.ci),
+    sprintf("[%.2f - %.2f]", alpha_B_L2$feldt$lower.ci, alpha_B_L2$feldt$upper.ci)
+  ),
+  
+  stringsAsFactors = FALSE
+)
+
+# Rename column headers (use empty string for "Vocabulary")
+
+colnames(alpha_table) <- c("", "Alpha", "95% CI", "Alpha", "95% CI")
+
+# Now we want to display the results in a clean, formatted table.
+
+alpha_table %>%
+  kable(align = "lcccc", caption = "Alpha coefficients for L1 and L2 production test") %>%
+  add_header_above(c(" " = 1, "L1 production" = 2, "L2 production" = 2))
+
+# Rundungsfehler?? why? vllt weil wir bereits in data frame gerundet haben? versuche dataframe mit 3f und dann erst in Tabelle runden
+
+#whether responses are consistent between items
+#*We want to associate the results of our analysis here with the interpretation in the study. As we can see in the results of the reliability analysis, which are also displayed in a clean table in the paper (see p.1126), alpha coefficients range from .73 to .84, showing adequate reliability of all the tests.
+```
 
 # Effects of Learning Condition (Research Question 1)
 
