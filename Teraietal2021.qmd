@@ -517,10 +517,6 @@ options(digits=7)
 AIC(fit1)
 ```
 
-*Interpretation: Without the interaction, the model assumes that the
-effects of Test and Condition are additive and do not depend on each
-other. AIC (Akike Information Criterion) is udes to compare models,
-lower is better.*
 
 ```{r}
 # Model with interaction
@@ -604,7 +600,12 @@ testInteractions() for simple main effects
 
 emmeans for estimated marginal means
 
-Interpretation: The anova function() tests whether the interaction
+Interpretation: 
+Without the interaction, the model assumes that the effects of Test and Condition are additive and do not depend on each other. AIC (Akike Information Criterion) was calculated for both variants of the model. It is used to estimate the quality of a model in comparison to another one, where a lower AIC is better. The model with the interaction showed lower AIC (with interaction: 2427.102; without interaction: 2429.771). Participant and item intercepts were used as crossed random effects. Looking at the summary of fit1.1 under Fixed effects, the results show a significant main effect of Test Type (Estimate = -0.976, SE = 0.105, z = -9.315, p < .001). All these numbers are rounded up to three digits for better readability. The interaction of Test Type and Learning Condition (see row "Test2:Condition2") was also significant
+(Estimate = -0.446, SE = 0.206, z = -2.169, p = .030). But, there was no main effect of Learning Condition, as we can see under "Condition2" (Estimate = -0.038, SE = 0.103, z = -0.366, p = .714).
+
+*Since a significant effect of the interaction was found, we moved on to finding simple main effects of the variables and conducting multiple comparisons. If we look at* 
+The anova function() tests whether the interaction
 improves the model. It puts out... With the testInteractions() function
 it is possible to perform simple main effects analysis *after finding a
 significant interaction (only tells you that the effect of one variable
