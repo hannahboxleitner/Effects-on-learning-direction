@@ -50,6 +50,8 @@ questions: 1. Which learning direction is more effective for vocabulary
 acquisition, L1 to L2 learning or L2 to L1 learning? 2. How does L2
 proficiency influence the effects of L2 to L1 and L1 to L2 learning?
 
+To answer these questions, the authors designed an experiment where Japanese EFL learners studied word pairs and then completed retrieval practive tasks in different conditions. After learning, students were tested on their ability to produce the target vocabulary items both in L1 and L2.
+
 Therefore, the authors established the hypotheses that there is no
 significant difference between the two learning directions and that the
 effect of learning direction depends on the learner’s L2 proficiency
