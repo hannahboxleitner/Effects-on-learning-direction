@@ -876,6 +876,46 @@ What you learned in this section:
 - Visualizing interaction effects with the effects package.
 
 
+#Model Diagnostics
+
+Now, we checked our GLMMs and have our results. But before interpreting these results too confidently, we should also check whether the predictors are highly correlated with one another which is a problem called multicollinearity. Multicollinearity might affect the results of our GLMMs.
+
+Why does this matter?
+
+- If our predictors are strongly correlated, the model has trouble keeping apart their unique contributions. 
+- This inflates standard errors, making estimates unreliable. 
+
+A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 1 means predictors are not collinear. Rules:
+-> VIF = 1: perfect independence
+-> VIF > 5: potential concern
+-> VIF > 10: serious multicollinearity
+
+#Calculating VIFs for the Models
+
+We use a helper function vif.mer() to calculate VIFs for mixed models.
+
+```{r}
+vif.mer(fit1.1)
+
+vif.mer(fit2.1)
+
+vif.mer(fit3.1)
+```
+
+Output:
+
+fit1.1 (Test x Condition):
+
+fit2.1 (L1 Production):
+
+fit3.1 (L2 Production):
+
+#Interpreting the VIFs
+
+All our VIF values are obviously quite close to 1. This means that the predictors (s.vocab, Condition, and their interaction) are not correlated with each other in problematic ways. Therefore our models are statistically stable: the estimate of the interaction effects we observed in our GLMMS are not due to multicollinearity.
+
+We can confidently say that the interaction between learning direction and proficiency is a genuine effect, not an artifact of overlapping predictors. The models are behaving well in terms of collinearity. 
+
 
 
 # Conclusion
