@@ -57,6 +57,15 @@ significant difference between the two learning directions and that the
 effect of learning direction depends on the learner’s L2 proficiency
 **(p. 1121-1122).**
 
+In this chapter, we will:
+
+- load and explore the dataset made available by the authors,
+- prepare the variables for analysis,
+- run generalized linear mixed models (GLMMs) to answer the two research questions,
+- and learn how to interpret and visualize the results.
+
+Our aim in this chapter is not only to replicate the study by Terai et al. (2021) but also to learn how to apply mixed-effect modeling in R to real research questions in second language acquisition. 
+
 # Retrieving the authors' data
 
 We will use the authors' original data for our reproduction, which they
@@ -512,7 +521,9 @@ How does L2 proficiency influence the effects of L2->L1 and L1->L2 learning?
 
 The authors hypothesized that the effect of learning direction might be dependant on the learner's proficiency in English. Meaning, lower-proficiency learners might benefit more from practicing in the L2->L1 direction, whilst higher-proficiency learners might benefit more from the L1->L2 direction.
 
-To answer and test this question, the authors fit generalized linear mixed models (GLMMs) separately for the L1 and L2 production test.
+To answer and test this question, we add an interaction term between Condition (learning direction) and s.vocab (scaled proficiency). 
+
+We use a generalzed linear mixed model (GLMM) with a logistic link function, because the dependent variable (Answer) is binary (correct = 1, incorrect = 0).(And the authors fit generalized linear mixed models (GLMMs) separately for the L1 and L2 production test.)
 
 GLMMs are appropriate and quite useful here because:
 - The dependent variable (Answer) is binary (correct=1, incorrect=0).
@@ -603,6 +614,9 @@ First we test a model which includes learning direction and proficiency as main 
 ```{r}
 #The glmer() function is provided by the lme4() package that we installed and activated (? anderes Wort ?) earlier. We use this function to fit Generalized Linear Mixed Effects Models (GLMMs). These models are extensions of generalized linear models (GLMs) that include random effects and thus allow the modeling of hierarchical or grouped data.
 #This first model assumes that learning direction and L2 proficiency each have independent effects on test accuracy
+# Answer~Condition*s.vocab: includes main effects of learning condition and proficiency plus their interaction
+# (1|ID) + (1|ItemID): random intercepts for participants anditems (to account for repeated measures)
+#family = binominal: logistic regression, appropriate for binary outcomes
 fit2<-glmer(Answer~s.vocab+Condition+(1|ID)+(1|ItemID), family=binomial, data=dat1.L1, glmerControl(optimizer="bobyqa"))
 
 summary(fit2)
