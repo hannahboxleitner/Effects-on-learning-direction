@@ -920,6 +920,17 @@ We can confidently say that the interaction between learning direction and profi
 
 # Conclusion
 
+You are now familiar with handling generalized linear mixed models! You have learned how to fit them, interpret their main effects and interations, as well as checking their assumptions with VIFs. GLMMs are powerful tools for analyzing binary outcomes such as accuracy (SOURCE??) which allows us to account for repeated measures across participants and items. It is completely normal that at times GLMMs can feel intimidating: coding contrasts and interpreting the outcomes are not always straightforward. But similar to plotting, there is always a solution. The insights we can gain from a nice model make all the effort worthwhile. 
+
+This chapter's analysis revealed that the effect of the learning direction is not fixed, but rather depends on L2 proficiency. In the L1 Production Test, learners with a lower-proficiency benefitted more from L1 to L2 practice, while learners with a higher-proficiency showed the opposite pattern. In the L2 Production Test we observed a similar tred, though the interaction was weaker. These results suggest that the learning direction may shift as learners' vocabulary knowledge grows. 
+
+In this chapter we combined descriptive statistics, mixed-effects modeling, and visualizations to answer the study's research question. The answer is nuanced: both learning directions can be effective, but their relative benefits change across proficiency level. While working on this we also figured out how model comparison (AIC) and diagnostics (VIFs) helped ensure that our conclusions are statistically sound (?).
+
+It seems that vocabulary learning is not something that can be generalized. While retrieval practice is robustly effective, the direction of practice depends on who the learner is. Due to the extensive research by Terai, Yamashita and Pasich (2021) who published their dataset and code along with the study, we were able to reproduce their findings and gain hands-on experience with modeling. This not only helps with our understanding of the research, but it also sharpens our skills as analysits of second-language data. 
+
+---- 
+
+
 -   No overall difference in accuracy between L1 -\> L2 and L2 -\> L1
     learning (RQ1)
 -   A significant interaction between learning direction and L2
