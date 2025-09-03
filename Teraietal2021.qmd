@@ -162,16 +162,91 @@ etc.) are mentioned in the paper by Terai et al., the data to reproduce
 these findings cannot be found. It is neither part of the data set
 accessible on IRIS, nor does it come up anywhere in the authors' R code.
 
+Most of the data that we will be looking at for descriptive statistics are things we are already familiar with such as mean, median, maximum and minimum, as well as the standard deviation. But the authors of the paper also had a look at skewness and kurtosis. 
+
+We will start with Skewness. To keep it simple, (EXPLAIN SKEWNESS)
+
 # Descriptive Statistics (Table 3)
 
 We want to reproduce Table 3 in Terai et al. (2021) which shows us the descriptive statistics of the target items of the study. Unfortunately the code for this table was not included in the R code published by the authors. Although, that is not an issue as we have the data in the form of a csv file! This is great for us. We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3. 
 
 In order to compute the mean, standard deviation, range, skew, kurtosis, and n for each variable we need these libraries: dplyr, psych, tibble, knitr, kableExtra (I think?).
 
+NUMBERS HERE ARE WRONG FOR SKEW AND KURTOSIS AND I CANNOT FIGURE OUT WHY OMG
+
 ```{r}
 
+##The packages we need include:
+library(dplyr)
+library(psych)
+library(knitr)
+library(kableExtra)
+## install.packages("moments")
+##library(moments)
+
+##For the next step we have to load our data, since the data was already read with the read.csv command we simply need to fix any stray spaces like "berth " 
+dat$ItemID <- trimws(dat$ItemID)
+
+##One row per item
+items <- dat %>%
+  group_by(ItemID) %>%
+  summarise(
+    L2Frequency = first(L2Frequency),
+    Syllables   = first(Syllables), 
+    Alphabet    = first(Alphabet),
+    L1Frequency = first(L1Frequency),
+    WordLength  = first(WordLength),
+    mora        = first(mora),
+    familiarity = mean(familiarity, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    L2Frequency_log = log10(L2Frequency + 1),
+    L1Frequency_log = log10(L1Frequency + 1)
+  )
+
+summ <-  function(x, pearson = FALSE){
+  d <- psych::describe(x)
+  kurt <- if(pearson) d$kurtosis + 3 else d$kurtosis
+  data.frame(
+    Mean     = round(d$mean, 2),
+    SD       = round(d$sd, 2),
+    Median   = round(d$median, 2),
+    Range    = paste0(d$min, " - ", d$max),
+    Skew     = round(d$skew, 2),
+    Kurtosis = round(d$kurtosis, 2),
+    n        = d$n
+  )
+}
+
+##Now we build the two subtables
+
+tab_L2 <- rbind(
+  cbind(Variable = "Frequency (L2, English, log10)", summ(items$L2Frequency, pearson = TRUE)),
+  cbind(Variable = "Syllables (L2)",           summ(items$Syllables, pearson = TRUE)),
+  cbind(Variable = "Letters (L2, Alphabet)",  summ(items$Alphabet, pearson = TRUE))
+)
+
+
+tab_L1 <- rbind(
+  cbind(Variable = "Frequency (L1, Japanese)",   summ(items$L1Frequency, pearson = TRUE)),
+  cbind(Variable = "Letters (L1, WordLength)",    summ(items$WordLength, pearson = TRUE)),
+  cbind(Variable = "Mora (L1)",                  summ(items$mora, pearson = TRUE)),
+  cbind(Variable = "Familiarity (participants)", summ(items$familiarity, pearson = TRUE))
+)
+
+##Now we can print it prettily (or we could do Vew(tab_L2); View(tab_L1))
+
+kable(tab_L2, caption = "Table 3a. Descriptive statistics for L2 (English) item properties.",
+      align = "lrrrrrc") |>
+  kable_classic(full_width = FALSE)
+
+kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item properties.",
+      align = "lrrrrrc") |>
+  kable_classic(full_width = FALSE)
 
 ```
+
 
 # Descriptive statistics of the tests and reliability testing
 
