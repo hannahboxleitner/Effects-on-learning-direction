@@ -467,11 +467,15 @@ alpha_table %>%
   kable(align = "lcccc", caption = "Alpha coefficients for L1 and L2 production test") %>%
   add_header_above(c(" " = 1, "L1 production" = 2, "L2 production" = 2))
 
-# Rundungsfehler?? why? vllt weil wir bereits in data frame gerundet haben? versuche dataframe mit 3f und dann erst in Tabelle runden
+# In this chunk, we calculated Cronbach’s alpha and 95% confidence intervals for two vocabulary tests (A and B) at two proficiency levels (L1 and L2), and created a summary table showing the reliability estimates and CIs for each test and level. Aside from the alpha() function, we used sprintf() to create and format strings for the table, which was then generated using the kable() function. 
 
-#whether responses are consistent between items
-#*We want to associate the results of our analysis here with the interpretation in the study. As we can see in the results of the reliability analysis, which are also displayed in a clean table in the paper (see p.1126), alpha coefficients range from .73 to .84, showing adequate reliability of all the tests.
 ```
+
+If we compare this with the results in the paper (p. 1126), we notice a difference in confidence intervals, specifically in the hundredths place. If we look at the output of alpha(), we see that it puts out two kinds of confidence intervals: Feldt and Duhachek. Reading up in the help file of the alpha() function, it becomes clear that alpha.ci (used to access CIs from alpha function) finds CIs using the Feldt procedure, which is based on the mean covariance, while Duhachek procedure considers the variance of the covariances. In the help file it is stated that in March, 2022, alpha.ci was finally fixed to follow the Feldt procedure. Since the paper was published in 2021, this might explain the deviating CIs here. If one would like to look at Duhachek's CI instead, it can either be seen in the output of alpha(), or one might install an earlier version of the package. Since we want to use the current psych package for our project and the differences don't change our outcome, we decided to stick with Feldt's CI and simply wanted to note why this difference occurs here.
+
+As mentioned before, Cronbach's alpha indicates whether responses are consistent between items, and ranges between 0 and 1, a higher value meaning higher reliability.
+As we can see in the results of the reliability analysis, alpha coefficients range from .73 to .84, showing adequate reliability of all the tests.
+
 
 # Effects of Learning Condition (Research Question 1)
 
@@ -483,7 +487,7 @@ the production tests and learning conditions. It contained Learning
 Condition and Test Type as explanatory variables, as well as the
 interaction of the two variables. Random effects (Subject and Item) were
 included, and production test answers were used as the response variable
-(p. 1125)*.*
+(p. 1125).
 
 ```{r}
 # Before starting on the model, we install and load the packages we need. These seem to be from an older Rstudio version, but they still work just fine!
@@ -543,12 +547,12 @@ options(digits=7)
 AIC(fit1.1)
 ```
 
-Now after calculating AICs for both versions of the model, we can see that the model *with* interaction showed lower AIC (with interaction: 2427.102; without interaction: 2429.771).
+Now after calculating AICs for both versions of the model, we can see that the model *with* interaction showed lower AIC (with interaction: 2427.102; without interaction: 2429.771), indicating higher quality of the model.
 
 As mentioned above, participant and item intercepts were used as crossed random effects. To interpret the results in accordance with the paper, we want to look at the summary output of fit1.1 under Fixed effects. The results show a significant main effect of **Test Type** (Estimate = -0.976, SE = 0.105, z = -9.315, p < .001). These numbers can be found in the "Test2" row, and are all rounded up to three digits for better readability. The negative estimate tells us that accuracy in Test 2 is lower than in Test 1. The p-value can be extracted from the column marked Pr(>|z|), where it is displayed in the form of <2e-16, since it is such a small number. It tells us that the effect (of switching between test types) is significant. The z value tells us how many standard deviations away a value is from the mean.
 Moving on to **Learning Condition**, there was no main effect, as we can see under "Condition2" (Estimate = -0.038, SE = 0.103, z = -0.366, p = .714). In this case, the p-value is > 0.05, meaning that the effect of learning condition is not significant. The main effect estimate of Condition2 is quite small (close to 0), telling us the predicted odds don't change much when moving from one learning condition to the other. 
 The **interaction** of Test Type and Learning Condition (see row "Test2:Condition2") was also significant
-(Estimate = -0.446, SE = 0.206, z = -2.169, p = .030). The interaction term tells us, how the effect of Test on accuracy changes depends on the Condition, or the other way around. The estimate tells us that, when both Test2 and Condition2 are present, the accuracy is even lower than when only one of them is. The p-value of .030 tells us that the interaction effect is unlikely due to chance. 
+(Estimate = -0.446, SE = 0.206, z = -2.169, p = .030). The interaction term tells us how the effect of Test on accuracy changes depends on the Condition, or the other way around. The estimate tells us that, when both Test2 and Condition2 are present, the accuracy is even lower than when only one of them is. The p-value of .030 indicates that the interaction effect is unlikely due to chance. 
 
 ```{r}
 # Testing interaction
@@ -563,8 +567,8 @@ testInteractions(fit1.1, fixed="Test", across="Condition")
 testInteractions(fit1.1, fixed="Condition", across="Test")
 ```
 
-Since a significant effect of the interaction was found, we moved on to comparing the two models with anova() to test if the interaction improves the model. It puts out a p-value of 0.03071. Being smaller than 0.05, this result is statistically significant, which is also indicated by the * specified in the significance codes in the output. It tells us that fit1.1 (with interaction)  fits the data significantly better than fit1 (without interaction). 
-With the testInteractions() function it is possible to perform simple main effects analysis after finding a significant interaction. A significant interaction only tells you that the effect of one variable depends on the level of the other, not which levels are different. So with this function, we want to unpack the interaction further and find out how the effect of one variable (Test or Condition) differs across levels of the other. If we look at the output of the first function where Test is fixed, the p-values (L1 Production: 0.188; L2 Production: 0.164) tell us that effect of Test does not significantly differ between conditions. If we take Condition as the fixed variable, p-values are very small (L1L2: 1.931e-07; L2L1: 1.608e-15), indicating that the effect of Condition does significantly differ between tests.
+Since a significant effect of the interaction was found, we moved on to comparing the two models with anova() to test if the interaction improves the model. It puts out a p-value of 0.03071. Being smaller than 0.05, this result is statistically significant, which is also indicated by the * specified in the significance codes in the output. It tells us that fit1.1 (model with interaction)  fits the data significantly better than fit1 (without interaction). 
+With the testInteractions() function it is possible to perform simple main effects analysis after finding a significant interaction. A significant interaction only tells you that the effect of one variable depends on the level of the other, not which levels are different. So with this function, we want to unpack the interaction further and find out how the effect of one variable (Test or Condition) differs across levels of the other. If we look at the output of the first function where Test is used as the fixed variable, the p-values (L1 Production: 0.188; L2 Production: 0.164) tell us that the effect of Test does not significantly differ between conditions. If we take Condition as the fixed variable, p-values are very small (L1L2: 1.931e-07; L2L1: 1.608e-15), indicating that the effect of Condition does significantly differ between tests.
 
 ```{r}
 
@@ -595,9 +599,9 @@ eff_size(b,sigma=sigma(fit1.1), edf= Inf)
 
 The analysis conducted in the code chunk above provides the most important information for the interpretation of this model done by the authors. We want to go through their statements and connect them with the code we reproduced. 
 In the paper, the authors claim there was a statistically significant difference between the scores of the two tests, suggesting that L1 production test scores were higher than L2 production test scores in both learning conditions (**L2 to L1 learning:** p < .001, d = 1.20, 95% CI [0.91, 1.49]; **L1 to L2 learning:** p < .001, d = 0.75, [0.47, 1.04]) (p. 1126). 
-Now, we want to take a close look at these numbers and what they mean. In our code above, we can find the numbers stated here in the output regarding our emmeans object b. The p-values show up when printing b, and lie < .001 for both learning conditions. A small p-value tells us that an effect likely exists, but does not say much about how big or important it is. This is where effect size comes into play: The function eff_size() put out the estimated effect sizes for both conditions, which are referred to as **d** in the paper and both display a large (larger for L2 to L1) effect size, and indicate that the difference (different levels of Test within each Condition) is not just statistically significant, but meaningful in size. Lastly, the confint() function applied to b put out the 95% confidence intervals for both learning directions, which means we can be 95% confident that the true standardized effect size lies in this range (which is a meaningful effect size, in our case).
+Now, we want to take a close look at these numbers and what they mean. In our code above, we can find the numbers stated here in the output regarding our emmeans object b. The p-values show up when printing b, and lie < .001 for both learning conditions. A small p-value tells us that an effect likely exists, but does not say much about how big or important it is. This is where effect size comes into play: The function eff_size() puts out the estimated effect sizes for both conditions, which are referred to as **d** in the paper. They both demonstrate a large (larger for L2 to L1) effect size, and indicate that the difference (different levels of Test within each Condition) is not just statistically significant, but meaningful in size. Lastly, the confint() function applied to b put out the 95% confidence intervals for both learning directions, which means we can be 95% confident that the true standardized effect size lies in this range (which is a meaningful effect size, in our case).
 
-It is further expressed that results showed no main effects of Learning Condition (L1 production test: p = .188, d = -0.19, 95% CI [-0.46, 0.09]; L2 production test: p = .082, d = 0.26, [-0.03, 0.55]). This can be derived when we look at the object a, which compares learning conditions separately for L1 Production and L2 Production. Printing a puts out p-values, which lie above 0.05 in both production tests and indicate no staistical significance of the differences between learning conditions. The effect sizes show a small negative effect for L1 Production, and a small positive effect for L2 Production, and do not suggest a meaningful difference. The confidence intervals in both cases include 0 (since it lies between -0.03 and 0.55, for example), telling us that no effect (d = 0) is a possibilibility given the data. To sum up, all these values do not support a main effect of Learning Condition.
+It is further expressed that results showed no main effects of Learning Condition (L1 production test: p = .188, d = -0.19, 95% CI [-0.46, 0.09]; L2 production test: p = .082, d = 0.26, [-0.03, 0.55]). This can be derived when we look at object a, which compares learning conditions separately for L1 Production and L2 Production. Printing a puts out p-values, which lie above 0.05 in both production tests and indicate no statistical significance of the differences between learning conditions. The effect sizes show a small negative effect for L1 Production, and a small positive effect for L2 Production, and do not suggest a meaningful difference. The confidence intervals in both cases include 0 (since it lies between -0.03 and 0.55, for example), telling us that no effect (d = 0) is a possibility given the data. To sum up, all these values do not support a main effect of Learning Condition.
 
 ```{r}
 # Visualizing the first model
@@ -606,7 +610,7 @@ It is further expressed that results showed no main effects of Learning Conditio
 # Setting graphical parameters for the plot
 par(pty="s") # sets the shape: square
 par(pin=c(10,10)) # sets the plot size
-par("ps") #font size
+par("ps") # font size
 
 # Plot
 plot(allEffects(fit1.1),multiline=T,ci.style="bands", xlab="Test Type", ylab="Accuracy Rate",
@@ -614,7 +618,7 @@ plot(allEffects(fit1.1),multiline=T,ci.style="bands", xlab="Test Type", ylab="Ac
        colors="black",asp=1)
 ```
 
-Lastly, the model is visualized. The plot shows the interaction between Test Type and Learning Condition on accuracy rates, based on the generalized linear mixed-effects model (fit1.1). It is an effect plot generated with the allEffects() function. The solid line represents the L1 to L2 learning condition; the dotted line represents the L2 to L1 learning condition. The y-axis represents accuracy rates on both L1 and L2 production test. The x-axis represents Test Type.
+Lastly, the model is visualized. The plot shows the interaction between Test Type and Learning Condition on accuracy rates, based on the generalized linear mixed-effects model (fit1.1). It is an effect plot generated with the allEffects() function. The solid line represents the L1 to L2 learning condition; the dotted line represents the L2 to L1 learning condition. The y-axis represents accuracy rates on both L1 and L2 production tests. The x-axis represents Test Type.
 We can see that the accuracy rates differ across Test Types and Learning Conditions, with a clear interaction between the two: The non-parallel lines indicate that the effect of one variable changes depending on the level of the other variable. The distance between the two lines is relatively small at each test type, which reflects the results that revealed no significant difference in learning effects between L2 to L1 learning and L1 to L2 learning.
 
 ```{r}
@@ -650,7 +654,7 @@ ggplot(emm_df, aes(x = Test, y = prob, group = Condition, color = Condition, lin
     text = element_text(size = 14),
     plot.title = element_text(hjust = 0.5)
   )
-#  This plot is quite similar to the one presented in the author's code. The only addition in *what* is presented, is that it contains so-called error bars above and below each point, which reflect the confidence intervals. Most differences lie in *how* the data is presented, where I changed the appearance a bit. I added the Beyonce palette, to give the two lines (that represent Learning Condition) some color. I still kept them solid vs. dashed, so that can be told apart easily. Also, the legend for "Condition" is next to the plot, not above it, which I find more well-arranged.
+# This plot is quite similar to the one presented in the author's code. The only addition in *what* is presented, is that it contains so-called error bars above and below each point, which reflect the confidence intervals. Most differences lie in *how* the data is presented, where I changed the appearance a bit. I added the Beyonce palette, to give the two lines (that represent Learning Condition) some color. I still kept them solid vs. dashed, so that they can be told apart easily. Also, the legend for "Condition" is next to the plot, not above it, which I find more well-arranged.
 ```
 Even though this is an additional plot to the one the authors already provided in their code, I want to explain why using ggplot2 for this might be of advantage. ggplot2 is built on the "grammar of graphics", which makes it easy to add layers and extend the plot. There are many options to alter the appearance of the plot, like colors, themes etc. Furthermore, in this code, we can explicitly see what is plotted and how specific elements are modified. This makes the plot more reproducible and easier to update or change later on.
 
