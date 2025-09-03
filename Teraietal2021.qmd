@@ -162,6 +162,17 @@ etc.) are mentioned in the paper by Terai et al., the data to reproduce
 these findings cannot be found. It is neither part of the data set
 accessible on IRIS, nor does it come up anywhere in the authors' R code.
 
+# Descriptive Statistics (Table 3)
+
+We want to reproduce Table 3 in Terai et al. (2021) which shows us the descriptive statistics of the target items of the study. Unfortunately the code for this table was not included in the R code published by the authors. Although, that is not an issue as we have the data in the form of a csv file! This is great for us. We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3. 
+
+In order to compute the mean, standard deviation, range, skew, kurtosis, and n for each variable we need these libraries: dplyr, psych, tibble, knitr, kableExtra (I think?).
+
+```{r}
+
+
+```
+
 # Descriptive statistics of the tests and reliability testing
 
 In this chapter, we will attempt to reproduce the authors' descriptive
