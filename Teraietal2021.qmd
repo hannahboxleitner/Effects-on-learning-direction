@@ -30,6 +30,7 @@ results with it. By the end of this chapter, it should become clear how
 to conduct and interpret mixed-effects logistics regression models in R
 for experimental data.
 
+
 # Introducing the study
 
 In this chapter, we attempt to reproduce the results of a linguistics
@@ -49,10 +50,21 @@ questions: 1. Which learning direction is more effective for vocabulary
 acquisition, L1 to L2 learning or L2 to L1 learning? 2. How does L2
 proficiency influence the effects of L2 to L1 and L1 to L2 learning?
 
+To answer these questions, the authors designed an experiment where Japanese EFL learners studied word pairs and then completed retrieval practive tasks in different conditions. After learning, students were tested on their ability to produce the target vocabulary items both in L1 and L2.
+
 Therefore, the authors established the hypotheses that there is no
 significant difference between the two learning directions and that the
 effect of learning direction depends on the learner’s L2 proficiency
 **(p. 1121-1122).**
+
+In this chapter, we will:
+
+- load and explore the dataset made available by the authors,
+- prepare the variables for analysis,
+- run generalized linear mixed models (GLMMs) to answer the two research questions,
+- and learn how to interpret and visualize the results.
+
+Our aim in this chapter is not only to replicate the study by Terai et al. (2021) but also to learn how to apply mixed-effect modeling in R to real research questions in second language acquisition. 
 
 # Retrieving the authors' data
 
@@ -149,6 +161,92 @@ descriptive statistics about the participants (age, years of learning
 etc.) are mentioned in the paper by Terai et al., the data to reproduce
 these findings cannot be found. It is neither part of the data set
 accessible on IRIS, nor does it come up anywhere in the authors' R code.
+
+Most of the data that we will be looking at for descriptive statistics are things we are already familiar with such as mean, median, maximum and minimum, as well as the standard deviation. But the authors of the paper also had a look at skewness and kurtosis. 
+
+We will start with Skewness. To keep it simple, (EXPLAIN SKEWNESS)
+
+# Descriptive Statistics (Table 3)
+
+We want to reproduce Table 3 in Terai et al. (2021) which shows us the descriptive statistics of the target items of the study. Unfortunately the code for this table was not included in the R code published by the authors. Although, that is not an issue as we have the data in the form of a csv file! This is great for us. We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3. 
+
+In order to compute the mean, standard deviation, range, skew, kurtosis, and n for each variable we need these libraries: dplyr, psych, tibble, knitr, kableExtra (I think?).
+
+NUMBERS HERE ARE WRONG FOR SKEW AND KURTOSIS AND I CANNOT FIGURE OUT WHY OMG
+
+```{r}
+
+##The packages we need include:
+library(dplyr)
+library(psych)
+library(knitr)
+library(kableExtra)
+## install.packages("moments")
+##library(moments)
+
+##For the next step we have to load our data, since the data was already read with the read.csv command we simply need to fix any stray spaces like "berth " 
+dat$ItemID <- trimws(dat$ItemID)
+
+##One row per item
+items <- dat %>%
+  group_by(ItemID) %>%
+  summarise(
+    L2Frequency = first(L2Frequency),
+    Syllables   = first(Syllables), 
+    Alphabet    = first(Alphabet),
+    L1Frequency = first(L1Frequency),
+    WordLength  = first(WordLength),
+    mora        = first(mora),
+    familiarity = mean(familiarity, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    L2Frequency_log = log10(L2Frequency + 1),
+    L1Frequency_log = log10(L1Frequency + 1)
+  )
+
+summ <-  function(x, pearson = FALSE){
+  d <- psych::describe(x)
+  kurt <- if(pearson) d$kurtosis + 3 else d$kurtosis
+  data.frame(
+    Mean     = round(d$mean, 2),
+    SD       = round(d$sd, 2),
+    Median   = round(d$median, 2),
+    Range    = paste0(d$min, " - ", d$max),
+    Skew     = round(d$skew, 2),
+    Kurtosis = round(d$kurtosis, 2),
+    n        = d$n
+  )
+}
+
+##Now we build the two subtables
+
+tab_L2 <- rbind(
+  cbind(Variable = "Frequency (L2, English, log10)", summ(items$L2Frequency, pearson = TRUE)),
+  cbind(Variable = "Syllables (L2)",           summ(items$Syllables, pearson = TRUE)),
+  cbind(Variable = "Letters (L2, Alphabet)",  summ(items$Alphabet, pearson = TRUE))
+)
+
+
+tab_L1 <- rbind(
+  cbind(Variable = "Frequency (L1, Japanese)",   summ(items$L1Frequency, pearson = TRUE)),
+  cbind(Variable = "Letters (L1, WordLength)",    summ(items$WordLength, pearson = TRUE)),
+  cbind(Variable = "Mora (L1)",                  summ(items$mora, pearson = TRUE)),
+  cbind(Variable = "Familiarity (participants)", summ(items$familiarity, pearson = TRUE))
+)
+
+##Now we can print it prettily (or we could do Vew(tab_L2); View(tab_L1))
+
+kable(tab_L2, caption = "Table 3a. Descriptive statistics for L2 (English) item properties.",
+      align = "lrrrrrc") |>
+  kable_classic(full_width = FALSE)
+
+kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item properties.",
+      align = "lrrrrrc") |>
+  kable_classic(full_width = FALSE)
+
+```
+
 
 # Descriptive statistics of the tests and reliability testing
 
@@ -423,6 +521,7 @@ kable(descriptive_stats_tests_trimmed,
 
 
 # Now we have a table that summarizes the descriptive statistics of the two types of post-tests, where the measures of scores in the two production tests can be easily compared. In the L1 production test, scores were shown to be generally higher than in L2 production test.
+
 ```
 
 ```{r}
@@ -479,6 +578,59 @@ As mentioned before, Cronbach's alpha indicates whether responses are consistent
 As we can see in the results of the reliability analysis, alpha coefficients range from .73 to .84, showing adequate reliability of all the tests.
 
 
+```
+
+```{r}
+# In this chunk, we want to summarize results of the reliability testing and reproduce a table similar to the one in the paper (p. 1126).
+
+alpha_A_L1 <- alpha(VocabularyA_L1production[,-1], warnings=FALSE)
+alpha_A_L2 <- alpha(VocabularyA_L2production[,-1], warnings=FALSE)
+alpha_B_L1 <- alpha(VocabularyB_L1production[,-1], warnings=FALSE)
+alpha_B_L2 <- alpha(VocabularyB_L2production[,-1], warnings=FALSE)
+
+
+
+alpha_table <- data.frame(
+  Vocabulary = c("Vocabulary A", "Vocabulary B"),
+  
+  Alpha_L1 = c(
+    sprintf("%.2f", alpha_A_L1$total$raw_alpha),
+    sprintf("%.2f", alpha_B_L1$total$raw_alpha)
+  ),
+  CI_L1 = c(
+    sprintf("[%.2f - %.2f]", alpha_A_L1$feldt$lower.ci, alpha_A_L1$feldt$upper.ci),
+    sprintf("[%.2f - %.2f]", alpha_B_L1$feldt$lower.ci, alpha_B_L1$feldt$upper.ci)
+  ),
+  
+  Alpha_L2 = c(
+    sprintf("%.2f", alpha_A_L2$total$raw_alpha),
+    sprintf("%.2f", alpha_B_L2$total$raw_alpha)
+  ),
+  CI_L2 = c(
+    sprintf("[%.2f - %.2f]", alpha_A_L2$feldt$lower.ci, alpha_A_L2$feldt$upper.ci),
+    sprintf("[%.2f - %.2f]", alpha_B_L2$feldt$lower.ci, alpha_B_L2$feldt$upper.ci)
+  ),
+  
+  stringsAsFactors = FALSE
+)
+
+# Rename column headers (use empty string for "Vocabulary")
+
+colnames(alpha_table) <- c("", "Alpha", "95% CI", "Alpha", "95% CI")
+
+# Now we want to display the results in a clean, formatted table.
+
+alpha_table %>%
+  kable(align = "lcccc", caption = "Alpha coefficients for L1 and L2 production test") %>%
+  add_header_above(c(" " = 1, "L1 production" = 2, "L2 production" = 2))
+
+# Rundungsfehler?? why? vllt weil wir bereits in data frame gerundet haben? versuche dataframe mit 3f und dann erst in Tabelle runden
+
+#whether responses are consistent between items
+#*We want to associate the results of our analysis here with the interpretation in the study. As we can see in the results of the reliability analysis, which are also displayed in a clean table in the paper (see p.1126), alpha coefficients range from .73 to .84, showing adequate reliability of all the tests.
+```
+
+
 # Effects of Learning Condition (Research Question 1)
 
 As we recall from the introduction, the first research question of Terai
@@ -509,6 +661,7 @@ Now, for the first model, we want to go through the process step by step and con
 
 ```{r}
 
+
 ## Model 1: Test Type & Learning Direction
 
 # To test RQ1, we fit a logistic mixed-effects regression model predicting accuracy (Answer) from Test, Condition, and their interaction. First, we want to fit a model without interaction.
@@ -529,6 +682,7 @@ Without interaction, the model assumes that the effects of Test and Condition ar
 
 If we look at the output of the summary() function for our model, the output includes *scaled residuals*. Residuals are the differences between observed and predicted values. This section shows summary statistics of the model's residuals after scaling: Minimum, first quartile (25^th^ percentile), median (50^th^ percentile), third quartile (75^th^ percentile), and maximum. These values give an impression of how well the model fits the data.
 The "Random effects" section put out the estimated variability in the intercept across subjects (ID) and items (ItemID), accounting for differences in overall accuracy between participants and between items.
+
 
 
 ```{r}
@@ -558,6 +712,29 @@ The **interaction** of Test Type and Learning Condition (see row "Test2:Conditio
 
 ```{r}
 # Testing interaction
+
+How does L2 proficiency influence the effects of L2->L1 and L1->L2 learning?
+
+The authors hypothesized that the effect of learning direction might be dependant on the learner's proficiency in English. Meaning, lower-proficiency learners might benefit more from practicing in the L2->L1 direction, whilst higher-proficiency learners might benefit more from the L1->L2 direction.
+
+To answer and test this question, we add an interaction term between Condition (learning direction) and s.vocab (scaled proficiency). 
+
+We use a generalzed linear mixed model (GLMM) with a logistic link function, because the dependent variable (Answer) is binary (correct = 1, incorrect = 0).(And the authors fit generalized linear mixed models (GLMMs) separately for the L1 and L2 production test.)
+
+GLMMs are appropriate and quite useful here because:
+- The dependent variable (Answer) is binary (correct=1, incorrect=0).
+- Responses are nested: the same participants answer multiple items, and the same items are seen by multiple participants.
+
+The packages that we need here are:
+- dplyr for the function filter() and general data manipulation,
+- lme4 for the function glmer() for fitting GLMMs,
+- effects for the function allEffects(), for plotting model predictions,
+- phia, for the function testInteractions(), for probing interactions.
+
+The paper reports that the advantage flips by proficiency level
+(lower-proficiency learners tend to benefit more from L2-\>L1, higher
+proficiency from L1-\>L2).
+
 
 # In this chunk, we want to move on to further analyze the two models and their results. We will start with comparing the model with and without interaction using the anova() function:
 
@@ -622,6 +799,7 @@ plot(allEffects(fit1.1),multiline=T,ci.style="bands", xlab="Test Type", ylab="Ac
 
 Lastly, the model is visualized. The plot shows the interaction between Test Type and Learning Condition on accuracy rates, based on the generalized linear mixed-effects model (fit1.1). It is an effect plot generated with the allEffects() function. The solid line represents the L1 to L2 learning condition; the dotted line represents the L2 to L1 learning condition. The y-axis represents accuracy rates on both L1 and L2 production tests. The x-axis represents Test Type.
 We can see that the accuracy rates differ across Test Types and Learning Conditions, with a clear interaction between the two: The non-parallel lines indicate that the effect of one variable changes depending on the level of the other variable. The distance between the two lines is relatively small at each test type, which reflects the results that revealed no significant difference in learning effects between L2 to L1 learning and L1 to L2 learning.
+
 
 ```{r}
 # Extension (Hannah)
@@ -698,6 +876,11 @@ We begin by focusing only on the L1 production data. This can be done by
 first loading our data with the command read.csv() and then the command
 filter() which only keeps the rows for the L1 Production test.
 
+## With a second model the scores of the L1 production test were analyzed. This seccond model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127). Here the authors analyzed the data with interaction and without interaction, to find out the AIC, p and z scores there are a few steps we need to take. 
+
+We begin by focusing only on the L1 production data. This can be done by first loading our data with the command read.csv() and then the command filter() which only keeps the rows for the L1 Production test.
+
+
 ```{r}
 ##L1 Production test
 
@@ -716,9 +899,13 @@ dat1.L1<-filter(dat1, Test=="L1 Production")
 dat1.L1$Condition <- as.factor(dat1.L1$Condition)
 ```
 
+
 Because in a later step we will have to take a look at interactions, we
 set up contrast coding. Using centered contrasts (-0.5, +0.5) makes the
 intercept easier to interpret as it becomes the grand mean.
+
+Because in a later step we will have to take a look at interactions, we set up contrast coding. Using centered contrasts (-0.5, +0.5) makes the intercept easier to interpret as it becomes the grand mean.
+
 
 ```{r}
   
@@ -751,9 +938,13 @@ contrasts(dat1.L1$Condition)<-my.simple
 
 ```
 
+
 In the next step, we need to standardize the vocabulary size scores.
 That way, one unit of s.vocab corresponds to one standard deviation of
 proficiency
+
+In the next step, we need to standardize the vocabulary size scores. That way, one unit of s.vocab corresponds to one standard deviation of proficiency
+
 
 ```{r}
 
@@ -765,12 +956,24 @@ dat1.L1$s.vocab<-scale(dat1.L1$Vocab)
 
 ##Model without interaction
 
+
 First we test a model which includes learning direction and proficiency
 as main effects only.
 
 ```{r}
 #The glmer() function is provided by the lme4() package that we installed and activated (? anderes Wort ?) earlier. We use this function to fit Generalized Linear Mixed Effects Models (GLMMs). These models are extensions of generalized linear models (GLMs) that include random effects and thus allow the modeling of hierarchical or grouped data.
 #This first model assumes that learning direction and L2 proficiency each have independent effects on test accuracy
+
+
+First we test a model which includes learning direction and proficiency as main effects only.
+
+```{r}
+#The glmer() function is provided by the lme4() package that we installed and activated (? anderes Wort ?) earlier. We use this function to fit Generalized Linear Mixed Effects Models (GLMMs). These models are extensions of generalized linear models (GLMs) that include random effects and thus allow the modeling of hierarchical or grouped data.
+#This first model assumes that learning direction and L2 proficiency each have independent effects on test accuracy
+# Answer~Condition*s.vocab: includes main effects of learning condition and proficiency plus their interaction
+# (1|ID) + (1|ItemID): random intercepts for participants anditems (to account for repeated measures)
+#family = binominal: logistic regression, appropriate for binary outcomes
+
 fit2<-glmer(Answer~s.vocab+Condition+(1|ID)+(1|ItemID), family=binomial, data=dat1.L1, glmerControl(optimizer="bobyqa"))
 
 summary(fit2)
@@ -781,6 +984,7 @@ options(digits=7)
 AIC(fit2)
 #This command prints AIC, a fit index (the lower the better)
 ```
+
 
 ##Interpretation (?) #The model predicts the probaility of a correct
 response (Answer), using logistic regression. The random intercepts
@@ -798,6 +1002,18 @@ no effect.
 
 ##Model with interaction What if proficiency only matters depending on
 the learning direction? To figure this out, we add an interaction term.
+=======
+##Interpretation (?)
+#The model predicts the probaility of a correct response (Answer), using logistic regression. The random intercepts (1|ID) and (1|ItemID) account for individual differences between participants and between vocabulary items.
+#The output of this first model shows that s.vocab is not significant with p = .57, this means that proficiency by itself did not strongly predict L1 Production accuracy
+# For Condition the model also showed that it was not significant p = .18, meanign that learning direction alone also did not explain differences.
+#So if we look at each predictor separately, there seems to be no clear effect.
+
+So, if we only consider the two predictors separately, there seems to be no effect.
+
+##Model with interaction
+What if proficiency only matters depending on the learning direction? To figure this out, we add an interaction term. 
+
 
 ```{r}
 fit2.1<-glmer(Answer~s.vocab*Condition+(1|ID)+(1|ItemID), family=binomial, data=dat1.L1, glmerControl(optimizer="bobyqa"))
@@ -813,6 +1029,8 @@ confint(fit2.1)
 options(digits=7)
 AIC(fit2.1)
 ```
+The interaction term s.vocab:Condition is significant -0.37, p = .009, which means that the effect of vocabulary proficiency depends on the learning direction.
+
 
 The interaction term s.vocab:Condition is significant -0.37, p = .009,
 which means that the effect of vocabulary proficiency depends on the
@@ -823,10 +1041,22 @@ and a likelihood ratio, we use to command anova(), which is an analysis
 of variance (a statistical formula which compares variances across the
 means (or average) of different groups).
 
+
+
+##Model comparison
+To formally check which model fits better using AIC and a likelihood ratio, we use to command anova(), which is an analysis of variance (a statistical formula which compares variances across the means (or average) of different groups).
+
 ```{r}
 anova(fit2,fit2.1)
 ##Model comparison: AIC is lower for the interaction model; the LR test is significant, so the interaction model fits better???
 ```
+Model with interaction: AIC = 1311.6
+Model without interaction: AIC = 1316.3
+χ² = 6.70, p = .009
+
+The model with interaction is a better fit.
+
+##Visualizing the effect
 
 Model with interaction: AIC = 1311.6 Model without interaction: AIC =
 1316.3 χ² = 6.70, p = .009
@@ -843,6 +1073,7 @@ plot(allEffects(fit2.1), multiline=T, ci.style="bands",
     rescale.axis=F, ylim = c(0,1), colors="black", asp=1)
 ```
 
+
 This plot shows that accuracy increases with proficiency. The slope
 differs by condition. Learners in one learning direction seem to benefit
 more strongly from larger vocabularies.
@@ -850,6 +1081,13 @@ more strongly from larger vocabularies.
 ##Testing simple effects
 
 ...Text...Explanation...
+
+This plot shows that accuracy increases with proficiency. The slope differs by condition. Learners in one learning direction seem to benefit more strongly from larger vocabularies. 
+
+##Testing simple effects
+
+...Text...Explanation... 
+
 
 ```{r}
 #Simple main effect
@@ -919,10 +1157,17 @@ summary(fit2)
 options(digits=7)
 AIC(fit2)
 #This command prints AIC, a fit index (the lower the better)
+
 ```
 
 ##GLMM with Interaction: #What if vocabulary size only matters depending
 on the learning direction? #Next, researchers added an interaction term:
+
+
+``` 
+##GLMM with Interaction:
+#What if vocabulary size only matters depending on the learning direction?
+#Next, researchers added an interaction term:
 
 ```{r}
 fit2.1<-glmer(Answer~s.vocab*Condition+(1|ID)+(1|ItemID), family=binomial, data=dat1.L1, glmerControl(optimizer="bobyqa"))
@@ -930,6 +1175,7 @@ summary(fit2.1)
 ##addition of s.vocab:Condition which directly tests RQ2: Does the effect of learning direction depend on L2 proficiency? -> here s.vocab:Condition2 is negative and significant (-0.367, p=.009)
             
 ```
+#Here the results showed that the interaction s.vocab:Condition is significant (-0.367, p = 0.009). This means that the effects of proficiency depend on the learning direction. Vocabulary knowledge seems to help more in one condition than in the other.
 
 #Here the results showed that the interaction s.vocab:Condition is
 significant (-0.367, p = 0.009). This means that the effects of
@@ -945,18 +1191,31 @@ options(digits=7)
 AIC(fit2.1)
 ```
 
+
 #Model Comparison #To formally check whether the model with the
 interaction is better than the simpler model, we compare them with a
 likelihodd ratio test:
+
+
+#Model Comparison
+#To formally check whether the model with the interaction is better than the simpler model, we compare them with a likelihodd ratio test:
 
 ```{r}
 anova(fit2,fit2.1)
 ##Model comparison: AIC is lower for the interaction model; the LR test is significant, so the interaction model fits better???
 ```
+#Model with interaction: AIC = 1311.6, fits better than without AIC = 1316.3
+#Chi-square test: χ²(1) = 6.70, p = .009 -> interaction model is significantly superior
+
 
 #Model with interaction: AIC = 1311.6, fits better than without AIC =
 1316.3 #Chi-square test: χ²(1) = 6.70, p = .009 -\> interaction model is
 significantly superior
+
+##Plotting/Visualizing the Effect using the effects package
+
+=======
+
 
 ##Plotting/Visualizing the Effect using the effects package
 
@@ -967,6 +1226,7 @@ plot(allEffects(fit2.1), multiline=T, ci.style="bands",
     main="L1 Production", lty=c(1,2),
     rescale.axis=F, ylim = c(0,1), colors="black", asp=1)
 ```
+#Here, this plot shows that the accuracy increases with vocabulary size, but the slope differs by condition and that learners in one learning direction benefit more strongly from larger vocabularies.
 
 #Here, this plot shows that the accuracy increases with vocabulary size,
 but the slope differs by condition and that learners in one learning
@@ -977,11 +1237,18 @@ direction benefit more strongly from larger vocabularies.
 testInteractions(fit2.1, fixed="s.vocab", across="Condition")
 ```
 
+
 ##L2 Production Test #The same steps are repeated for L2 Production with
 dat2.L2 #Here the interaction between s.vocab and Condition was
 marginally significant (p = .07) which suggests that proficiency also
 mattered, but that the moderating role of learning direction was weaker
 compared to the L1 Production test.
+
+
+##L2 Production Test
+#The same steps are repeated for L2 Production with dat2.L2
+#Here the interaction between s.vocab and Condition was marginally significant (p = .07) which suggests that proficiency also mattered, but that the moderating role of learning direction was weaker compared to the L1 Production test.
+
 
 ```{r}
 dat2<-read.csv(file = here("data", "dataset1_ssla_20210313.csv", header=T)
@@ -1041,6 +1308,7 @@ plot(allEffects(fit3.1),multiline=T,ci.style="bands", xlab="Vocabulary Size", yl
        main= "L2 Production", lty=c(1,2), rescale.axis=F, ylim = c(0,1),colors="black",asp=1)
 ```
 
+
 ##Interpretation & Takeaway #For L1 Production: Learners' prooficiency
 strongly interats with learning direction. More proficient learners
 perform better, but especially so in one condition. #For L2 Production:
@@ -1054,7 +1322,73 @@ What you learned in this section: - Adding a continous predictor
 Comparing models using AIC and likelihood ratio tests. - Visualizing
 interaction effects with the effects package.
 
+##Interpretation & Takeaway
+#For L1 Production: Learners' prooficiency strongly interats with learning direction. More proficient learners perform better, but especially so in one condition.
+#For L2 Production: A similar trend can be seen, although it is less pronounced.
+# Vocabulary proficiency shapes how effectively retrieval practice works, and the optimal learning direction may differ for learners with higher vs. lower proficiency.
+
+What you learned in this section:
+- Adding a continous predictor (s.vocab) to a GLMM.
+- Testing and interpreting interactions.
+- Comparing models using AIC and likelihood ratio tests.
+- Visualizing interaction effects with the effects package.
+
+
+#Model Diagnostics
+
+Now, we checked our GLMMs and have our results. But before interpreting these results too confidently, we should also check whether the predictors are highly correlated with one another which is a problem called multicollinearity. Multicollinearity might affect the results of our GLMMs.
+
+Why does this matter?
+
+- If our predictors are strongly correlated, the model has trouble keeping apart their unique contributions. 
+- This inflates standard errors, making estimates unreliable. 
+
+A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 1 means predictors are not collinear. Rules:
+-> VIF = 1: perfect independence
+-> VIF > 5: potential concern
+-> VIF > 10: serious multicollinearity
+
+#Calculating VIFs for the Models
+
+We use a helper function vif.mer() to calculate VIFs for mixed models.
+
+```{r}
+vif.mer(fit1.1)
+
+vif.mer(fit2.1)
+
+vif.mer(fit3.1)
+```
+
+Output:
+
+fit1.1 (Test x Condition):
+
+fit2.1 (L1 Production):
+
+fit3.1 (L2 Production):
+
+#Interpreting the VIFs
+
+All our VIF values are obviously quite close to 1. This means that the predictors (s.vocab, Condition, and their interaction) are not correlated with each other in problematic ways. Therefore our models are statistically stable: the estimate of the interaction effects we observed in our GLMMS are not due to multicollinearity.
+
+We can confidently say that the interaction between learning direction and proficiency is a genuine effect, not an artifact of overlapping predictors. The models are behaving well in terms of collinearity. 
+
+
+
+
 # Conclusion
+
+You are now familiar with handling generalized linear mixed models! You have learned how to fit them, interpret their main effects and interations, as well as checking their assumptions with VIFs. GLMMs are powerful tools for analyzing binary outcomes such as accuracy (SOURCE??) which allows us to account for repeated measures across participants and items. It is completely normal that at times GLMMs can feel intimidating: coding contrasts and interpreting the outcomes are not always straightforward. But similar to plotting, there is always a solution. The insights we can gain from a nice model make all the effort worthwhile. 
+
+This chapter's analysis revealed that the effect of the learning direction is not fixed, but rather depends on L2 proficiency. In the L1 Production Test, learners with a lower-proficiency benefitted more from L1 to L2 practice, while learners with a higher-proficiency showed the opposite pattern. In the L2 Production Test we observed a similar tred, though the interaction was weaker. These results suggest that the learning direction may shift as learners' vocabulary knowledge grows. 
+
+In this chapter we combined descriptive statistics, mixed-effects modeling, and visualizations to answer the study's research question. The answer is nuanced: both learning directions can be effective, but their relative benefits change across proficiency level. While working on this we also figured out how model comparison (AIC) and diagnostics (VIFs) helped ensure that our conclusions are statistically sound (?).
+
+It seems that vocabulary learning is not something that can be generalized. While retrieval practice is robustly effective, the direction of practice depends on who the learner is. Due to the extensive research by Terai, Yamashita and Pasich (2021) who published their dataset and code along with the study, we were able to reproduce their findings and gain hands-on experience with modeling. This not only helps with our understanding of the research, but it also sharpens our skills as analysits of second-language data. 
+
+---- 
+
 
 -   No overall difference in accuracy between L1 -\> L2 and L2 -\> L1
     learning (RQ1)
