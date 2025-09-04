@@ -279,7 +279,7 @@ accu_L1L2_L1Pro
 ```
 
 ```{r}
-# L1 production
+# L1 production: Statistics and plot
 
 # To provide descriptive statistics, we now want to use the describe() function on the Score column, which returns a rich set of stats.
 
@@ -305,8 +305,7 @@ boxplot(L1pro,col="grey91", outline = T)
 beeswarm(L1pro,add=T)
 ```
 
-*Interpretation here (whiskers blabla) also or only in the end with
-tables?*
+Boxplots are a way to visualize both the central tendency (median) of a variable and the spread around this central tendency (IQR). The median is represented by the thick line inside the box, while the box represents interquartile range, meaning the range of the middle 50% of the data. The whiskers outside the box extend to the highest and smallest values, and the jittered dots represent individual data points. As we can see here, the median is similar in both learning directions. L2→L1 displays slightly greater variability and a higher concentration of upper outliers. Overall, performance appears comparable between the two groups.
 
 ```{r}
 ## L2 production test
@@ -367,7 +366,7 @@ accu_L1L2_L2Pro
 ```
 
 ```{r}
-# L2 production
+# L2 production: Statistics and plot
 
 # In this chunk of code, we want to provide descriptive statistics for L2 production test as well and visualize them in a similar boxplot.
 
@@ -388,6 +387,9 @@ boxplot(L2pro,col="grey91", outline = T)
 beeswarm(L2pro,add=T)
 
 ```
+
+Median scores in the L2 production test are similar for both learning directions (L2→L1 and L1→L2), suggesting comparable central performance. L1→L2 learning shows a slightly higher median. In the L2→L1 group, values below the median are more spread out, indicating more variety.
+Comparing L1 and L2 production tests, L1 production scores appear to be generally higher and more consistent across learning directions.
 
 ```{r}
 # Summarized results of descriptive statistics
@@ -471,7 +473,7 @@ alpha_table %>%
 
 ```
 
-If we compare this with the results in the paper (p. 1126), we notice a difference in confidence intervals, specifically in the hundredths place. If we look at the output of alpha(), we see that it puts out two kinds of confidence intervals: Feldt and Duhachek. Reading up in the help file of the alpha() function, it becomes clear that alpha.ci (used to access CIs from alpha function) finds CIs using the Feldt procedure, which is based on the mean covariance, while Duhachek procedure considers the variance of the covariances. In the help file it is stated that in March, 2022, alpha.ci was finally fixed to follow the Feldt procedure. Since the paper was published in 2021, this might explain the deviating CIs here. If one would like to look at Duhachek's CI instead, it can either be seen in the output of alpha(), or one might install an earlier version of the package. Since we want to use the current psych package for our project and the differences don't change our outcome, we decided to stick with Feldt's CI and simply wanted to note why this difference occurs here.
+If we compare this table about alpha coefficients with the one in the paper (p. 1126), we notice a difference in confidence intervals, specifically in the hundredths place. If we look at the output of alpha(), we see that it puts out two kinds of confidence intervals: Feldt and Duhachek. Reading up in the help file of the alpha() function, it becomes clear that alpha.ci (used to access CIs from alpha function) finds CIs using the Feldt procedure, which is based on the mean covariance, while Duhachek procedure considers the variance of the covariances. In the help file it is stated that in March, 2022, alpha.ci was finally fixed to follow the Feldt procedure. Since the paper was published in 2021, this might explain the deviating CIs here. If one would like to look at Duhachek's CI instead, it can either be seen in the output of alpha(), or one might install an earlier version of the package. Since we want to use the current psych package for our project and the differences don't change our outcome, we decided to stick with Feldt's CI and simply wanted to note why this difference occurs here.
 
 As mentioned before, Cronbach's alpha indicates whether responses are consistent between items, and ranges between 0 and 1, a higher value meaning higher reliability.
 As we can see in the results of the reliability analysis, alpha coefficients range from .73 to .84, showing adequate reliability of all the tests.
@@ -656,6 +658,7 @@ ggplot(emm_df, aes(x = Test, y = prob, group = Condition, color = Condition, lin
   )
 # This plot is quite similar to the one presented in the author's code. The only addition in *what* is presented, is that it contains so-called error bars above and below each point, which reflect the confidence intervals. Most differences lie in *how* the data is presented, where I changed the appearance a bit. I added the Beyonce palette, to give the two lines (that represent Learning Condition) some color. I still kept them solid vs. dashed, so that they can be told apart easily. Also, the legend for "Condition" is next to the plot, not above it, which I find more well-arranged.
 ```
+
 Even though this is an additional plot to the one the authors already provided in their code, I want to explain why using ggplot2 for this might be of advantage. ggplot2 is built on the "grammar of graphics", which makes it easy to add layers and extend the plot. There are many options to alter the appearance of the plot, like colors, themes etc. Furthermore, in this code, we can explicitly see what is plotted and how specific elements are modified. This makes the plot more reproducible and easier to update or change later on.
 
 # Effects of Learning Directions and L2 Proficiency (Research Question 2)
