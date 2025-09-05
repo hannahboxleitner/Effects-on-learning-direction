@@ -174,6 +174,61 @@ In order to compute the mean, standard deviation, range, skew, kurtosis, and n f
 
 NUMBERS HERE ARE WRONG FOR SKEW AND KURTOSIS AND I CANNOT FIGURE OUT WHY OMG
 
+EXPLAIN SKEW AND KURTOSIS WHAT IS THIS AND WHY DO WE NEED IT?? THEN EXPLAIN WHY THERE ARE SMALL DISCREPANCIES BETWEEN SKEW AND KURTOSIS NUMBERS THE PAPER AND OUR REPRODUCTION
+```{r}
+library(dplyr)
+
+# 1) Load and reduce to one row per item (Table 3 is item-level)
+dat <- read.csv("data/dataset1_ssla_20210313.csv", header = TRUE)
+items <- dplyr::distinct(dat, ItemID, .keep_all = TRUE)
+
+# 2) Set the exact variable lists (from your CSV)
+l2_vars <- c("L2Frequency", "Syllables", "Alphabet")
+l1_vars <- c("L1Frequency", "WordLength", "mora", "familiarity")
+
+# 3) Simple helpers for skewness/kurtosis (excess kurtosis)
+skewness <- function(x) {
+  x <- na.omit(x); n <- length(x)
+  if (n < 3) return(NA_real_)
+  m <- mean(x); s <- sd(x); if (s == 0) return(0)
+  sum((x - m)^3) / n / (s^3)
+}
+kurtosis_excess <- function(x) {
+  x <- na.omit(x); n <- length(x)
+  if (n < 4) return(NA_real_)
+  m <- mean(x); s <- sd(x); if (s == 0) return(0)
+  sum((x - m)^4) / n / (s^4) - 3
+}
+
+# 4) One tiny function to get the Table 3 columns
+summarise_descriptives <- function(df) {
+  data.frame(
+    Variable = names(df),
+    M        = sapply(df, function(x) mean(x, na.rm = TRUE)),
+    SD       = sapply(df, function(x) sd(x, na.rm = TRUE)),
+    Mdn      = sapply(df, function(x) stats::median(x, na.rm = TRUE)),
+    Minimum  = sapply(df, function(x) min(x, na.rm = TRUE)),
+    Maximum  = sapply(df, function(x) max(x, na.rm = TRUE)),
+    Skew     = sapply(df, skewness),
+    Kurtosis = sapply(df, kurtosis_excess),
+    row.names = NULL
+  )
+}
+
+# 5) Build the two tables
+tbl_L2 <- items %>% dplyr::select(dplyr::all_of(l2_vars)) %>% summarise_descriptives()
+tbl_L1 <- items %>% dplyr::select(dplyr::all_of(l1_vars)) %>% summarise_descriptives()
+
+# 6) Round like the paper and print
+round_cols <- c("M","SD","Mdn","Minimum","Maximum","Skew","Kurtosis")
+tbl_L2 <- dplyr::mutate(tbl_L2, dplyr::across(all_of(round_cols), ~round(.x, 2)))
+tbl_L1 <- dplyr::mutate(tbl_L1, dplyr::across(all_of(round_cols), ~round(.x, 2)))
+
+tbl_L2
+tbl_L1
+
+```
+
 ```{r}
 
 ##The packages we need include:
