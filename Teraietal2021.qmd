@@ -703,6 +703,14 @@ alpha_table %>%
 #*We want to associate the results of our analysis here with the interpretation in the study. As we can see in the results of the reliability analysis, which are also displayed in a clean table in the paper (see p.1126), alpha coefficients range from .73 to .84, showing adequate reliability of all the tests.
 ```
 
+Terai et al. (2021) used generalized linear mixed-effect models (GLMM) to analyze and examine three variables: Learning Condition (L2 to L1 and L1 to L2), Test Type (L1 production and L2 production), and Vocabulary Size (L2 Proficiency), as well as interaction between two variables (p.1125).Three models were chosen for this analysis, the first one to analyze the relationship between learning conditions and production tests (RQ1) (Terai et al. 2021 : 1125). The second and third model analyzed the effects of the two types of learning (L2 to L1 and L1 to L2) based on the results of the production tests (RQ2). These two models are pretty much the same except that the third and last model also used L2 production test scores.
+
+Generalized linear mixed-models (GLMMs) are an extension of linear mixed models. They are tools that help us to analyze not normally distributed data, such as binary and count data, when obeservations are clustered in some way. GLMMs are mostly used to include some models that are used commonly, such as logistic regression or linear regression. What is great about these models is that they allow for an analysis of clustered or longitudinal data that is not continous (Gurka & Edwards 2011).
+
+MAYBE A BETTER EXPLANATION NEEDED??? BETTER SOURCE TOO
+
+phia package (De Rosario-Martinze 2015)
+emmeans package (Lenth 2019)
 
 # Effects of Learning Condition (Research Question 1)
 
