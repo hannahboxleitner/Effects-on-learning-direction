@@ -940,13 +940,11 @@ Below, we will go through the code step by step to try and understand what the a
 
 (((With a second model the scores of the L1 production test were analyzed. This second model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127). Here the authors analyzed the data with interaction and without interaction, to find out the AIC, p and z scores there are a few steps we need to take. )))
 
-Step 1: Model setup and Data Preparation
-
 We begin by focusing only on the L1 production data. This can be done by first loading our data with the command read.csv() and then the command filter() which only keeps the rows for the L1 Production test.
 
 
-```{r}
 
+```{r}
 #First, we filter the data so that only the relevant test type (L1 or L2 Production) remains. Then, we ensure that categorical predictors are properly set as factors and that numeric predictors are scaled (standardized).
 dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
@@ -954,18 +952,21 @@ dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 ##With the filter(...) function, provided by the dplyr package, we only keep the rows for the L1 Production posttests, because we will analyze this test separately from the L2 production test. Meaning, the function is mainly used to subset rows in a data frame based on our specified conditions, (L1 production Test)
 dat1.L1<-filter(dat1, Test=="L1 Production")
 
+```
 
+Next we want to declare the learning direction (Condition) as a factor. Factors are how R represents categorical predictors such as the learning direction. GLMMs need these to create the matrix correctly.
+
+```{r}
 #Make the categorical factors factorial: this means qualitative data is encoded into numeric data so that we can work with it and use the data for statistical analysis. The as.factor() function is used to convert a vector into a factor, which is a data type specifically designed for categorical data. It is essential to use factors for statistical data analysis such as an ANOVA or a regression which we will be doing in a later step. At this point, we need factors for a summary of our data.
 #Very basic: We set Condition (Learning direction) as a factor; Condition represents the learning direction (L1 -> L2 or L2 -> L1)
 dat1.L1$Condition <- as.factor(dat1.L1$Condition)
 ```
 
 
-We also apply contrast coding. Centered contrasts, in our case -0.5, +0.5, make the intercept much easier to interpret, since it then represents the grand mean across conditions. 
+We also apply contrast coding. Centered contrasts, in our case -0.5, +0.5, make the intercept much easier to interpret, since it then represents the grand mean across conditions. The command contr.treatment(2) we use below creates the default contrast. Why center at all? Our grand mean is then represented by an intercept, and interactions are much easier to interpret. In our models output, "Condition2" is the numeric code for the second level of condition relative to the first. A positive Condition2 estimate means the second level is higher (at a mean proficiency).
 
 
 ```{r}
-  
 #In this next step we change our coding so the variables are correct and not still working with the data from previous tests. 
 #The function contr.treatment() is used to create contrast matrices for categorical variables in regression models. It is the default contrast coding method in R for unordered factors. This way a baseline/reference level is assigned and then it compares all the other levels to this baseline/reference.
 c <- contr.treatment(2)
@@ -993,6 +994,7 @@ contrasts(dat1.L1$Condition)<-my.simple
 
 
 In the next step, we need to standardize the vocabulary size scores. That way, one unit of s.vocab corresponds to one standard deviation of proficiency. (REWRITE)
+Next we will standardize the proficiency, which means we transform Vocab scores into z-scores which will also help us with the interpretation.
 
 
 ```{r}
