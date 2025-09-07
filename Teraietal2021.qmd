@@ -314,6 +314,13 @@ kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item
   kable_classic(full_width = FALSE)
 ```
 
+
+EXTENSION HERE!!!
+
+```{r}
+
+```
+
 Our reproduced tables now closely match Table 3 in Terai et al. (2021)! The L2 frequency has a mean of about 1025 with a quite lare SD (~852), which shows us that some English words were quite frequent while others were much rarer. The skewness here is positive (~1.51), although different than the one reported in the paper (~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. Syllables in English have an average mean of 2, and range from 1 to 5 with only a slight positive skewness which means that most words are short and only a few are longer, again there is a small difference in skewness. Letters average around 6.2 again with a positive skewness. While the numbers of skewness only differ marginally there are larger discrepancies for the kurtosis numbers. There are several different possibilities as to why this is the case for our reproduction of Table 3. Kurtosis is a statistic that is not calculated in the same way across all R packages. There are different definitions and reports of kurtosis which means it is quite normal for the values to differ slightly depending on the method. In our reproduction we use the "moments" package, which calculates excess kurtosis, so mismatches with the published paper are expected. (SOUURCE)
 
 In the L1 table, the frequency distribution also shows a strong positive skewness which means that a few Japanese translations are very common but many are quite rare. Fami (B) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar. Unfortunately, here once again the computed numbers for kurtosis differ a lot. Just as explained above, this does not mean our reproduction is completely wrong. There are many factors that might influence kurtosis.
@@ -663,7 +670,7 @@ alpha_B_L2 <- alpha(VocabularyB_L2production[,-1], warnings=FALSE)
 
 
 
-alpha_table <- data.frame(
+ alpha_table <- data.frame(
   Vocabulary = c("Vocabulary A", "Vocabulary B"),
   
   Alpha_L1 = c(
@@ -946,7 +953,7 @@ We begin by focusing only on the L1 production data. This can be done by first l
 
 ```{r}
 #First, we filter the data so that only the relevant test type (L1 or L2 Production) remains. Then, we ensure that categorical predictors are properly set as factors and that numeric predictors are scaled (standardized).
-dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
+dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv", header=T)
 
 
 ##With the filter(...) function, provided by the dplyr package, we only keep the rows for the L1 Production posttests, because we will analyze this test separately from the L2 production test. Meaning, the function is mainly used to subset rows in a data frame based on our specified conditions, (L1 production Test)
