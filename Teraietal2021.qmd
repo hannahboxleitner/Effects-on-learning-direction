@@ -155,152 +155,170 @@ dat$s.vocab<-scale(dat$Vocab)
 
 # Descriptive statistics
 
-Before we dive into the descriptive statistics conducted in this study,
-we need to explain that one part of it will not be reproduced. While
-descriptive statistics about the participants (age, years of learning
-etc.) are mentioned in the paper by Terai et al., the data to reproduce
-these findings cannot be found. It is neither part of the data set
-accessible on IRIS, nor does it come up anywhere in the authors' R code.
+Before we dive into the descriptive statistics conducted in this study, we need to explain that one part of it will not be reproduced. While descriptive statistics about the participants (age, years of learning etc.) are mentioned in the paper by Terai et al. (2021), the data to reproduce these findings cannot be found. It is neither part of the data set accessible on IRIS, nor does it come up anywhere in the authors' R code. Therefore, we will only focus on the descriptive statistics of the target items (40 English words used in the study), which is Table 3 in Terai et al. (2021).
 
-Most of the data that we will be looking at for descriptive statistics are things we are already familiar with such as mean, median, maximum and minimum, as well as the standard deviation. But the authors of the paper also had a look at skewness and kurtosis. 
+Most of the statistics that we will be looking at are things we are already familiar with: the mean, median, maximum and minimum, as well as the standard deviation (SD). In addition, the authors also reported skewness and kurtosis. 
 
-We will start with Skewness. To keep it simple, (EXPLAIN SKEWNESS)
+Skewness and Kurtosis are both measures of shapes and distribution of a dataset in qualitative methods. Skewness measures the asymmetry of distribution. Simply put, it describes the amount of which the distribution differs from a completely symmetric shape. 
 
-# Descriptive Statistics (Table 3)
+Skew = 0 -> perfectly symmetrical.
+Negative Skew -> longer "tail" on the left.
+Positive Skew -> longer "tail" on the right.
 
-We want to reproduce Table 3 in Terai et al. (2021) which shows us the descriptive statistics of the target items of the study. Unfortunately the code for this table was not included in the R code published by the authors. Although, that is not an issue as we have the data in the form of a csv file! This is great for us. We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3. 
+Kurtosis then is a measure of peaks of a distribution. Basically, it is a description of how the peaks compare to a normal distribution. 
 
-In order to compute the mean, standard deviation, range, skew, kurtosis, and n for each variable we need these libraries: dplyr, psych, tibble, knitr, kableExtra (I think?).
+Kurtosis = 0 -> similar to a normal distribution.
+Positive kurtosis -> sharper peak (more concentrated in the center).
+Negative kurtosis -> flatter peak. 
 
-NUMBERS HERE ARE WRONG FOR SKEW AND KURTOSIS AND I CANNOT FIGURE OUT WHY OMG
 
-EXPLAIN SKEW AND KURTOSIS WHAT IS THIS AND WHY DO WE NEED IT?? THEN EXPLAIN WHY THERE ARE SMALL DISCREPANCIES BETWEEN SKEW AND KURTOSIS NUMBERS THE PAPER AND OUR REPRODUCTION
+# Table 3: Descriptive Statistics of target items
+
+We want to reproduce Table 3 in Terai et al. (2021) which shows us the descriptive statistics of the target items of the study. Unfortunately the code for this table was not included in the R code published by the authors. That is not an issue though because we have the data in the form of a csv file! This is great for us. We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step by step.
+
+We have already loaded the data we will need for our table, but just to be sure, we will do it again and also load all the necessary libraries for the two tables, so we have a kind of "toolbox" that contains all the functions we might need:
+
 ```{r}
-library(dplyr)
+# Install these once if you do not already have them
+# install.packages("readr")       -> reading data
+# install.packages("dplyr")       -> data wrangling
+# install.packages("moments")     -> skewness and kurtosis
+# install.packages("knitr")       -> for pretty tables
+# install.packages("kableExtra")  -> for even prettier tables
 
-# 1) Load and reduce to one row per item (Table 3 is item-level)
-dat <- read.csv("data/dataset1_ssla_20210313.csv", header = TRUE)
-items <- dplyr::distinct(dat, ItemID, .keep_all = TRUE)
+# Load packages
+library(readr)      # read_csv()
+library(dplyr)      # data wrangling
+library(moments)    # skewness(), kurtosis()
+library(knitr)      # kable()
+library(kableExtra) # nicer tables
 
-# 2) Set the exact variable lists (from your CSV)
-l2_vars <- c("L2Frequency", "Syllables", "Alphabet")
-l1_vars <- c("L1Frequency", "WordLength", "mora", "familiarity")
 
-# 3) Simple helpers for skewness/kurtosis (excess kurtosis)
-skewness <- function(x) {
-  x <- na.omit(x); n <- length(x)
-  if (n < 3) return(NA_real_)
-  m <- mean(x); s <- sd(x); if (s == 0) return(0)
-  sum((x - m)^3) / n / (s^3)
-}
-kurtosis_excess <- function(x) {
-  x <- na.omit(x); n <- length(x)
-  if (n < 4) return(NA_real_)
-  m <- mean(x); s <- sd(x); if (s == 0) return(0)
-  sum((x - m)^4) / n / (s^4) - 3
-}
+# Load the dataset (provided in the IRIS repository)
+dat<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
-# 4) One tiny function to get the Table 3 columns
-summarise_descriptives <- function(df) {
-  data.frame(
-    Variable = names(df),
-    M        = sapply(df, function(x) mean(x, na.rm = TRUE)),
-    SD       = sapply(df, function(x) sd(x, na.rm = TRUE)),
-    Mdn      = sapply(df, function(x) stats::median(x, na.rm = TRUE)),
-    Minimum  = sapply(df, function(x) min(x, na.rm = TRUE)),
-    Maximum  = sapply(df, function(x) max(x, na.rm = TRUE)),
-    Skew     = sapply(df, skewness),
-    Kurtosis = sapply(df, kurtosis_excess),
-    row.names = NULL
-  )
-}
-
-# 5) Build the two tables
-tbl_L2 <- items %>% dplyr::select(dplyr::all_of(l2_vars)) %>% summarise_descriptives()
-tbl_L1 <- items %>% dplyr::select(dplyr::all_of(l1_vars)) %>% summarise_descriptives()
-
-# 6) Round like the paper and print
-round_cols <- c("M","SD","Mdn","Minimum","Maximum","Skew","Kurtosis")
-tbl_L2 <- dplyr::mutate(tbl_L2, dplyr::across(all_of(round_cols), ~round(.x, 2)))
-tbl_L1 <- dplyr::mutate(tbl_L1, dplyr::across(all_of(round_cols), ~round(.x, 2)))
-
-tbl_L2
-tbl_L1
+# Clean stray spaces from ItemID (sometimes "berth " instead of "berth")
+dat$ItemID <- trimws(dat$ItemID)
 
 ```
 
+In the paper by Terai et al. (2021) we can see that the variables used are, for L2-related variables: Frequency, Syllables, and Letters. For L1-related variables: Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami B). The Fami A and Frequency for L1-related variables that we see in the table are the familiarity ratings and frequencies taken from another study by Amano & Kondo (1999).
+
+First, we need to take a look at the data the authors have uploaded for us. The column names may differ from what we want to see in the table later on which is why we briefly want to check them by having them printed:
+
+```{r}
+names(dat)
+##This is what the columns in our dataset mean:
+#ItemID: the English target word (40 items)
+#L2Frequency is simply the frequency of the word in English (COCA: Corpus of Contemporary American English)
+#Syllables: number of syllables in the English word
+#Alphabet: number of letters in the English word (this is "Letters" in the L2 table)
+#L1Frequency: frequency of the word in Japanese (Amano & Kondo 1999)
+#WordLength: number of letters in the Japanese orthographic form
+#mora: number of mora (Japanese syllable-like units)
+#Familiarity: familiarity ratings from the current study (Fami (B))
+
+```
+
+The raw dataset has multiple rows per word because each participant contributed responses. But for descriptive statistics of the items, we only want one row per word. So we take the first value for fixed properties such as frequenc or length which are always the same and then compute the mean familiarity across the participants.
+
+
 ```{r}
 
-##The packages we need include:
-library(dplyr)
-library(psych)
-library(knitr)
-library(kableExtra)
-## install.packages("moments")
-##library(moments)
-
-##For the next step we have to load our data, since the data was already read with the read.csv command we simply need to fix any stray spaces like "berth " 
-dat$ItemID <- trimws(dat$ItemID)
-
-##One row per item
+# Make it item-level (1 row per word)
+# We keep the first observed value for fixed properties
+# and compute the mean familiarity across participants for each item.
 items <- dat %>%
   group_by(ItemID) %>%
   summarise(
     L2Frequency = first(L2Frequency),
-    Syllables   = first(Syllables), 
+    Syllables   = first(Syllables),
     Alphabet    = first(Alphabet),
     L1Frequency = first(L1Frequency),
     WordLength  = first(WordLength),
     mora        = first(mora),
     familiarity = mean(familiarity, na.rm = TRUE),
     .groups = "drop"
-  ) %>%
-  mutate(
-    L2Frequency_log = log10(L2Frequency + 1),
-    L1Frequency_log = log10(L1Frequency + 1)
   )
+```
 
-summ <-  function(x, pearson = FALSE){
-  d <- psych::describe(x)
-  kurt <- if(pearson) d$kurtosis + 3 else d$kurtosis
+A quick check before we continue, we expect 40 unique items so this command should print 40: 
+
+```{r}
+nrow(items)
+```
+
+In order to avoid repeating code, we use a small function that computes all the statistics we need for one variable.
+
+We create our own function which we will name desc(). It is simply like a small machine, we give this machine a variable and it produces an output for us, a set of summary numbers. The functions mean(), sd(), median(), min(), max() are standard R functions you are already familiar with. The package "moments" allows us to use the functions skewness() and kurtosis(). With the addition of na.rm = TRUE we tell our helper to ignore missing values. Then, to combine all these numbers we use data.frame() which makes it possible for us to print them neatly. 
+
+```{r}
+# A tiny helper to compute stats
+desc <- function(x) {
   data.frame(
-    Mean     = round(d$mean, 2),
-    SD       = round(d$sd, 2),
-    Median   = round(d$median, 2),
-    Range    = paste0(d$min, " - ", d$max),
-    Skew     = round(d$skew, 2),
-    Kurtosis = round(d$kurtosis, 2),
-    n        = d$n
+    Mean     = mean(x, na.rm = TRUE),
+    SD       = sd(x, na.rm = TRUE),
+    Median   = median(x, na.rm = TRUE),
+    Minimum  = min(x, na.rm = TRUE),
+    Maximum  = max(x, na.rm = TRUE),
+    # Correct definitions for Table 3:
+    Skew     = skewness(x, na.rm = TRUE),
+    Kurtosis = kurtosis(x, na.rm = TRUE)
   )
 }
+```
 
-##Now we build the two subtables
+Now that we have most of what we need for the table, we can start to build them up! There are two subtables we need.
 
+```{r}
+## Here we build our first table (tab_L2) for the L2-related variables. desc(item$L2Frequency) runs our helper function on the frequency values and so on. The command cbind(Variable = "Frequency"...) attaches a label so we know which row is which. We repeat this for syllables and letters as well and then use the command rbind() which binds all three pieces into one table. We do the same for the L1 table (tab_L1).
 tab_L2 <- rbind(
-  cbind(Variable = "Frequency (L2, English, log10)", summ(items$L2Frequency, pearson = TRUE)),
-  cbind(Variable = "Syllables (L2)",           summ(items$Syllables, pearson = TRUE)),
-  cbind(Variable = "Letters (L2, Alphabet)",  summ(items$Alphabet, pearson = TRUE))
+  cbind(Variable = "Frequency", 
+desc(items$L2Frequency)),
+  cbind(Variable = "Syllables",
+desc(items$Syllables)),
+  cbind(Variable = "Letters",  
+desc(items$Alphabet))
 )
 
-
+# L1-related variables
 tab_L1 <- rbind(
-  cbind(Variable = "Frequency (L1, Japanese)",   summ(items$L1Frequency, pearson = TRUE)),
-  cbind(Variable = "Letters (L1, WordLength)",    summ(items$WordLength, pearson = TRUE)),
-  cbind(Variable = "Mora (L1)",                  summ(items$mora, pearson = TRUE)),
-  cbind(Variable = "Familiarity (participants)", summ(items$familiarity, pearson = TRUE))
+  cbind(Variable = "Frequency",
+desc(items$L1Frequency)),
+  cbind(Variable = "Letters",
+desc(items$WordLength)),
+  cbind(Variable = "Mora (syllables)",                desc(items$mora)),
+  cbind(Variable = "Fami (B)",                 desc(items$familiarity))
 )
+```
 
-##Now we can print it prettily (or we could do Vew(tab_L2); View(tab_L1))
+Great! You are almost done building the table for the descriptive statistics. In the next step, just to make the table more comprehensible, we will round the numbers to two decimals. 
 
+```{r}
+#Oftentimes numbers produced by R have many decimals we do not need, it makes tables harder to read. So we use the mutate() function which is used to change or add columns. across(where(is.numeric), ...) means thhat we apply the next step to all numeric columns. And then ~round(., 2) rounds each number to 2 decimal places. The dot (.) is just a placeholder that basically means "whatever column we are looking at currently."
+tab_L2 <- tab_L2 %>% mutate(across(where(is.numeric), ~round(., 2)))
+tab_L1 <- tab_L1 %>% mutate(across(where(is.numeric), ~round(., 2)))
+```
+
+Perfect, the next and easiest part of building up our two subtables is captioning them and then finally printingthem. Here we need the kable() and the kable_classic() function.
+
+EXPLAIN
+
+```{r}
 kable(tab_L2, caption = "Table 3a. Descriptive statistics for L2 (English) item properties.",
-      align = "lrrrrrc") |>
+      align = "lrrrrrr") |>
   kable_classic(full_width = FALSE)
 
 kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item properties.",
-      align = "lrrrrrc") |>
+      align = "lrrrrrr") |>
   kable_classic(full_width = FALSE)
-
 ```
+
+Our reproduced tables now closely match Table 3 in Terai et al. (2021)! The L2 frequency has a mean of about 1025 with a quite lare SD (~852), which shows us that some English words were quite frequent while others were much rarer. The skewness here is positive (~1.51), although different than the one reported in the paper (~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. Syllables in English have an average mean of 2, and range from 1 to 5 with only a slight positive skewness which means that most words are short and only a few are longer, again there is a small difference in skewness. Letters average around 6.2 again with a positive skewness. While the numbers of skewness only differ marginally there are larger discrepancies for the kurtosis numbers. There are several different possibilities as to why this is the case for our reproduction of Table 3. Kurtosis is a statistic that is not calculated in the same way across all R packages. There are different definitions and reports of kurtosis which means it is quite normal for the values to differ slightly depending on the method. In our reproduction we use the "moments" package, which calculates excess kurtosis, so mismatches with the published paper are expected. (SOUURCE)
+
+In the L1 table, the frequency distribution also shows a strong positive skewness which means that a few Japanese translations are very common but many are quite rare. Fami (B) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar. Unfortunately, here once again the computed numbers for kurtosis differ a lot. Just as explained above, this does not mean our reproduction is completely wrong. There are many factors that might influence kurtosis.
+
+In summary, our reproduction shows the same patterns as the published table: most words are short, quite familiar, and positively skewed in their distributions. The small differences in skewness and especially in kurtosis are due to different calculation methods, not because our analysis is wrong. This is also a nice reminder that in statistics, sometimes numbers can vary slightly depending on the software or definitions used, but the overall interpretations remain the same.
 
 
 # Descriptive statistics of the tests and reliability testing
