@@ -313,8 +313,6 @@ kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item
       align = "lrrrrrr") |>
   kable_classic(full_width = FALSE)
 ```
-<<<<<<< Updated upstream
-=======
 ## Extension (Beyhan)
 # Visualizations of Table 3
 With Table 3 we were shown a summary of many numbers (mean, SD, range, skewness and kurtosis) for the 40 target words, but these numbers are much easier to understand when we actually see them visualized. Below we want to turn some key variables of Table3 into quick histograms to visually connect the ideas of skew and kurtosis to the actual items used in this study. 
@@ -407,7 +405,6 @@ ggplot(items, mapping = aes(x = Letters_L1)) +
   base_theme
 ```
 Amazing, here we clearly see that there is a cluster around 3 to four, showing that the distribution is quite compact with only a slight right skew (~0.17). 
->>>>>>> Stashed changes
 
 Our reproduced tables now closely match Table 3 in Terai et al. (2021)! The L2 frequency has a mean of about 1025 with a quite lare SD (~852), which shows us that some English words were quite frequent while others were much rarer. The skewness here is positive (~1.51), although different than the one reported in the paper (~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. Syllables in English have an average mean of 2, and range from 1 to 5 with only a slight positive skewness which means that most words are short and only a few are longer, again there is a small difference in skewness. Letters average around 6.2 again with a positive skewness. While the numbers of skewness only differ marginally there are larger discrepancies for the kurtosis numbers. There are several different possibilities as to why this is the case for our reproduction of Table 3. Kurtosis is a statistic that is not calculated in the same way across all R packages. There are different definitions and reports of kurtosis which means it is quite normal for the values to differ slightly depending on the method. In our reproduction we use the "moments" package, which calculates excess kurtosis, so mismatches with the published paper are expected. (SOUURCE)
 
