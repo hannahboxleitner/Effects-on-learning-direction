@@ -24,9 +24,8 @@ This chapter is based on data published in:
 
 This chapter will introduce the application of R in Second Language
 Acquisition research, using data from Terai et al. (2021). We will go
-through the entire data analysis pipeline, from importing the data
-(chapter ???) to running logistic regression models and visualizing
-results with it. By the end of this chapter, it should become clear how
+through the entire data analysis pipeline, from importing the data to running logistic regression models and visualizing
+results. By the end of this chapter, it should become clear how
 to conduct and interpret mixed-effects logistics regression models in R
 for experimental data.
 
@@ -36,7 +35,7 @@ for experimental data.
 In this chapter, we attempt to reproduce the results of a linguistics
 study by Terai et al. (2021). The study focuses on learning directions
 in pair-associated vocabulary learning: L2 to L1, where L2 words are
-used as stimuli and responses are given in L1, vs. L1 to L2. Opposed to
+used as stimuli and responses are given in L1, vs. L1 to L2, where it is the other way around. Opposed to
 studying practices, where both a target and the answer are
 simultaneously presented, pair-associated learning includes *retrieval*.
 Retrieval is defined as the process of accessing stored information and
@@ -59,12 +58,12 @@ effect of learning direction depends on the learner’s L2 proficiency
 
 In this chapter, we will:
 
-- load and explore the dataset made available by the authors,
+- load and explore the data set made available by the authors,
 - prepare the variables for analysis,
 - run generalized linear mixed models (GLMMs) to answer the two research questions,
 - and learn how to interpret and visualize the results.
 
-Our aim in this chapter is not only to replicate the study by Terai et al. (2021) but also to learn how to apply mixed-effect modeling in R to real research questions in second language acquisition. 
+Our aim in this chapter is not only to replicate the study by Terai et al. (2021), but also to learn how to apply mixed-effect modeling in R to research questions in second language acquisition. 
 
 # Retrieving the authors' data
 
@@ -82,28 +81,12 @@ authors' R code. Our further reproduction will use this R code to
 investigate and interpret the statistical analysis and results presented
 in the paper.
 
-The dataset (dataset1_ssla_20210313.csv) contains data for each
-participant and item. Each row includes:
-
--   Answer: whether the participant gave the correct answer (1 =
-    correct, 0 = incorrect)
-
--   Test: test type (L1 Production or L2 Production)
-
--   Condition: learning direction (L2-\>L1 or L1-\>L2)
-
--   ID: participant identifier
-
--   ItemID: item (word) identifier
-
--   Vocab: vocabulary test score (L2 proficiency)
-
--   *more ( L2 frequency?, length, syllables, etc.?)? -\> why not
-    included?*
+The data set (dataset1_ssla_20210313.csv) contains data for each
+participant and item, including Answer (whether the participant gave the correct answer (1 = correct, 0 = incorrect)), Test (distinguishing two test types: L1 Production or L2 Production), Condition (learning direction L2 -> L1 or L1 -> L2), and so on. But more on that later.
 
 # Importing and setting up the data
 
-Before importing the dataset and starting on our project, we need to
+Before importing the data set and starting on our project, we need to
 load all the packages that we will need. Some of these packages may have
 to installed first **(maybe include textbook reference 13.10)**.
 
@@ -131,14 +114,14 @@ VocabularyA_L2production <- read.csv(file = here("data", "vocaA_L2pro_20210313.c
 VocabularyB_L1production <- read.csv(file = here("data", "vocaB_L1pro_20210313.csv"))
 VocabularyB_L2production <- read.csv(file = here("data", "vocaB_L2pro_20210313.csv"))
 
-#First, we will load the dataset
+#First, we will load the data set
 dat<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
 #Then, we need to convert the categorical variables we have to factors using the function as.factor()
 dat$Test<-as.factor(dat$Test)
 dat$Condition<-as.factor(dat$Condition)
 
-#Next, we will contrast the coding (-0.5 vs. +0.5) for categorical predictors.
+#Next, we will contrast the coding (-0.5 vs. +0.5) for categorical predictors
 c<-contr.treatment(2)
 my.coding<-matrix(rep(1/2,2,ncol=1))
 my.simple<-c-my.coding
@@ -150,16 +133,16 @@ contrasts(dat$Condition)<-my.simple
 #And standardize vocabulary scores (centered and scaled)
 dat$s.vocab<-scale(dat$Vocab)
 
-##All these steps set up the dataset for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression. Scaling the vocabulary scores helps with interaction terms.
+# All these steps set up the data set for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression. Scaling the vocabulary scores helps with interaction terms.
 ```
 
 # Descriptive statistics
 
-Before we dive into the descriptive statistics conducted in this study, we need to explain that one part of it will not be reproduced. While descriptive statistics about the participants (age, years of learning etc.) are mentioned in the paper by Terai et al. (2021), the data to reproduce these findings cannot be found. It is neither part of the data set accessible on IRIS, nor does it come up anywhere in the authors' R code. Therefore, we will only focus on the descriptive statistics of the target items (40 English words used in the study), which is Table 3 in Terai et al. (2021).
+Before we dive into the descriptive statistics conducted in this study, we need to explain that one part of it will not be reproduced. While descriptive statistics about the participants (age, years of learning etc.) are mentioned in the paper by Terai et al. (2021), the data to reproduce these findings cannot be found. It is neither part of the data set accessible on IRIS, nor does it come up anywhere in the authors' R code. Therefore, we will only focus on the descriptive statistics of the target items (40 English words used in the study), test types and the reliability testing. We'll start with target items, which is found in Table 3 (p. 1123) in Terai et al. (2021).
 
 Most of the statistics that we will be looking at are things we are already familiar with: the mean, median, maximum and minimum, as well as the standard deviation (SD). In addition, the authors also reported skewness and kurtosis. 
 
-Skewness and Kurtosis are both measures of shapes and distribution of a dataset in qualitative methods. Skewness measures the asymmetry of distribution. Simply put, it describes the amount of which the distribution differs from a completely symmetric shape. 
+Skewness and Kurtosis are both measures of shapes and distribution of a data set in qualitative methods. Skewness measures the asymmetry of distribution. Simply put, it describes the amount of which the distribution differs from a completely symmetric shape. 
 
 Skew = 0 -> perfectly symmetrical.
 Negative Skew -> longer "tail" on the left.
@@ -174,7 +157,7 @@ Negative kurtosis -> flatter peak.
 
 # Table 3: Descriptive Statistics of target items
 
-We want to reproduce Table 3 in Terai et al. (2021) which shows us the descriptive statistics of the target items of the study. Unfortunately the code for this table was not included in the R code published by the authors. That is not an issue though because we have the data in the form of a csv file! This is great for us. We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step by step.
+We want to reproduce Table 3 in Terai et al. (2021), which shows us the descriptive statistics of the target items of the study. Unfortunately the code for all the tables was not included in the R code published by the authors. Fortunately, we have the data in the form of a csv file! This is great for us. We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step by step.
 
 We have already loaded the data we will need for our table, but just to be sure, we will do it again and also load all the necessary libraries for the two tables, so we have a kind of "toolbox" that contains all the functions we might need:
 
@@ -220,7 +203,7 @@ names(dat)
 
 ```
 
-The raw dataset has multiple rows per word because each participant contributed responses. But for descriptive statistics of the items, we only want one row per word. So we take the first value for fixed properties such as frequenc or length which are always the same and then compute the mean familiarity across the participants.
+The raw data set has multiple rows per word because each participant contributed responses. But for descriptive statistics of the items, we only want one row per word. So we take the first value for fixed properties, such as frequency or length, which are always the same and then compute the mean familiarity across the participants.
 
 
 ```{r}
@@ -250,7 +233,7 @@ nrow(items)
 
 In order to avoid repeating code, we use a small function that computes all the statistics we need for one variable.
 
-We create our own function which we will name desc(). It is simply like a small machine, we give this machine a variable and it produces an output for us, a set of summary numbers. The functions mean(), sd(), median(), min(), max() are standard R functions you are already familiar with. The package "moments" allows us to use the functions skewness() and kurtosis(). With the addition of na.rm = TRUE we tell our helper to ignore missing values. Then, to combine all these numbers we use data.frame() which makes it possible for us to print them neatly. 
+We create our own function which we will name desc(). It is simply like a small machine, we give this machine a variable and it produces an output for us, a set of summary numbers. The functions mean(), sd(), median(), min(), max() are standard R functions you are already familiar with. The package "moments" allows us to use the functions skewness() and kurtosis(). With the addition of na.rm = TRUE we tell our helper to ignore missing values. Then, to combine all these numbers, we use data.frame() which makes it possible for us to print them neatly. 
 
 ```{r}
 # A tiny helper to compute stats
@@ -292,7 +275,7 @@ desc(items$WordLength)),
 )
 ```
 
-Great! You are almost done building the table for the descriptive statistics. In the next step, just to make the table more comprehensible, we will round the numbers to two decimals. 
+Great! You are almost done building the table for the descriptive statistics. In the next step, we will round the numbers to two decimals to make the table more comprehensible. 
 
 ```{r}
 #Oftentimes numbers produced by R have many decimals we do not need, it makes tables harder to read. So we use the mutate() function which is used to change or add columns. across(where(is.numeric), ...) means thhat we apply the next step to all numeric columns. And then ~round(., 2) rounds each number to 2 decimal places. The dot (.) is just a placeholder that basically means "whatever column we are looking at currently."
@@ -300,7 +283,7 @@ tab_L2 <- tab_L2 %>% mutate(across(where(is.numeric), ~round(., 2)))
 tab_L1 <- tab_L1 %>% mutate(across(where(is.numeric), ~round(., 2)))
 ```
 
-Perfect, the next and easiest part of building up our two subtables is captioning them and then finally printingthem. Here we need the kable() and the kable_classic() function.
+Perfect, the next and easiest part of building up our two subtables is captioning them and then finally printing them. Here we need the kable() and the kable_classic() function.
 
 EXPLAIN
 
