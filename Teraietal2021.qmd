@@ -392,7 +392,7 @@ Amazing, here we clearly see that there is a cluster around 3 to four, showing t
 
 Our reproduced tables now closely match Table 3 in Terai et al. (2021)! The L2 frequency has a mean of about 1025 with a quite lare SD (~852), which shows us that some English words were quite frequent while others were much rarer. The skewness here is positive (~1.51), although different than the one reported in the paper (~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. Syllables in English have an average mean of 2, and range from 1 to 5 with only a slight positive skewness which means that most words are short and only a few are longer, again there is a small difference in skewness. Letters average around 6.2 again with a positive skewness. While the numbers of skewness only differ marginally there are larger discrepancies for the kurtosis numbers. There are several different possibilities as to why this is the case for our reproduction of Table 3. Kurtosis is a statistic that is not calculated in the same way across all R packages. There are different definitions and reports of kurtosis which means it is quite normal for the values to differ slightly depending on the method. In our reproduction we use the "moments" package, which calculates excess kurtosis, so mismatches with the published paper are expected. (SOUURCE)
 
-In the L1 table, the frequency distribution also shows a strong positive skewness which means that a few Japanese translations are very common but many are quite rare. Fami (B) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar. Unfortunately, here once again the computed numbers for kurtosis differ a lot. Just as explained above, this does not mean our reproduction is completely wrong. There are many factors that might influence kurtosis.
+In the L1 table, the frequency distribution also shows a strong positive skewness, which means that a few Japanese translations are very common but many are quite rare. Fami (B) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar. Unfortunately, once again the computed numbers for kurtosis differ a lot. Just as explained above, this does not mean our reproduction is completely wrong. There are many factors that might influence kurtosis.
 
 In summary, our reproduction shows the same patterns as the published table: most words are short, quite familiar, and positively skewed in their distributions. The small differences in skewness and especially in kurtosis are due to different calculation methods, not because our analysis is wrong. This is also a nice reminder that in statistics, sometimes numbers can vary slightly depending on the software or definitions used, but the overall interpretations remain the same.
 
@@ -453,7 +453,7 @@ reliability analyses are in regard to.
 ## Accuracy
 
 ```{r}
-# To investigate accuracy, we first introduce our dataset as the variable dat.acc and load the dplyr library. In accordance with the previous data imports, we are using the here package in this case as well: 
+# To investigate accuracy, we first introduce our data set as the variable dat.acc and load the dplyr library. In accordance with the previous data imports, we are using the here package in this case as well: 
 
 dat.acc<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
@@ -465,7 +465,7 @@ library(dplyr) # -> for data manipulation
 ## L1 production test
 # L2 -> L1
 
-# This code chunk, referring to L2 -> L1 of the L1 production set, processes the collected results for each participant — their ID, how many items they answered, and how many they got right — and organizes them into a clean table. Therefore, it gives us the core numbers necessary to describe and analyze accuracy. We want to take time to explain this chunk of code in detail. 
+# This code chunk, referring to L2 -> L1 of the L1 production set, processes the collected results for each participant — their ID, how many items they answered, and how many they got right — and organizes them into a clean table. Therefore, it gives us the core numbers necessary to describe and analyze accuracy. We want to take the time to explain this chunk of code in detail. 
 
 
 #L2→L1 (L1 production test)
@@ -500,7 +500,10 @@ View(accu_L2L1_L1Pro)
 ```
 
 ```{r}
-#L1→L2 (L1 production test)
+## L1 production test
+# L1 → L2
+
+# With this code chunk, we follow the same steps, but for the other learning direction (L1 -> L2 of the L1 production set).
 
 ids<-data.frame(unique(dat.acc$ID))
 names(ids) <- ("id")
@@ -538,7 +541,7 @@ describe(accu_L1L2_L1Pro$Score)
 
 # Plot (L1 production)
 
-# To visualize this, we want to create a boxplot comparing the two learning directions. For this, the beeswarm package has to be installed and loaded:
+# To visualize this, we want to create a boxplot comparing the two learning directions. For this to work, the beeswarm package has to be installed and loaded:
 
 # install.packages("beeswarm")
 
@@ -615,7 +618,7 @@ accu_L1L2_L2Pro
 ```{r}
 # L2 production: Statistics and plot
 
-# In this chunk of code, we want to provide descriptive statistics for L2 production test as well and visualize them in a similar boxplot.
+# In this chunk of code, we want to provide descriptive statistics for L2 production test as well, and visualize them in a similar boxplot.
 
 # L2 -> L1 learning
 
@@ -639,9 +642,9 @@ Median scores in the L2 production test are similar for both learning directions
 Comparing L1 and L2 production tests, L1 production scores appear to be generally higher and more consistent across learning directions.
 
 ```{r}
-# Summarized results of descriptive statistics
+# Summarized results: Descriptive statistics of the tests
 
-# In this chunk, we want to create tables that display the summarized results of descriptive statistics, similar to the table used in the paper (p. 1126).
+# In this chunk, we want to create a table that displays the summarized results of descriptive statistics, similar to the Table 4 in the paper (p. 1126). As with the target items, there was no code available for creating the tables. But with the available data, we can find a way to reproduce them anyway!
 
 # First, we need to load the knitr and kableExtra packages.
 
@@ -674,7 +677,9 @@ kable(descriptive_stats_tests_trimmed,
 ```
 
 ```{r}
-# In this chunk, we want to summarize results of the reliability testing and reproduce a table similar to the one in the paper (p. 1126).
+# Summarized results: Alpha coefficients for L1 and L2 production tests
+
+# In this chunk, we want to summarize results of the reliability testing and reproduce a table similar to Table 5 in the paper (p. 1126).
 
 alpha_A_L1 <- alpha(VocabularyA_L1production[,-1], warnings=FALSE)
 alpha_A_L2 <- alpha(VocabularyA_L2production[,-1], warnings=FALSE)
@@ -728,9 +733,9 @@ As we can see in the results of the reliability analysis, alpha coefficients ran
 
 # Generalized linear mixed-effects models
 
-Terai et al. (2021) used generalized linear mixed-effect models (GLMM) to analyze and examine three variables: Learning Condition (L2 to L1 and L1 to L2), Test Type (L1 production and L2 production), and Vocabulary Size (L2 Proficiency), as well as interaction between two variables (p.1125).Three models were chosen for this analysis, the first one to analyze the relationship between learning conditions and production tests (RQ1) (Terai et al. 2021 : 1125). The second and third model analyzed the effects of the two types of learning (L2 to L1 and L1 to L2) based on the results of the production tests (RQ2). These two models are pretty much the same except that the third and last model also used L2 production test scores.
+Terai et al. (2021) used generalized linear mixed-effect models (GLMM) to analyze and examine three variables: Learning Condition (L2 to L1 and L1 to L2), Test Type (L1 production and L2 production), and Vocabulary Size (L2 Proficiency), as well as interaction between two variables (p.1125).Three models were chosen for this analysis, the first one to analyze the relationship between learning conditions and production tests (RQ1) (Terai et al. 2021 : 1125). The second and third model analyzed the effects of the two learning directions (L2 to L1 and L1 to L2) based on the results of the production tests (RQ2). They are pretty similar, except that the third and last model also used L2 production test scores.
 
-Generalized linear mixed-models (GLMMs) are an extension of linear mixed models. They are tools that help us to analyze not normally distributed data, such as binary and count data, when obeservations are clustered in some way. GLMMs are mostly used to include some models that are used commonly, such as logistic regression or linear regression. What is great about these models is that they allow for an analysis of clustered or longitudinal data that is not continous (Gurka & Edwards 2011).
+Generalized linear mixed-models (GLMMs) are an extension of linear mixed models. They are tools that help us to analyze not normally distributed data, such as binary and count data, when observations are clustered in some way. GLMMs are mostly used to include some models that are used commonly, such as logistic regression or linear regression. What is great about these models, is that they allow for analysis of clustered or longitudinal data that is not continuous (Gurka & Edwards 2011).
 
 MAYBE A BETTER EXPLANATION NEEDED??? BETTER SOURCE TOO
 
