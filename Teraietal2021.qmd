@@ -650,58 +650,7 @@ If we compare this table about alpha coefficients with the one in the paper (p. 
 As mentioned before, Cronbach's alpha indicates whether responses are consistent between items, and ranges between 0 and 1, a higher value meaning higher reliability.
 As we can see in the results of the reliability analysis, alpha coefficients range from .73 to .84, showing adequate reliability of all the tests.
 
-
-```
-
-```{r}
-# In this chunk, we want to summarize results of the reliability testing and reproduce a table similar to the one in the paper (p. 1126).
-
-alpha_A_L1 <- alpha(VocabularyA_L1production[,-1], warnings=FALSE)
-alpha_A_L2 <- alpha(VocabularyA_L2production[,-1], warnings=FALSE)
-alpha_B_L1 <- alpha(VocabularyB_L1production[,-1], warnings=FALSE)
-alpha_B_L2 <- alpha(VocabularyB_L2production[,-1], warnings=FALSE)
-
-
-
-alpha_table <- data.frame(
-  Vocabulary = c("Vocabulary A", "Vocabulary B"),
-  
-  Alpha_L1 = c(
-    sprintf("%.2f", alpha_A_L1$total$raw_alpha),
-    sprintf("%.2f", alpha_B_L1$total$raw_alpha)
-  ),
-  CI_L1 = c(
-    sprintf("[%.2f - %.2f]", alpha_A_L1$feldt$lower.ci, alpha_A_L1$feldt$upper.ci),
-    sprintf("[%.2f - %.2f]", alpha_B_L1$feldt$lower.ci, alpha_B_L1$feldt$upper.ci)
-  ),
-  
-  Alpha_L2 = c(
-    sprintf("%.2f", alpha_A_L2$total$raw_alpha),
-    sprintf("%.2f", alpha_B_L2$total$raw_alpha)
-  ),
-  CI_L2 = c(
-    sprintf("[%.2f - %.2f]", alpha_A_L2$feldt$lower.ci, alpha_A_L2$feldt$upper.ci),
-    sprintf("[%.2f - %.2f]", alpha_B_L2$feldt$lower.ci, alpha_B_L2$feldt$upper.ci)
-  ),
-  
-  stringsAsFactors = FALSE
-)
-
-# Rename column headers (use empty string for "Vocabulary")
-
-colnames(alpha_table) <- c("", "Alpha", "95% CI", "Alpha", "95% CI")
-
-# Now we want to display the results in a clean, formatted table.
-
-alpha_table %>%
-  kable(align = "lcccc", caption = "Alpha coefficients for L1 and L2 production test") %>%
-  add_header_above(c(" " = 1, "L1 production" = 2, "L2 production" = 2))
-
-# Rundungsfehler?? why? vllt weil wir bereits in data frame gerundet haben? versuche dataframe mit 3f und dann erst in Tabelle runden
-
-#whether responses are consistent between items
-#*We want to associate the results of our analysis here with the interpretation in the study. As we can see in the results of the reliability analysis, which are also displayed in a clean table in the paper (see p.1126), alpha coefficients range from .73 to .84, showing adequate reliability of all the tests.
-```
+# Generalized linear mixed-effects models
 
 Terai et al. (2021) used generalized linear mixed-effect models (GLMM) to analyze and examine three variables: Learning Condition (L2 to L1 and L1 to L2), Test Type (L1 production and L2 production), and Vocabulary Size (L2 Proficiency), as well as interaction between two variables (p.1125).Three models were chosen for this analysis, the first one to analyze the relationship between learning conditions and production tests (RQ1) (Terai et al. 2021 : 1125). The second and third model analyzed the effects of the two types of learning (L2 to L1 and L1 to L2) based on the results of the production tests (RQ2). These two models are pretty much the same except that the third and last model also used L2 production test scores.
 
