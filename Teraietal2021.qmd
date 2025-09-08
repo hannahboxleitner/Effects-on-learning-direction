@@ -768,11 +768,9 @@ library(phia) # same as emmeans
 
 ```
 
-Now, for the first model, we want to go through the process step by step and connect the code with the interpretation of data in the paper.
+Now, for the first model, we want to go through the process step by step, and connect the code with the interpretation of data in the paper.
 
 ```{r}
-
-
 ## Model 1: Test Type & Learning Direction
 
 # To test RQ1, we fit a logistic mixed-effects regression model predicting accuracy (Answer) from Test, Condition, and their interaction. First, we want to fit a model without interaction.
@@ -789,11 +787,10 @@ options(digits=7)
 AIC(fit1)
 ```
 
-Without interaction, the model assumes that the effects of Test and Condition are additive and do not depend on each other. AIC (Akike Information Criterion) was calculated for both variants of the model. It is used to estimate the quality of a model in comparison to another one, where a lower AIC is better. Therefore, we will get back to it after fitting the model with interaction and compare the two.
+Without interaction, the model assumes that the effects of Test and Condition are additive and do not depend on each other. AIC (Akike Information Criterion) was calculated for both variants of the model. It is used to estimate the quality of a model in comparison to another one, with a lower AIC indicating higher quality. Therefore, we will get back to this after fitting the model with interaction, and compare the two.
 
 If we look at the output of the summary() function for our model, the output includes *scaled residuals*. Residuals are the differences between observed and predicted values. This section shows summary statistics of the model's residuals after scaling: Minimum, first quartile (25^th^ percentile), median (50^th^ percentile), third quartile (75^th^ percentile), and maximum. These values give an impression of how well the model fits the data.
-The "Random effects" section put out the estimated variability in the intercept across subjects (ID) and items (ItemID), accounting for differences in overall accuracy between participants and between items.
-
+The *Random effects* section puts out the estimated variability in the intercept across subjects (ID) and items (ItemID), accounting for differences in overall accuracy between participants and between items.
 
 
 ```{r}
@@ -816,7 +813,8 @@ AIC(fit1.1)
 
 Now after calculating AICs for both versions of the model, we can see that the model *with* interaction showed lower AIC (with interaction: 2427.102; without interaction: 2429.771), indicating higher quality of the model.
 
-As mentioned above, participant and item intercepts were used as crossed random effects. To interpret the results in accordance with the paper, we want to look at the summary output of fit1.1 under Fixed effects. The results show a significant main effect of **Test Type** (Estimate = -0.976, SE = 0.105, z = -9.315, p < .001). These numbers can be found in the "Test2" row, and are all rounded up to three digits for better readability. The negative estimate tells us that accuracy in Test 2 is lower than in Test 1. The p-value can be extracted from the column marked Pr(>|z|), where it is displayed in the form of <2e-16, since it is such a small number. It tells us that the effect (of switching between test types) is significant. The z value tells us how many standard deviations away a value is from the mean.
+The authors state that the results show a significant main effect of **Test Type** (Estimate = -0.976, SE = 0.105, z = -9.315, p < .001). We want to find these results in the output of our code and see how they lead to this interpretation. If we look at the summary output of fit1.1 under Fixed effects, the numbers can be found in the "Test2" row. They are all rounded up to three digits for better readability. The negative estimate tells us that accuracy in Test 2 is lower than in Test 1. The p-value can be extracted from the column marked Pr(>|z|), where it is displayed in the form of <2e-16, since it is such a small number. It tells us that the effect (of switching between test types) is significant. The z value tells us how many standard deviations away a value is from the mean.
+
 Moving on to **Learning Condition**, there was no main effect, as we can see under "Condition2" (Estimate = -0.038, SE = 0.103, z = -0.366, p = .714). In this case, the p-value is > 0.05, meaning that the effect of learning condition is *not* significant. The main effect estimate of Condition2 is quite small (close to 0), telling us the predicted odds don't change much when moving from one learning condition to the other. 
 The **interaction** of Test Type and Learning Condition (see row "Test2:Condition2") was also significant
 (Estimate = -0.446, SE = 0.206, z = -2.169, p = .030). The interaction term tells us how the effect of Test on accuracy changes depends on the Condition, or the other way around. The estimate tells us that, when both Test2 and Condition2 are present, the accuracy is even lower than when only one of them is. The p-value of .030 indicates that the interaction effect is unlikely due to chance. 
@@ -833,12 +831,13 @@ testInteractions(fit1.1, fixed="Test", across="Condition")
 testInteractions(fit1.1, fixed="Condition", across="Test")
 ```
 
-Since a significant effect of the interaction was found, we moved on to comparing the two models with anova() to test if the interaction improves the model. It puts out a p-value of 0.03071. Being smaller than 0.05, this result is statistically significant, which is also indicated by the * specified in the significance codes in the output. It tells us that fit1.1 (model with interaction)  fits the data significantly better than fit1 (without interaction). 
-With the testInteractions() function it is possible to perform simple main effects analysis after finding a significant interaction. A significant interaction only tells you that the effect of one variable depends on the level of the other, not which levels are different. So with this function, we want to unpack the interaction further and find out how the effect of one variable (Test or Condition) differs across levels of the other. If we look at the output of the first function where Test is used as the fixed variable, the p-values (L1 Production: 0.188; L2 Production: 0.164) tell us that the effect of Test does not significantly differ between conditions. If we take Condition as the fixed variable, p-values are very small (L1L2: 1.931e-07; L2L1: 1.608e-15), indicating that the effect of Condition does significantly differ between tests.
+Since a significant effect of the interaction was found, we compared the two models with the anova() function to test if the interaction improves the model. It puts out a p-value of 0.03071. Being smaller than 0.05, the effect is statistically significant, which is also symbolized by the * specified in the significance codes in the output. It tells us that fit1.1 (model with interaction)  fits the data significantly better than fit1 (without interaction). 
+With the testInteractions() function, it is possible to perform simple main effects analysis after finding a significant interaction. A significant interaction only tells you that the effect of one variable depends on the level of the other, not which levels are different. So with this function, we want to unpack the interaction further and find out how the effect of one variable (Test or Condition) differs across levels of the other. If we look at the output of the first function where **Test** is used as the fixed variable, the p-values (L1 Production: 0.188; L2 Production: 0.164) tell us that the effect of Test does *not* significantly differ between conditions. If we take **Condition** as the fixed variable, p-values are very small (L1L2: 1.931e-07; L2L1: 1.608e-15), indicating that the effect of Condition *does* significantly differ between tests.
 
 ```{r}
 
 # Multiple comparisons
+
 # Through computing estimated marginal means using the emmeans() function, we want to conduct pairwise comparisons of Condition levels within each level of Test, and assign it to a variable a.
 a<-emmeans(fit1.1, pairwise~Condition|Test, adjust="tukey")
   a
@@ -865,9 +864,9 @@ eff_size(b,sigma=sigma(fit1.1), edf= Inf)
 
 The analysis conducted in the code chunk above provides the most important information for the interpretation of this model done by the authors. We want to go through their statements and connect them with the code we reproduced. 
 In the paper, the authors claim there was a statistically significant difference between the scores of the two tests, suggesting that L1 production test scores were higher than L2 production test scores in both learning conditions (**L2 to L1 learning:** p < .001, d = 1.20, 95% CI [0.91, 1.49]; **L1 to L2 learning:** p < .001, d = 0.75, [0.47, 1.04]) (p. 1126). 
-Now, we want to take a close look at these numbers and what they mean. In our code above, we can find the numbers stated here in the output regarding our emmeans object b. The p-values show up when printing b, and lie < .001 for both learning conditions. A small p-value tells us that an effect likely exists, but does not say much about how big or important it is. This is where effect size comes into play: The function eff_size() puts out the estimated effect sizes for both conditions, which are referred to as **d** in the paper. They both demonstrate a large (larger for L2 to L1) effect size, and indicate that the difference (different levels of Test within each Condition) is not just statistically significant, but meaningful in size. Lastly, the confint() function applied to b put out the 95% confidence intervals for both learning directions, which means we can be 95% confident that the true standardized effect size lies in this range (which is a meaningful effect size, in our case).
+Now, we want to take a close look at these numbers and what they mean. In our code, we can find the numbers stated here in the output regarding the emmeans object b. The p-values show up when printing b, and lie < .001 for both learning conditions. A small p-value tells us that an effect likely exists, but does not say much about how big or important it is. This is where effect size comes into play: The function eff_size() puts out the estimated effect sizes for both conditions, which are referred to as **d** in the paper. They both demonstrate a large (larger for L2 to L1) effect size, and indicate that the difference (different levels of Test within each Condition) is not just statistically significant, but meaningful in size. Lastly, the confint() function applied to b put out the 95% confidence intervals for both learning directions, which means we can be 95% confident that the true standardized effect size lies in this range (which is a meaningful effect size, in our case).
 
-It is further expressed that results showed no main effects of Learning Condition (L1 production test: p = .188, d = -0.19, 95% CI [-0.46, 0.09]; L2 production test: p = .082, d = 0.26, [-0.03, 0.55]). This can be derived when we look at object a, which compares learning conditions separately for L1 Production and L2 Production. Printing a puts out p-values, which lie above 0.05 in both production tests and indicate no statistical significance of the differences between learning conditions. The effect sizes show a small negative effect for L1 Production, and a small positive effect for L2 Production, and do not suggest a meaningful difference. The confidence intervals in both cases include 0 (since it lies between -0.03 and 0.55, for example), telling us that no effect (d = 0) is a possibility given the data. To sum up, all these values do not support a main effect of Learning Condition.
+It is further expressed that results showed no main effects of Learning Condition (L1 production test: p = .188, d = -0.19, 95% CI [-0.46, 0.09]; L2 production test: p = .082, d = 0.26, [-0.03, 0.55]). This can be derived when we look at object a, which compares learning conditions separately for L1 Production and L2 Production. Printing a puts out p-values, which lie above 0.05 in both production tests and indicate no statistical significance of the differences between learning conditions. The effect sizes show a small negative effect for L1 Production, and a small positive effect for L2 Production, and do not suggest a meaningful difference. The confidence intervals in both cases include 0 (since it lies between -0.03 and 0.55, for example), telling us that no effect (d = 0) is a possibility given the data. To sum up, all these values do *not* support a main effect of Learning Condition.
 
 ```{r}
 # Visualizing the first model
@@ -890,7 +889,7 @@ We can see that the accuracy rates differ across Test Types and Learning Conditi
 
 ```{r}
 # Extension (Hannah)
-# To extend the work on this model, I want to display the results using the ggplot() function instead. For this, we need to load lme4, gglpot2 and paletteer libraries:
+# To extend the work on this model, I want to plot the results using the ggplot() function instead. I will explain later why this could be of advantage. First, we need to load lme4, gglpot2 and paletteer libraries:
 
 library(lme4)
 library(ggplot2)
