@@ -157,7 +157,7 @@ Negative kurtosis -> flatter peak.
 
 # Table 3: Descriptive Statistics of target items
 
-We want to reproduce Table 3 in Terai et al. (2021), which shows us the descriptive statistics of the target items of the study. Unfortunately the code for all the tables was not included in the R code published by the authors. Fortunately, we have the data in the form of a csv file! This is great for us. We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step by step.
+We want to reproduce Table 3 in Terai et al. (2021), which shows us the descriptive statistics of the target items of the study. Unfortunately, the code for all the tables was not included in the R code published by the authors. But since we have the data in the form of a csv file, this is not a problem! We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step by step.
 
 We have already loaded the data we will need for our table, but just to be sure, we will do it again and also load all the necessary libraries for the two tables, so we have a kind of "toolbox" that contains all the functions we might need:
 
