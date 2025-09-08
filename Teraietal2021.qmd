@@ -1147,41 +1147,24 @@ and easier to update or change later on.
 # Effects of Learning Directions and L2 Proficiency (RQ2)
 
 As introduced above, the second research question asks: How does
-learners' L2 proficiency change the relative benefits of L2 -\> L1 vs.
-L1 -\> L2 learning?
+learners' L2 proficiency change the relative benefits of L2 -> L1 vs. L1 -> L2 learning?
 
-Terai et al. (2021) hypothesized that the effect of learning direction
-might be dependant on the learner's proficiency in English. Meaning,
-lower-proficiency learners might benefit more from practicing in the L2
--\> L1 direction, whilst higher-proficiency learners might benefit more
-from the L1 -\> L2 direction.
+Terai et al. (2021) hypothesized that the effect of learning direction might be dependant on the learner's proficiency in English. Meaning, lower-proficiency learners might benefit more from practicing in the L2 -> L1 direction, whilst higher-proficiency learners might benefit more from the L1 -> L2 direction.
 
-To answer and test this question, the authors once again use generalized
-linear mixed models (GLMMs) separately for the L1 and L2 production
-tests, with Condition (learning direction), scaled vocabulary size
-(s.vocab), and their interaction as fixed effects, and Subject/Item
-random intercepts.
+To answer and test this question, the authors once again use generalized linear mixed models (GLMMs) separately for the L1 and L2 production tests, with Condition (learning direction), scaled vocabulary size (s.vocab), and their interaction as fixed effects, and Subject/Item random intercepts.
 
-Below, we will go through the code step by step to try and understand
-what the authors did to answer this research question.
+Below, we will go through the code step by step to try and understand what the authors did to answer this research question.
 
 ##L1 Production test
 
-(((With a second model the scores of the L1 production test were
-analyzed. This second model contained Learning Condition and Vocabulary
-Size (English proficiency) as explanatory variables and Accuracy of the
-L1 production test as the response variable (Terai et al. 2021 : 1127).
-Here the authors analyzed the data with interaction and without
-interaction, to find out the AIC, p and z scores there are a few steps
-we need to take. )))
+With a second model the scores of the L1 production test were
+analyzed. This second model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127). Here the authors analyzed the data with interaction and without interaction, to find out the AIC, p and z scores there are a few steps we need to take.
 
-We begin by focusing only on the L1 production data. This can be done by
-first loading our data with the command read.csv() and then the command
-filter() which only keeps the rows for the L1 Production test.
+We begin by focusing only on the L1 production data. This can be done by first loading our data with the command read.csv() and then the command filter() which only keeps the rows for the L1 Production test.
 
 ```{r}
 #First, we filter the data so that only the relevant test type (L1 or L2 Production) remains. Then, we ensure that categorical predictors are properly set as factors and that numeric predictors are scaled (standardized).
-dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
+dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 
 
 ##With the filter(...) function, provided by the dplyr package, we only keep the rows for the L1 Production posttests, because we will analyze this test separately from the L2 production test. Meaning, the function is mainly used to subset rows in a data frame based on our specified conditions, (L1 production Test)
@@ -1189,9 +1172,7 @@ dat1.L1<-filter(dat1, Test=="L1 Production")
 
 ```
 
-Next we want to declare the learning direction (Condition) as a factor.
-Factors are how R represents categorical predictors such as the learning
-direction. GLMMs need these to create the matrix correctly.
+Next we want to declare the learning direction (Condition) as a factor. Factors are how R represents categorical predictors such as the learning direction. GLMMs need these to create the matrix correctly.
 
 ```{r}
 #Make the categorical factors factorial: this means qualitative data is encoded into numeric data so that we can work with it and use the data for statistical analysis. The as.factor() function is used to convert a vector into a factor, which is a data type specifically designed for categorical data. It is essential to use factors for statistical data analysis such as an ANOVA or a regression which we will be doing in a later step. At this point, we need factors for a summary of our data.
@@ -1199,15 +1180,8 @@ direction. GLMMs need these to create the matrix correctly.
 dat1.L1$Condition <- as.factor(dat1.L1$Condition)
 ```
 
-We also apply contrast coding. Centered contrasts, in our case -0.5,
-+0.5, make the intercept much easier to interpret, since it then
-represents the grand mean across conditions. The command
-contr.treatment(2) we use below creates the default contrast. Why center
-at all? Our grand mean is then represented by an intercept, and
-interactions are much easier to interpret. In our models output,
-"Condition2" is the numeric code for the second level of condition
-relative to the first. A positive Condition2 estimate means the second
-level is higher (at a mean proficiency).
+We also apply contrast coding. Centered contrasts, in our case -0.5, +0.5, make the intercept much easier to interpret, since it then represents the grand mean across conditions. The command
+contr.treatment(2) we use below creates the default contrast. Why center at all? Our grand mean is then represented by an intercept, and interactions are much easier to interpret. In our models output, "Condition2" is the numeric code for the second level of condition relative to the first. A positive Condition2 estimate means the second level is higher (at a mean proficiency).
 
 ```{r}
 #In this next step we change our coding so the variables are correct and not still working with the data from previous tests. 
@@ -1226,20 +1200,15 @@ print(my.simple)
 ## 0.5
 ##-0.5
 
-##makes main effects easier to interpret and reduces collinearity in interaction models (so wie ich es verstanden habe????)
+##makes main effects easier to interpret and reduces collinearity in interaction models
 #The function contrasts() in R specifies or even retrieves the contrast coding for a variable.
 #Contrast coding is essential when working with linear models, as this can determine how how levels of a factor are represented as numeric dummy variables.
-#A contrast in R is a combination of variables that allows comparison of different treatments.. (Explain more? Understand??)
 #By applying contrast coding, the two groups (L1 to L2 and L2 to L1) are coded as -0.5 and +0.5. This coding makes the model's intercept easier to interpret (it becomes the overall mean).
 contrasts(dat1.L1$Condition)<-my.simple
 
 ```
 
-In the next step, we need to standardize the vocabulary size scores.
-That way, one unit of s.vocab corresponds to one standard deviation of
-proficiency. (REWRITE) Next we will standardize the proficiency, which
-means we transform Vocab scores into z-scores which will also help us
-with the interpretation.
+In the next step, we need to standardize the vocabulary size scores. That way, one unit of s.vocab corresponds to one standard deviation of proficiency. (REWRITE) Next we will standardize the proficiency, which means we transform Vocab scores into z-scores which will also help us with the interpretation.
 
 ```{r}
 #Scaling the Score: Here Vocab scores (L2 proficiency measures) are converted to z-scores. The scale() function standardizes or normalizes data. It centers or scales the columns of our numeric matric/data frame.
@@ -1249,11 +1218,9 @@ dat1.L1$s.vocab<-scale(dat1.L1$Vocab)
 
 ##Step 2: Model without interaction
 
-First, we test a model which includes learning direction and proficiency
-as main effects only.
+First, we test a model which includes learning direction and proficiency as main effects only.
 
-This first model assumes that learning direction and L2 proficiency each
-have independent effects on test accuracy.
+This first model assumes that learning direction and L2 proficiency each have independent effects on test accuracy.
 
 ```{r}
 #Answer~Condition*s.vocab: includes main effects of learning condition and proficiency plus their interaction
@@ -1272,21 +1239,13 @@ AIC(fit2)
 ##This command prints AIC, a fit index (the lower the better)
 ```
 
-##Interpretation The model predicts the probability of a correct
-response (Answer), using logistic regression. The random intercepts
-(1\|ID) and (1\|ItemID) account for individual differences between
-participants and between vocabulary items. The output of this first
-model shows that s.vocab is not significant with p = .57, this means
-that proficiency by itself did not strongly predict L1 Production
-accuracy. For 'Condition' the model also showed that it was not
-significant p = .18, meaning that learning direction alone also did not
-explain differences. So if we look at each predictor separately, there
+##Interpretation 
+The model predicts the probability of a correct response (Answer), using logistic regression. The random intercepts (1|ID) and (1|ItemID) account for individual differences between participants and between vocabulary items. The output of this first model shows that s.vocab is not significant with p = .57, this means that proficiency by itself did not strongly predict L1 Production accuracy. For 'Condition' the model also showed that it was not significant p = .18, meaning that learning direction alone also did not explain differences. So if we look at each predictor separately, there
 seems to be no clear effect.
 
 ##Step 3: Model with Interaction
 
-What if proficiency only matters depending on the learning direction? To
-figure this out, we add an interaction term.
+What if proficiency only matters depending on the learning direction? To figure this out, we add an interaction term.
 
 ```{r}
 fit2.1<-glmer(Answer~s.vocab*Condition+(1|ID)+(1|ItemID), family=binomial, data=dat1.L1, glmerControl(optimizer="bobyqa"))
@@ -1303,32 +1262,19 @@ AIC(fit2.1)
 ##addition of s.vocab:Condition which directly tests RQ2: Does the effect of learning direction depend on L2 proficiency? -> here s.vocab:Condition2 is negative and significant (-0.367, p=.009)
 ```
 
-The interaction term s.vocab:Condition is significant with an estimate
-of about -0.37, p = .009, which means that the effect of vocabulary
-proficiency depends on the learning direction. With centered coding, a
-negative interaction such as -0.37 suggests that the slope of
-proficiency is steeper for L1 -\> L2 than for L2 -\> L1. Very basically
-said: at a lower proficiency, L2 -\> L1 shows a higher accuracy, while
-at a higher proficiency, L1 -\> L2 improves. The crossover in the paper
+The interaction term s.vocab:Condition is significant with an estimate of about -0.37, p = .009, which means that the effect of vocabulary proficiency depends on the learning direction. With centered coding, a negative interaction such as -0.37 suggests that the slope of proficiency is steeper for L1 -> L2 than for L2 -> L1. Very basically said: at a lower proficiency, L2 -> L1 shows a higher accuracy, while at a higher proficiency, L1 -> L2 improves. The crossover in the paper
 occurs around vocabulary size of about 5.419 which confirms the
-hypothesized 'flip'. Effecctiveness of learning direction depends on
-proficiency.
+hypothesized 'flip'. Effecctiveness of learning direction depends on proficiency.
 
 ##Step 4: Model comparison
 
-To formally check which model fits better using AIC and a likelihood
-ratio, we use to command anova(), which is an analysis of variance (a
-statistical formula which compares variances across the means (or
-average) of different groups).
+To formally check which model fits better using AIC and a likelihood ratio, we use to command anova(), which is an analysis of variance (a statistical formula which compares variances across the means (oraverage) of different groups).
 
 ```{r}
 anova(fit2,fit2.1)
 ```
 
-The AIC favors the interaction model (1311.6 vs. 1316.3), and the
-likelihood ratio is statistically significant (χ² = 6.70, p = .009),
-indicating that the model with the Condition x Proficiency interaction
-fits best.
+The AIC favors the interaction model (1311.6 vs. 1316.3), and the likelihood ratio is statistically significant (χ² = 6.70, p = .009), indicating that the model with the Condition x Proficiency interaction fits best.
 
 ##Step 5: Visualizing the effect
 
@@ -1339,26 +1285,21 @@ plot(allEffects(fit2.1), multiline=T, ci.style="bands",
     rescale.axis=F, ylim = c(0,1), colors="black", asp=1)
 ```
 
-Looking at the plot you see a nearly flat line for L2 -\> L1 and a
-positive, steeper line for L1 -\> L2 which cross at intermediate
-proficiency. This plot shows that accuracy increases with proficiency.
+Looking at the plot you see a nearly flat line for L2 -> L1 and a positive, steeper line for L1 -> L2 which cross at intermediate proficiency. This plot shows that accuracy increases with proficiency.
 
-The slope differs by condition. It is much steeper for L1 -\> L2. For
-lower proficiency learners, L2 -\> L1 is better, and for higher
-proficiency learners L1 -\> L2 is more beneficial. Learners in one
-learning direction seem to benefit more strongly from larger
-vocabularies.
+The slope differs by condition. It is much steeper for L1 -> L2. For lower proficiency learners, L2 -> L1 is better, and for higher proficiency learners L1 -> L2 is more beneficial. Learners in one learning direction seem to benefit more strongly from larger vocabularies.
 
 ##Step 6: Testing simple effects
 
-This tests whether the slope of proficiency differs significantly
-between conditions as predicted. This is basically a Chi-square test.
+This tests whether the slope of proficiency differs significantly between conditions as predicted. This is basically a Chi-square test.
 
 ```{r}
 testInteractions(fit2.1, fixed="s.vocab", across="Condition")
 ```
 
-##Interpretation: ??
+##Interpretation
+
+There seems to be a significant interaction between Learning Direction and Proficiency (s.vocab:Condition2 = -0.367, SE = 0.141, z = -2.596, p = .009). We also see that the interaction model fit better than a model without the interaction (AIC = 1311.6 vs. 1316.3). Accuracy for L2 -> L1 was higher at lower proficiency, while L1 -> L2 improved more with proficiency. This supports the second research question: the optimal learning direction is dependant on proficiency.
 
 ##L2 Production Test
 
@@ -1406,8 +1347,7 @@ summary(fit3.1)
 
 #Here the results showed that the interaction s.vocab:Condition is
 significant (-0.367, p = 0.009). This means that the effects of
-proficiency depend on the learning direction. Vocabulary knowledge seems
-to help more in one condition than in the other.
+proficiency depend on the learning direction. Vocabulary knowledge seems to help more in one condition than in the other.
 
 ```{r}
 confint(fit3.1)
@@ -1419,8 +1359,7 @@ AIC(fit3.1)
 ```
 
 #Model Comparison #To formally check whether the model with the
-interaction is better than the simpler model, we compare them with a
-likelihood ratio test:
+interaction is better than the simpler model, we compare them with a likelihood ratio test:
 
 ```{r}
 anova(fit3,fit3.1)
@@ -1433,32 +1372,22 @@ plot(allEffects(fit3.1),multiline=T,ci.style="bands", xlab="Vocabulary Size", yl
        main= "L2 Production", lty=c(1,2), rescale.axis=F, ylim = c(0,1),colors="black",asp=1)
 ```
 
-The same trend seems to appear for L2 production (flatter L2 -\> L1
-slope, steeper L1 -\> L2 slope), but the interaction in this case is not
-significant (p = 0.70). The authors note that this might be due to a
-floor effect which means that an L2 form recall may be more difficult
-after a brief ecposure, so the overall performance is lower and the
-interaction is more difficult to detect statistically.
+The same trend seems to appear for L2 production (flatter L2 -> L1 slope, steeper L1 -> L2 slope), but the interaction in this case is not significant (p = 0.70). The authors note that this might be due to a floor effect which means that an L2 form recall may be more difficult after a brief ecposure, so the overall performance is lower and the interaction is more difficult to detect statistically.
 
 ##Interpretation & Take-home
 
 Generally, L1 production showed that lower proficiency learners
-benefitted from L2 -\> L1 learning direction, while higher proficiency
-speakers benefitted from L1 -\> L2 learning direction (crossover about
-5.419). For the L2 production similar things were obsered but were not
-statistically significant.
+benefitted from L2 -> L1 learning direction, while higher proficiency speakers benefitted from L1 -> L2 learning direction (crossover about 5.419). For the L2 production similar things were obsered but were not statistically significant.
 
-Vocabulary proficiency shapes how effectively retrieval practice works,
-and the optimal learning direction may differ for learners with higher
-vs. lower proficiency.
+Vocabulary proficiency shapes how effectively retrieval practice works, and the optimal learning direction may differ for learners with higher vs. lower proficiency.
 
-The optimal learning direction is clearly not a one-size-fits-all
-matter, it depends on proficiency.
+The optimal learning direction is clearly not a one-size-fits-all matter, it depends on proficiency.
 
-What you learned in this section: - Adding a continous predictor
-(s.vocab) to a GLMM. - Testing and interpreting interactions. -
-Comparing models using AIC and likelihood ratio tests. - Visualizing
-interaction effects with the effects package.
+What you learned in this section: 
+- Adding a continous predictor (s.vocab) to a GLMM. 
+- Testing and interpreting interactions. 
+- Comparing models using AIC and likelihood ratio tests. 
+- Visualizing interaction effects with the effects package.
 
 #Model Diagnostics
 
