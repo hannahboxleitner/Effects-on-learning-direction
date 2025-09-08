@@ -191,14 +191,14 @@ data set in qualitative methods. Skewness measures the asymmetry of
 distribution. Simply put, it describes the amount of which the
 distribution differs from a completely symmetric shape.
 
-Skew = 0 -\> perfectly symmetrical. Negative Skew -\> longer "tail" on
-the left. Positive Skew -\> longer "tail" on the right.
+Skew = 0 -> perfectly symmetrical. Negative Skew -> longer "tail" on
+the left. Positive Skew -> longer "tail" on the right.
 
 Kurtosis then is a measure of peaks of a distribution. Basically, it is
 a description of how the peaks compare to a normal distribution.
 
-Kurtosis = 0 -\> similar to a normal distribution. Positive kurtosis -\>
-sharper peak (more concentrated in the center). Negative kurtosis -\>
+Kurtosis = 0 -> similar to a normal distribution. Positive kurtosis ->
+sharper peak (more concentrated in the center). Negative kurtosis ->
 flatter peak.
 
 # Descriptive Statistics of target items
@@ -234,22 +234,16 @@ library(kableExtra) # nicer tables
 # Load the dataset (provided in the IRIS repository)
 dat<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
-# Clean stray spaces from ItemID (sometimes "berth " instead of "berth")
+# Clean stray spaces from ItemID using trimws() function
+# trimws() removes whitespace from the beginning and end of text
+# This helps to prevent issues like "berth " vs. "berth" being treated as different
 dat$ItemID <- trimws(dat$ItemID)
 
 ```
 
-In the paper by Terai et al. (2021) we can see that the variables used
-are, for L2-related variables: Frequency, Syllables, and Letters. For
-L1-related variables: Frequency, Letters, and Mora (syllables) as well
-as Familiarity (Fami B). The Fami A and Frequency for L1-related
-variables that we see in the table are the familiarity ratings and
-frequencies taken from another study by Amano & Kondo (1999).
+In the paper by Terai et al. (2021) we can see that the variables used are, for L2-related variables: Frequency, Syllables, and Letters. For L1-related variables: Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami B). The Fami A and Frequency for L1-related variables that we see in the table are the familiarity ratings and frequencies taken from another study by Amano & Kondo (1999).
 
-First, we need to take a look at the data the authors have uploaded for
-us. The column names may differ from what we want to see in the table
-later on which is why we briefly want to check them by having them
-printed:
+First, we need to take a look at the data the authors have uploaded for us. The column names may differ from what we want to see in the table later on which is why we briefly want to check them by having them printed:
 
 ```{r}
 names(dat)
@@ -265,19 +259,13 @@ names(dat)
 
 ```
 
-The raw data set has multiple rows per word because each participant
-contributed responses. But for descriptive statistics of the items, we
-only want one row per word. So we take the first value for fixed
-properties, such as frequency or length, which are always the same and
-then compute the mean familiarity across the participants.
+Basically, what we are doing next is shaping our data from participant-level to item-level. The raw data set has multiple rows per word because each participant contributed responses and thus has their own row per word. For example, the word "weasel" might appear many times, one time for each participant. But for descriptive statistics of the items, we only want one row per word.
+
+To solve this issue we use the commands group_by() and summarise() to turn all those rows into just a single one per word. The command 'group_by(ItemID)' we use in the code groups all rows together that contain the same word. The function summarise() then creates our new dataset by calculating the information for each group, so L2Frequency, Syllables, Alphabet, etc. The function 'first()' is fairly simple, since the frequencies, syllables etc. of the words do not change, we just take the first occurence without any repetition. Only for the familiarity ratings we calculated the mean() across all participants for each word.
 
 ```{r}
-
-# Make it item-level (1 row per word)
-# We keep the first observed value for fixed properties
-# and compute the mean familiarity across participants for each item.
-items <- dat %>%
-  group_by(ItemID) %>%
+items <- dat |>
+  group_by(ItemID) |>
   summarise(
     L2Frequency = first(L2Frequency),
     Syllables   = first(Syllables),
@@ -290,24 +278,13 @@ items <- dat %>%
   )
 ```
 
-A quick check before we continue, we expect 40 unique items so this
-command should print 40:
+A quick check before we continue, we expect 40 unique items so this command should print 40:
 
 ```{r}
 nrow(items)
 ```
 
-In order to avoid repeating code, we use a small function that computes
-all the statistics we need for one variable.
-
-We create our own function which we will name desc(). It is simply like
-a small machine, we give this machine a variable and it produces an
-output for us, a set of summary numbers. The functions mean(), sd(),
-median(), min(), max() are standard R functions you are already familiar
-with. The package "moments" allows us to use the functions skewness()
-and kurtosis(). With the addition of na.rm = TRUE we tell our helper to
-ignore missing values. Then, to combine all these numbers, we use
-data.frame() which makes it possible for us to print them neatly.
+In order to avoid repeating code (and because we are lazy), we create our own function that computes all the statistics (mean, SD, median, min, max, skew, kurtosis) we need for each variable. We build our own small machine that we will name desc(), it will do all the calculations for us. 'desc <- funcion(x) creates this function with the input 'x' which represents whichever variable we want to analyze. Inside of our function, we use 'data.frame()' for organization of our statistics before we begin the calculations. Each calculation takes our input variable 'x' and computes the statistics. The functions skewness() and kurtosis() come from the 'moments' package we loaded earlier.
 
 ```{r}
 # A tiny helper to compute stats
@@ -318,53 +295,54 @@ desc <- function(x) {
     Median   = median(x, na.rm = TRUE),
     Minimum  = min(x, na.rm = TRUE),
     Maximum  = max(x, na.rm = TRUE),
-    # Correct definitions for Table 3:
     Skew     = skewness(x, na.rm = TRUE),
     Kurtosis = kurtosis(x, na.rm = TRUE)
   )
 }
 ```
 
-Now that we have most of what we need for the table, we can start to
-build them up! There are two subtables we need.
+Now that we have most of what we need for the tables, we can start to build them up! There are two subtables we need.
+
+The code below does this with two important functions: cbind() which creates columns that stick together side by side. For example 'cbind(Variable = "Frequency", desc(items$L2Frequency)' creates one row by combining the columb called "Variable" with the value "Frequency" and all the statistics from our desc() function applied to the L2 data. The command rbind() stacks these rows on top of each other to build the final table. As you see we only have to run our helper function 'desc()' seven times!
 
 ```{r}
-## Here we build our first table (tab_L2) for the L2-related variables. desc(item$L2Frequency) runs our helper function on the frequency values and so on. The command cbind(Variable = "Frequency"...) attaches a label so we know which row is which. We repeat this for syllables and letters as well and then use the command rbind() which binds all three pieces into one table. We do the same for the L1 table (tab_L1).
 tab_L2 <- rbind(
-  cbind(Variable = "Frequency", 
-desc(items$L2Frequency)),
-  cbind(Variable = "Syllables",
-desc(items$Syllables)),
-  cbind(Variable = "Letters",  
-desc(items$Alphabet))
+  cbind(Variable = "Frequency", desc(items$L2Frequency)),
+  cbind(Variable = "Syllables", desc(items$Syllables)),
+  cbind(Variable = "Letters", desc(items$Alphabet))
 )
 
 # L1-related variables
 tab_L1 <- rbind(
-  cbind(Variable = "Frequency",
-desc(items$L1Frequency)),
-  cbind(Variable = "Letters",
-desc(items$WordLength)),
-  cbind(Variable = "Mora (syllables)",                desc(items$mora)),
-  cbind(Variable = "Fami (B)",                 desc(items$familiarity))
+  cbind(Variable = "Frequency", desc(items$L1Frequency)),
+  cbind(Variable = "Letters", desc(items$WordLength)),
+  cbind(Variable = "Mora (syllables)", desc(items$mora)),
+  cbind(Variable = "Fami (B)", desc(items$familiarity))
 )
 ```
 
-Great! You are almost done building the table for the descriptive
-statistics. In the next step, we will round the numbers to two decimals
-to make the table more comprehensible.
+Great! You are almost done building the table for the descriptive statistics. In the next step, we will round the numbers to two decimals to make the table more comprehensible.
 
 ```{r}
-#Oftentimes numbers produced by R have many decimals we do not need, it makes tables harder to read. So we use the mutate() function which is used to change or add columns. across(where(is.numeric), ...) means thhat we apply the next step to all numeric columns. And then ~round(., 2) rounds each number to 2 decimal places. The dot (.) is just a placeholder that basically means "whatever column we are looking at currently."
-tab_L2 <- tab_L2 %>% mutate(across(where(is.numeric), ~round(., 2)))
-tab_L1 <- tab_L1 %>% mutate(across(where(is.numeric), ~round(., 2)))
+# We will do this columb by column to make it clear:
+tab_L2$Mean <- round(tab_L2$Mean, 2)
+tab_L2$SD <- round(tab_L2$SD, 2)
+tab_L2$Median <- round(tab_L2$Median, 2)
+tab_L2$Minimum <- round(tab_L2$Minimum, 2)
+tab_L2$Maximum <- round(tab_L2$Maximum, 2)
+tab_L2$Skew <- round(tab_L2$Skew, 2)
+tab_L2$Kurtosis <- round(tab_L2$Kurtosis, 2)
+
+tab_L1$Mean <- round(tab_L1$Mean, 2)
+tab_L1$SD <- round(tab_L1$SD, 2)
+tab_L1$Median <- round(tab_L1$Median, 2)
+tab_L1$Minimum <- round(tab_L1$Minimum, 2)
+tab_L1$Maximum <- round(tab_L1$Maximum, 2)
+tab_L1$Skew <- round(tab_L1$Skew, 2)
+tab_L1$Kurtosis <- round(tab_L1$Kurtosis, 2)
 ```
 
-Perfect, the next and easiest part of building up our two subtables is
-captioning them and then finally printing them. Here we need the kable()
-and the kable_classic() function.
-
-EXPLAIN
+Perfect, the next and easiest part of building up our two subtables is captioning them and then finally printing them. Here we need the kable() and the kable_classic() function. We use these functions to make the tables look easy to read. The kable() function is quite nice because it helps to make R's output look a little more professional. The function comes from the knitr package. kable(tab_L2, ...) takes our tab_2 data frame and converts it into a formatted table which we then caption with the command 'caption = "...". With the command 'align = "lrrrrrr" we control the way the text is aligned in each column. the 'l' means left-aligned, while every added 'r' means the remaining columns should be right-aligned (SOURCE). The kable_classics function comes from the kableExtra package we loaded earlier. It is also another function to tidy up our table style. The command 'full_width = FALSE' makes sure that the table does not stretch too wide. When you run this code, you will see a polished table with clear borders and proper formatting which will make it easier to read and interpret.
 
 ```{r}
 kable(tab_L2, caption = "Table 3a. Descriptive statistics for L2 (English) item properties.",
@@ -380,16 +358,13 @@ kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item
 
 # Visualizations of Table 3
 
-With Table 3 we were shown a summary of many numbers (mean, SD, range,
-skewness and kurtosis) for the 40 target words, but these numbers are
-much easier to understand when we actually see them visualized. Below we
-want to turn some key variables of Table3 into quick histograms to
-visually connect the ideas of skew and kurtosis to the actual items used
-in this study.
+With Table 3 we were shown a summary of many numbers (mean, SD, range, skewness and kurtosis) for the 40 target words, but these numbers are much easier to understand when we actually see them visualized. Below we want to turn some key variables of Table 3 into quick histograms to visually connect the ideas of skew and kurtosis to the actual items used in this study.
+
+Please note that in this extension our reloading of the data may seem repetitive, but it simply ensures that this 
 
 ```{r}
 library(tidyverse)
-dat <- read.csv("data/dataset1_ssla_20210313.csv", header = TRUE)
+dat<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 dat$ItemID <- trimws(dat$ItemID)
 
 items <- dat |>
@@ -436,14 +411,9 @@ ggplot(items, aes(x = L2Frequency)) +
 base_theme
 ```
 
-In this histogram we can clearly see a right-skewed distribution which
-we saw in the table with the positive skewness values (\~1.51). This
-means most words are lower or medium frequency with only a few really
-high-frequency words (see the long right tail). The mean sits to the
-right of the median which is another characteristic of positive skew.
+In this histogram we can clearly see a right-skewed distribution which we saw in the table with the positive skewness values (\~1.51). This means most words are lower or medium frequency with only a few really high-frequency words (see the long right tail). The mean sits to the right of the median which is another characteristic of positive skew.
 
-Now, we want to do the exact same for the L1 frequencies to compare our
-numbers and outcomes.
+Now, we want to do the exact same for the L1 frequencies to compare our numbers and outcomes.
 
 ```{r}
 ggplot(items, aes(x = L1Frequency)) +
@@ -458,12 +428,10 @@ ggplot(items, aes(x = L1Frequency)) +
 base_theme
 ```
 
-Again, we see a right-skew even stronger than for L2. This means there
-are a few very common L1 forms.
+Again, we see a right-skew even stronger than for L2. This means there are a few very common L1 forms.
 
 Just to be sure we understand how to build and understand these
-histograms, we want to create two more. For L2 letters and L1 letters
-(Japanese orthographic length).
+histograms, we want to create two more. For L2 letters and L1 letters Japanese orthographic length).
 
 ```{r}
 ggplot(items, mapping = aes(x = Letters_L2)) +
@@ -477,13 +445,9 @@ ggplot(items, mapping = aes(x = Letters_L2)) +
   base_theme
 ```
 
-Great! Here we can clearly see that many items are around 5 to 7 letters
-with very few short and long words. The table already showed that there
-was a slight right-skew which we can now see in the histogram as well
-(\~0.97).
+Great! Here we can clearly see that many items are around 5 to 7 letters with very few short and long words. The table already showed that there was a slight right-skew which we can now see in the histogram as well (~0.97).
 
-Lastly we want to compare the L2 letters to the L1 letters of Japanese.
-Here we use nearly the same code:
+Lastly we want to compare the L2 letters to the L1 letters of Japanese. Here we use nearly the same code:
 
 ```{r}
 ggplot(items, mapping = aes(x = Letters_L1)) +
@@ -497,45 +461,15 @@ ggplot(items, mapping = aes(x = Letters_L1)) +
   base_theme
 ```
 
-Amazing, here we clearly see that there is a cluster around 3 to four,
-showing that the distribution is quite compact with only a slight right
-skew (\~0.17).
+Amazing, here we clearly see that there is a cluster around 3 to four, showing that the distribution is quite compact with only a slight right skew (~0.17).
 
-Our reproduced tables now closely match Table 3 in Terai et al. (2021)!
-The L2 frequency has a mean of about 1025 with a quite lare SD (\~852),
-which shows us that some English words were quite frequent while others
-were much rarer. The skewness here is positive (\~1.51), although
-different than the one reported in the paper (\~1.57). The difference is
-only small and still shows that the distribution has a "long tail" of
-very high-frequency words. Syllables in English have an average mean of
-2, and range from 1 to 5 with only a slight positive skewness which
-means that most words are short and only a few are longer, again there
-is a small difference in skewness. Letters average around 6.2 again with
-a positive skewness. While the numbers of skewness only differ
-marginally there are larger discrepancies for the kurtosis numbers.
-There are several different possibilities as to why this is the case for
-our reproduction of Table 3. Kurtosis is a statistic that is not
-calculated in the same way across all R packages. There are different
-definitions and reports of kurtosis which means it is quite normal for
-the values to differ slightly depending on the method. In our
-reproduction we use the "moments" package, which calculates excess
-kurtosis, so mismatches with the published paper are expected. (SOUURCE)
+Our reproduced tables now closely match Table 3 in Terai et al. (2021)! The L2 frequency has a mean of about 1025 with a quite lare SD ( ~852), which shows us that some English words were quite frequent while others were much rarer. The skewness here is positive (~1.51), although different than the one reported in the paper (~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. Syllables in English have an average mean of 2, and range from 1 to 5 with only a slight positive skewness which means that most words are short and only a few are longer, again there
+is a small difference in skewness. Letters average around 6.2 again with a positive skewness. While the numbers of skewness only differ marginally there are larger discrepancies for the kurtosis numbers. 
+There are several different possibilities as to why this is the case for our reproduction of Table 3. Kurtosis is a statistic that is not calculated in the same way across all R packages. There are different definitions and reports of kurtosis which means it is quite normal for the values to differ slightly depending on the method. In our reproduction we use the "moments" package, which calculates excess kurtosis, so mismatches with the published paper are expected. (SOUURCE)
 
-In the L1 table, the frequency distribution also shows a strong positive
-skewness, which means that a few Japanese translations are very common
-but many are quite rare. Fami (B) averages about 5.2 on a 7-point scale,
-with a pretty low SD, suggesting that the words were mostly familiar.
-Unfortunately, once again the computed numbers for kurtosis differ a
-lot. Just as explained above, this does not mean our reproduction is
-completely wrong. There are many factors that might influence kurtosis.
+In the L1 table, the frequency distribution also shows a strong positive skewness, which means that a few Japanese translations are very common but many are quite rare. Fami (B) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar. Unfortunately, once again the computed numbers for kurtosis differ a lot. Just as explained above, this does not mean our reproduction is completely wrong. There are many factors that might influence kurtosis.
 
-In summary, our reproduction shows the same patterns as the published
-table: most words are short, quite familiar, and positively skewed in
-their distributions. The small differences in skewness and especially in
-kurtosis are due to different calculation methods, not because our
-analysis is wrong. This is also a nice reminder that in statistics,
-sometimes numbers can vary slightly depending on the software or
-definitions used, but the overall interpretations remain the same.
+In summary, our reproduction shows the same patterns as the published table: most words are short, quite familiar, and positively skewed in their distributions. The small differences in skewness and especially in kurtosis are due to different calculation methods, not because our analysis is wrong. This is also a nice reminder that in statistics, sometimes numbers can vary slightly depending on the software or definitions used, but the overall interpretations remain the same.
 
 # Descriptive statistics of the tests and reliability testing
 
