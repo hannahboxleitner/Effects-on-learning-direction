@@ -1399,6 +1399,10 @@ A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 
 We use a helper function vif.mer() to calculate VIFs for mixed models.
 
 ```{r}
+
+
+source("https://raw.githubusercontent.com/aufrank/R-hacks/master/mer-utils.R")
+
 vif.mer(fit1.1)
 
 vif.mer(fit2.1)
