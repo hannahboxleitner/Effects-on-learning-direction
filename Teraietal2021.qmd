@@ -77,6 +77,8 @@ practive tasks in different conditions. After learning, students were
 tested on their ability to produce the target vocabulary items both in
 L1 and L2.
 
+((Very basically explained, what the authors tested in the Production tests consisted of showing the participants either an English or a Japanese word and then they had to write it in the other language. This way their abilities to access either their native (L1) or second language (L2). Think about yourself, when you see a foreign word you have learned before, how easily can you think of the meaning in your native language? This is exactly what we are measuring.))
+
 Therefore, the authors established the hypotheses that there is no
 significant difference between the two learning directions and that the
 effect of learning direction depends on the learner’s L2 proficiency
@@ -216,29 +218,26 @@ for the two tables, so we have a kind of "toolbox" that contains all the
 functions we might need:
 
 ```{r}
-# Install these once if you do not already have them
-# install.packages("readr")       -> reading data
-# install.packages("dplyr")       -> data wrangling
-# install.packages("moments")     -> skewness and kurtosis
-# install.packages("knitr")       -> for pretty tables
-# install.packages("kableExtra")  -> for even prettier tables
-
-# Load packages
-library(readr)      # read_csv()
-library(dplyr)      # data wrangling
-library(moments)    # skewness(), kurtosis()
-library(knitr)      # kable()
-library(kableExtra) # nicer tables
+#Install these once if you do not already have them:
+#install.packages("readr")
+#install.packages("dplyr")
+#install.packages("moments")
+#install.packages("knitr")
+#install.packages("kableExtra")
 
 
-# Load the dataset (provided in the IRIS repository)
-dat<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
+#Load the packages you need
+library(readr) #read csv
+library(dplyr) #data wrangling
+library(moments) #for skewness and kurtosis
+library(knitr) #for the command kable()
+library(kableExtra) #for nicer tables
 
-# Clean stray spaces from ItemID using trimws() function
-# trimws() removes whitespace from the beginning and end of text
-# This helps to prevent issues like "berth " vs. "berth" being treated as different
+#We load our data which was provided in the IRIS repository
+dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
+
+#twimws() removes space from the beginning and end of the text which helps to prevent issues like "berth " vs. "berth" being treated as different
 dat$ItemID <- trimws(dat$ItemID)
-
 ```
 
 In the paper by Terai et al. (2021) we can see that the variables used are, for L2-related variables: Frequency, Syllables, and Letters. For L1-related variables: Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami B). The Fami A and Frequency for L1-related variables that we see in the table are the familiarity ratings and frequencies taken from another study by Amano & Kondo (1999).
@@ -268,14 +267,15 @@ items <- dat |>
   group_by(ItemID) |>
   summarise(
     L2Frequency = first(L2Frequency),
-    Syllables   = first(Syllables),
-    Alphabet    = first(Alphabet),
+    Syllables = first(Syllables),
+    Alphabet = first(Alphabet),
     L1Frequency = first(L1Frequency),
-    WordLength  = first(WordLength),
-    mora        = first(mora),
+    WordLength = first(WordLength),
+    mora = first(mora),
     familiarity = mean(familiarity, na.rm = TRUE),
     .groups = "drop"
   )
+
 ```
 
 A quick check before we continue, we expect 40 unique items so this command should print 40:
@@ -287,17 +287,16 @@ nrow(items)
 In order to avoid repeating code (and because we are lazy), we create our own function that computes all the statistics (mean, SD, median, min, max, skew, kurtosis) we need for each variable. We build our own small machine that we will name desc(), it will do all the calculations for us. 'desc <- funcion(x) creates this function with the input 'x' which represents whichever variable we want to analyze. Inside of our function, we use 'data.frame()' for organization of our statistics before we begin the calculations. Each calculation takes our input variable 'x' and computes the statistics. The functions skewness() and kurtosis() come from the 'moments' package we loaded earlier.
 
 ```{r}
-# A tiny helper to compute stats
 desc <- function(x) {
   data.frame(
-    Mean     = mean(x, na.rm = TRUE),
-    SD       = sd(x, na.rm = TRUE),
-    Median   = median(x, na.rm = TRUE),
-    Minimum  = min(x, na.rm = TRUE),
-    Maximum  = max(x, na.rm = TRUE),
-    Skew     = skewness(x, na.rm = TRUE),
+    Mean = mean(x, na.rm = TRUE),
+    SD = sd(x, na.rm = TRUE),
+    Median = median(x, na.rm = TRUE), 
+    Minimum = min(x, na.rm = TRUE),
+    Maximum = max(x, na.rm = TRUE),
+    Skew = skewness(x, na.rm = TRUE),
     Kurtosis = kurtosis(x, na.rm = TRUE)
-  )
+    )
 }
 ```
 
@@ -312,19 +311,18 @@ tab_L2 <- rbind(
   cbind(Variable = "Letters", desc(items$Alphabet))
 )
 
-# L1-related variables
 tab_L1 <- rbind(
   cbind(Variable = "Frequency", desc(items$L1Frequency)),
   cbind(Variable = "Letters", desc(items$WordLength)),
   cbind(Variable = "Mora (syllables)", desc(items$mora)),
   cbind(Variable = "Fami (B)", desc(items$familiarity))
 )
+
 ```
 
 Great! You are almost done building the table for the descriptive statistics. In the next step, we will round the numbers to two decimals to make the table more comprehensible.
 
 ```{r}
-# We will do this columb by column to make it clear:
 tab_L2$Mean <- round(tab_L2$Mean, 2)
 tab_L2$SD <- round(tab_L2$SD, 2)
 tab_L2$Median <- round(tab_L2$Median, 2)
@@ -1135,19 +1133,14 @@ ggplot(emm_df, aes(x = Test, y = prob, group = Condition, color = Condition, lin
 # This plot is quite similar to the one presented in the author's code. The only addition in *what* is presented, is that it contains so-called error bars above and below each point, which reflect the confidence intervals. Most differences lie in *how* the data is presented, where I changed the appearance a bit. I added the Beyonce palette, to give the two lines (that represent Learning Condition) some color. I still kept them solid vs. dashed, so that they can be told apart easily. Also, the legend for "Condition" is next to the plot, not above it, which I find more well-arranged.
 ```
 
-Even though this is an additional plot to the one the authors already
-provided in their code, I want to explain why using ggplot2 for this
-might be of advantage. ggplot2 is built on the "grammar of graphics",
-which makes it easy to add layers and extend the plot. There are many
-options to alter the appearance of the plot, like colors, themes etc.
-Furthermore, in this code, we can explicitly see what is plotted and how
-specific elements are modified. This makes the plot more reproducible
-and easier to update or change later on.
+Even though this is an additional plot to the one the authors already provided in their code, I want to explain why using ggplot2 for this
+might be of advantage. ggplot2 is built on the "grammar of graphics", which makes it easy to add layers and extend the plot. There are many
+options to alter the appearance of the plot, like colors, themes etc. Furthermore, in this code, we can explicitly see what is plotted and how
+specific elements are modified. This makes the plot more reproducible and easier to update or change later on.
 
 # Effects of Learning Directions and L2 Proficiency (RQ2)
 
-As introduced above, the second research question asks: How does
-learners' L2 proficiency change the relative benefits of L2 -> L1 vs. L1 -> L2 learning?
+As introduced above, the second research question asks: How does learners' L2 proficiency change the relative benefits of L2 -> L1 vs. L1 -> L2 learning?
 
 Terai et al. (2021) hypothesized that the effect of learning direction might be dependant on the learner's proficiency in English. Meaning, lower-proficiency learners might benefit more from practicing in the L2 -> L1 direction, whilst higher-proficiency learners might benefit more from the L1 -> L2 direction.
 
@@ -1157,31 +1150,33 @@ Below, we will go through the code step by step to try and understand what the a
 
 ##L1 Production test
 
-With a second model the scores of the L1 production test were
-analyzed. This second model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127). Here the authors analyzed the data with interaction and without interaction, to find out the AIC, p and z scores there are a few steps we need to take.
+With a second model the scores of the L1 production test were analyzed. This second model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127). Here the authors analyzed the data with interaction and without interaction, to find out the AIC, p and z scores there are a few steps we need to take.
 
-We begin by focusing only on the L1 production data. This can be done by first loading our data with the command read.csv() and then the command filter() which only keeps the rows for the L1 Production test.
-
+We begin by focusing only on the L1 production data. This can be done by first loading our data with the command read.csv() and then the command filter() which only keeps the rows for the L1 Production test. We filter this data because while each participant took both L1 and L2 production tests, the authors of this study found different patterns for both test types which is why they chose to analyze them separately (p. 1126).
 ```{r}
-#First, we filter the data so that only the relevant test type (L1 or L2 Production) remains. Then, we ensure that categorical predictors are properly set as factors and that numeric predictors are scaled (standardized).
 dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 
-
-##With the filter(...) function, provided by the dplyr package, we only keep the rows for the L1 Production posttests, because we will analyze this test separately from the L2 production test. Meaning, the function is mainly used to subset rows in a data frame based on our specified conditions, (L1 production Test)
+#Then, we filter the data so that only the relevant test type (L1 or L2 Production) remains. Then, we ensure that categorical predictors are properly set as factors and that numeric predictors are scaled (standardized).
 dat1.L1<-filter(dat1, Test=="L1 Production")
 
 ```
 
-Next we want to declare the learning direction (Condition) as a factor. Factors are how R represents categorical predictors such as the learning direction. GLMMs need these to create the matrix correctly.
+To check whether you understood the filter function completely, use the 'nrow()' function to find out! How many rows were in the original dataset compared to the filtered dataset? 
 
 ```{r}
-#Make the categorical factors factorial: this means qualitative data is encoded into numeric data so that we can work with it and use the data for statistical analysis. The as.factor() function is used to convert a vector into a factor, which is a data type specifically designed for categorical data. It is essential to use factors for statistical data analysis such as an ANOVA or a regression which we will be doing in a later step. At this point, we need factors for a summary of our data.
+nrow(dat1)
+nrow(dat1.L1)
+```
+
+Next we want to declare the learning direction (Condition) as a factor. Factors are how R represents categorical predictors such as the learning direction. GLMMs need these to create the matrix correctly. The as.factor() function is used to convert a vector into a factor, which is a data type specifically designed for categorical data. It is essential to use factors for statistical data analysis such as an ANOVA or a regression which we will be doing in a later step. At this point, we need factors for a summary of our data. (REWRITE)
+
+```{r}
+#Make the categorical factors factorial: this means qualitative data is encoded into numeric data so that we can work with it and use the data for statistical analysis. 
 #Very basic: We set Condition (Learning direction) as a factor; Condition represents the learning direction (L1 -> L2 or L2 -> L1)
 dat1.L1$Condition <- as.factor(dat1.L1$Condition)
 ```
 
-We also apply contrast coding. Centered contrasts, in our case -0.5, +0.5, make the intercept much easier to interpret, since it then represents the grand mean across conditions. The command
-contr.treatment(2) we use below creates the default contrast. Why center at all? Our grand mean is then represented by an intercept, and interactions are much easier to interpret. In our models output, "Condition2" is the numeric code for the second level of condition relative to the first. A positive Condition2 estimate means the second level is higher (at a mean proficiency).
+We also apply contrast coding. Centered contrasts, in our case -0.5, +0.5, make the intercept much easier to interpret, since it then represents the grand mean across conditions. The command contr.treatment(2) we use below creates the default contrast. Why center at all? Our grand mean is then represented by an intercept, and interactions are much easier to interpret. In our models output, 'Condition2' is the numeric code for the second level of condition relative to the first. A positive Condition2 estimate means the second level is higher (at a mean proficiency).
 
 ```{r}
 #In this next step we change our coding so the variables are correct and not still working with the data from previous tests. 
@@ -1203,7 +1198,7 @@ print(my.simple)
 ##makes main effects easier to interpret and reduces collinearity in interaction models
 #The function contrasts() in R specifies or even retrieves the contrast coding for a variable.
 #Contrast coding is essential when working with linear models, as this can determine how how levels of a factor are represented as numeric dummy variables.
-#By applying contrast coding, the two groups (L1 to L2 and L2 to L1) are coded as -0.5 and +0.5. This coding makes the model's intercept easier to interpret (it becomes the overall mean).
+#By applying contrast coding, the two groups (L1 -> L2 and L2 -> L1) are coded as -0.5 and +0.5. This coding makes the model's intercept easier to interpret (it becomes the overall mean).
 contrasts(dat1.L1$Condition)<-my.simple
 
 ```
@@ -1240,8 +1235,7 @@ AIC(fit2)
 ```
 
 ##Interpretation 
-The model predicts the probability of a correct response (Answer), using logistic regression. The random intercepts (1|ID) and (1|ItemID) account for individual differences between participants and between vocabulary items. The output of this first model shows that s.vocab is not significant with p = .57, this means that proficiency by itself did not strongly predict L1 Production accuracy. For 'Condition' the model also showed that it was not significant p = .18, meaning that learning direction alone also did not explain differences. So if we look at each predictor separately, there
-seems to be no clear effect.
+The model predicts the probability of a correct response (Answer), using logistic regression. The random intercepts (1|ID) and (1|ItemID) account for individual differences between participants and between vocabulary items. The output of this first model shows that s.vocab is not significant with p = .57, this means that proficiency by itself did not strongly predict L1 Production accuracy. For 'Condition' the model also showed that it was not significant p = .18, meaning that learning direction alone also did not explain differences. So if we look at each predictor separately, there seems to be no clear effect.
 
 ##Step 3: Model with Interaction
 
@@ -1262,9 +1256,7 @@ AIC(fit2.1)
 ##addition of s.vocab:Condition which directly tests RQ2: Does the effect of learning direction depend on L2 proficiency? -> here s.vocab:Condition2 is negative and significant (-0.367, p=.009)
 ```
 
-The interaction term s.vocab:Condition is significant with an estimate of about -0.37, p = .009, which means that the effect of vocabulary proficiency depends on the learning direction. With centered coding, a negative interaction such as -0.37 suggests that the slope of proficiency is steeper for L1 -> L2 than for L2 -> L1. Very basically said: at a lower proficiency, L2 -> L1 shows a higher accuracy, while at a higher proficiency, L1 -> L2 improves. The crossover in the paper
-occurs around vocabulary size of about 5.419 which confirms the
-hypothesized 'flip'. Effecctiveness of learning direction depends on proficiency.
+The interaction term s.vocab:Condition is significant with an estimate of about -0.37, p = .009, which means that the effect of vocabulary proficiency depends on the learning direction. With centered coding, a negative interaction such as -0.37 suggests that the slope of proficiency is steeper for L1 -> L2 than for L2 -> L1. Very basically said: at a lower proficiency, L2 -> L1 shows a higher accuracy, while at a higher proficiency, L1 -> L2 improves. The crossover in the paper occurs around vocabulary size of about 5.419 which confirms the hypothesized 'flip'. Effecctiveness of learning direction depends on proficiency.
 
 ##Step 4: Model comparison
 
@@ -1345,9 +1337,7 @@ summary(fit3.1)
             
 ```
 
-#Here the results showed that the interaction s.vocab:Condition is
-significant (-0.367, p = 0.009). This means that the effects of
-proficiency depend on the learning direction. Vocabulary knowledge seems to help more in one condition than in the other.
+Here the results showed that the interaction s.vocab:Condition is significant (-0.367, p = 0.009). This means that the effects of proficiency depend on the learning direction. Vocabulary knowledge seems to help more in one condition than in the other.
 
 ```{r}
 confint(fit3.1)
@@ -1358,8 +1348,8 @@ options(digits=7)
 AIC(fit3.1)
 ```
 
-#Model Comparison #To formally check whether the model with the
-interaction is better than the simpler model, we compare them with a likelihood ratio test:
+#Model Comparison 
+To formally check whether the model with the interaction is better than the simpler model, we compare them with a likelihood ratio test:
 
 ```{r}
 anova(fit3,fit3.1)
@@ -1372,12 +1362,11 @@ plot(allEffects(fit3.1),multiline=T,ci.style="bands", xlab="Vocabulary Size", yl
        main= "L2 Production", lty=c(1,2), rescale.axis=F, ylim = c(0,1),colors="black",asp=1)
 ```
 
-The same trend seems to appear for L2 production (flatter L2 -> L1 slope, steeper L1 -> L2 slope), but the interaction in this case is not significant (p = 0.70). The authors note that this might be due to a floor effect which means that an L2 form recall may be more difficult after a brief ecposure, so the overall performance is lower and the interaction is more difficult to detect statistically.
+The same trend seems to appear for L2 production (flatter L2 -> L1 slope, steeper L1 -> L2 slope), but the interaction in this case is not significant (p = .70). The authors note that this might be due to a floor effect which means that an L2 form recall may be more difficult after a brief ecposure, so the overall performance is lower and the interaction is more difficult to detect statistically.
 
 ##Interpretation & Take-home
 
-Generally, L1 production showed that lower proficiency learners
-benefitted from L2 -> L1 learning direction, while higher proficiency speakers benefitted from L1 -> L2 learning direction (crossover about 5.419). For the L2 production similar things were obsered but were not statistically significant.
+Generally, L1 production showed that lower proficiency learners benefitted from L2 -> L1 learning direction, while higher proficiency speakers benefitted from L1 -> L2 learning direction (crossover reported in the paper at about 5.419). For the L2 production similar things were obsered but were not statistically significant.
 
 Vocabulary proficiency shapes how effectively retrieval practice works, and the optimal learning direction may differ for learners with higher vs. lower proficiency.
 
@@ -1403,10 +1392,7 @@ Why does this matter?
     keeping apart their unique contributions.
 -   This inflates standard errors, making estimates unreliable.
 
-A common diagnostic here is the Variance Inflation Factor (VIF). A VIF
-close to 1 means predictors are not collinear. Rules: -\> VIF = 1:
-perfect independence -\> VIF \> 5: potential concern -\> VIF \> 10:
-serious multicollinearity
+A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 1 means predictors are not collinear. Rules: -> VIF = 1: perfect independence -> VIF > 5: potential concern -> VIF > 10: serious multicollinearity
 
 #Calculating VIFs for the Models
 
@@ -1430,53 +1416,24 @@ fit3.1 (L2 Production):
 
 #Interpreting the VIFs
 
-All our VIF values are obviously quite close to 1. This means that the
-predictors (s.vocab, Condition, and their interaction) are not
-correlated with each other in problematic ways. Therefore our models are
-statistically stable: the estimate of the interaction effects we
-observed in our GLMMS are not due to multicollinearity.
+All our VIF values are obviously quite close to 1. This means that the predictors (s.vocab, Condition, and their interaction) are not correlated with each other in problematic ways. Therefore our models are statistically stable: the estimate of the interaction effects we observed in our GLMMS are not due to multicollinearity.
 
-We can confidently say that the interaction between learning direction
-and proficiency is a genuine effect, not an artifact of overlapping
-predictors. The models are behaving well in terms of collinearity.
+We can confidently say that the interaction between learning direction and proficiency is a genuine effect, not an artifact of overlapping predictors. The models are behaving well in terms of collinearity.
 
 # Conclusion
 
-You are now familiar with handling generalized linear mixed models! You
-have learned how to fit them, interpret their main effects and
-interactions, as well as checking their assumptions with VIFs. GLMMs are
-powerful tools for analyzing binary outcomes such as accuracy
-(SOURCE??), which allows us to account for repeated measures across
-participants and items. It is completely normal that at times GLMMs can
-feel intimidating: coding contrasts and interpreting the outcomes are
-not always straightforward. But, similar to plotting, there is always a
-solution. The insights we can gain from a nicely fitted model make all
-the effort worthwhile.
+You are now familiar with handling generalized linear mixed models! You have learned how to fit them, interpret their main effects and interactions, as well as checking their assumptions with VIFs. GLMMs are powerful tools for analyzing binary outcomes such as accuracy (SOURCE??), which allows us to account for repeated measures across participants and items. It is completely normal that at times GLMMs can feel intimidating: coding contrasts and interpreting the outcomes are not always straightforward. But, similar to plotting, there is always a
+solution. The insights we can gain from a nicely fitted model make all the effort worthwhile.
 
 This chapter's analysis revealed that the effect of the learning
-direction is not fixed, but rather depends on L2 proficiency. In the L1
-Production Test, learners with a lower-proficiency appeared to benefit
-more from L1 to L2 practice, while learners with a higher-proficiency
-showed the opposite pattern. In the L2 Production Test we observed a
-similar trend, though the interaction was weaker. These results suggest
-that the learning direction may shift as learners' vocabulary knowledge
-grows.
+direction is not fixed, but rather depends on L2 proficiency. In the L1 Production Test, learners with a lower-proficiency appeared to benefit more from L1 to L2 practice, while learners with a higher-proficiency showed the opposite pattern. In the L2 Production Test we observed a similar trend, though the interaction was weaker. These results suggest that the learning direction may shift as learners' vocabulary knowledge grows.
 
-In this chapter, we combined descriptive statistics, mixed-effects
-modeling, and visualizations to answer the study's research question.
-The answer is nuanced: both learning directions can be effective, but
-their relative benefits change across proficiency level. While working
-on this, we also figured out how model comparison (AIC) and diagnostics
-(VIFs) helped ensure that our conclusions are statistically sound (?).
+In this chapter, we combined descriptive statistics, mixed-effects modeling, and visualizations to answer the study's research question. The answer is nuanced: both learning directions can be effective, but their relative benefits change across proficiency level. While working on this, we also figured out how model comparison (AIC) and diagnostics (VIFs) helped ensure that our conclusions are statistically sound (?).
 
 It seems that vocabulary learning is not something that can be
 generalized. While retrieval practice is robustly effective, the
 direction of practice depends on who the learner is. Due to the
-extensive research by Terai, Yamashita and Pasich (2021) who published
-their data set and code along with the paper, we were able to reproduce
-their findings and gain hands-on experience with modeling. This not only
-helps with our understanding of the research, but it also sharpens our
-skills as analysts of second-language data.
+extensive research by Terai, Yamashita and Pasich (2021) who published their data set and code along with the paper, we were able to reproduce their findings and gain hands-on experience with modeling. This not only helps with our understanding of the research, but it also sharpens our skills as analysts of second-language data.
 
 ------------------------------------------------------------------------
 
