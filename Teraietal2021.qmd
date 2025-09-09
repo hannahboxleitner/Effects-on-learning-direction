@@ -1175,6 +1175,8 @@ dat1.L1$Condition <- as.factor(dat1.L1$Condition)
 
 We also apply contrast coding. Centered contrasts, in our case -0.5, +0.5, make the intercept much easier to interpret, since it then represents the grand mean across conditions. The command contr.treatment(2) we use below creates the default contrast. Why center at all? Our grand mean is then represented by an intercept, and interactions are much easier to interpret. In our models output, 'Condition2' is the numeric code for the second level of condition relative to the first. A positive Condition2 estimate means the second level is higher (at a mean proficiency).
 
+We also apply contrast coding. While it may look confusing and maybe even unnecessary, it is actually quite the important step. 
+
 ```{r}
 #In this next step we change our coding so the variables are correct and not still working with the data from previous tests. 
 #The function contr.treatment() is used to create contrast matrices for categorical variables in regression models. It is the default contrast coding method in R for unordered factors. This way a baseline/reference level is assigned and then it compares all the other levels to this baseline/reference.
@@ -1396,11 +1398,11 @@ A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 
 We use a helper function vif.mer() to calculate VIFs for mixed models.
 
 ```{r}
-##vif.mer(fit1.1)
+vif.mer(fit1.1)
 
-v##if.mer(fit2.1)
+vif.mer(fit2.1)
 
-##vif.mer(fit3.1)
+vif.mer(fit3.1)
 ```
 
 Output:
