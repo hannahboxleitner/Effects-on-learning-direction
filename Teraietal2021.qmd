@@ -1240,7 +1240,6 @@ confint(fit2.1)
 ```{r}
 options(digits=7)
 AIC(fit2.1)
-##addition of s.vocab:Condition which directly tests RQ2: Does the effect of learning direction depend on L2 proficiency?
 ```
 The main difference in this model is that s.vocab * Condition here includes both main effects and their interaction. We tested whether the effect of vocabulary differs between the learning conditions. Just as we read in the paper, the interaction of Learning Condition and Vocabulary Size is significant with an estimate of about -0.37, SE = 0.14, z = -2.596, p = .009, which means that the effect of vocabulary proficiency depends on the learning direction.
 
@@ -1279,33 +1278,31 @@ There seems to be a significant interaction between Learning Direction and Profi
 
 ##L2 Production Test
 
-We now repeat all the same steps for the L2 production test.
+We now repeat all the same steps for the L2 production test, but now we predict accuracy for when the participants had to produce English words after learning Japanese-English pairs.
 
 ```{r}
-dat2<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"))
+dat2 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"))
 
-dat2.L2<-filter(dat2, Test=="L2 Production")
+dat2.L2 <- filter(dat2, Test == "L2 Production")
 
+dat2.L2$Condition <- as.factor(dat2.L2$Condition)
 
-dat2.L2$Condition<-as.factor(dat2.L2$Condition)
-
-  
 c<-contr.treatment(2)
 my.coding<-matrix(rep(1/2,2,ncol=1))
 my.simple<-c-my.coding
 print(my.simple)
-##  2
-## 0.5
-##-0.5
 ```
 
 ```{r}
-contrasts(dat2.L2$Condition)<-my.simple 
+contrasts(dat2.L2$Condition) <- my.simple 
 
-dat2.L2$s.vocab<-scale(dat2.L2$Vocab)
+dat2.L2$s.vocab <- scale(dat2.L2$Vocab)
 
 
-fit3<-glmer(Answer~s.vocab+Condition+(1|ID)+(1|ItemID),family=binomial, data=dat2.L2, glmerControl(optimizer="bobyqa"))
+fit3 <- glmer(Answer ~ s.vocab+Condition + (1|ID) + (1|ItemID),
+              family=binomial, 
+              data=dat2.L2, 
+              glmerControl(optimizer="bobyqa"))
 summary(fit3)
 ```
 
@@ -1315,13 +1312,14 @@ AIC(fit3)
 ```
 
 ```{r}
-fit3.1<-glmer(Answer~s.vocab*Condition+(1|ID)+(1|ItemID),family=binomial, data=dat2.L2, glmerControl(optimizer="bobyqa"))
+fit3.1 <- glmer(Answer ~ s.vocab*Condition + (1|ID) + (1|ItemID),
+                family=binomial,
+                data=dat2.L2, 
+                glmerControl(optimizer="bobyqa"))
 summary(fit3.1)
-##addition of s.vocab:Condition which directly tests RQ2: Does the effect of learning direction depend on L2 proficiency? -> here s.vocab:Condition2 is negative and significant (-0.367, p=.009)
-            
 ```
 
-Here the results showed that the interaction s.vocab:Condition is significant (-0.367, p = 0.009). This means that the effects of proficiency depend on the learning direction. Vocabulary knowledge seems to help more in one condition than in the other.
+Here the results showed that the interaction s.vocab:Condition is significant (-0.367, p = .009). This means that the effects of proficiency depend on the learning direction. Vocabulary knowledge seems to help more in one condition than in the other.
 
 ```{r}
 confint(fit3.1)
@@ -1350,11 +1348,9 @@ The same trend seems to appear for L2 production (flatter L2 -> L1 slope, steepe
 
 ##Interpretation & Take-home
 
-Generally, L1 production showed that lower proficiency learners benefitted from L2 -> L1 learning direction, while higher proficiency speakers benefitted from L1 -> L2 learning direction (crossover reported in the paper at about 5.419). For the L2 production similar things were obsered but were not statistically significant.
+Generally, L1 production showed that lower proficiency learners benefitted from L2 -> L1 learning direction, while higher proficiency speakers benefitted from L1 -> L2 learning direction. For the L2 production similar things were observed but were not statistically significant. Vocabulary proficiency shapes how effectively retrieval practice works, and the optimal learning direction may differ for learners with higher vs. lower proficiency. The optimal learning direction is clearly not a one-size-fits-all matter, it depends on learner proficiency.
 
-Vocabulary proficiency shapes how effectively retrieval practice works, and the optimal learning direction may differ for learners with higher vs. lower proficiency.
-
-The optimal learning direction is clearly not a one-size-fits-all matter, it depends on proficiency.
+Why do we use mixed-effects models at all when they appear to be so complicated? Mixed-effects models can be really useful, especially for studies like the one by Terai et al. (2021). We have multiple responses from the same participant and multiple participants responding to the same items. This can quickly become complicate and also creates a lot of dependencies. With mixed-effect models you are able to include random effects for participants and items while also accounting for the fact that some participants may be generally better or worse, or the fact that some items might be easier or harder. With the random effects we used before, each participant gets their own intercept adjustment, just like each item. With the model we get an estimae of how much variation exists between participants and between items.
 
 What you learned in this section: 
 - Adding a continous predictor (s.vocab) to a GLMM. 
@@ -1372,8 +1368,7 @@ our GLMMs.
 
 Why does this matter?
 
--   If our predictors are strongly correlated, the model has trouble
-    keeping apart their unique contributions.
+-   If our predictors are strongly correlated, the model has trouble keeping apart their unique contributions.
 -   This inflates standard errors, making estimates unreliable.
 
 A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 1 means predictors are not collinear. Rules: -> VIF = 1: perfect independence -> VIF > 5: potential concern -> VIF > 10: serious multicollinearity
@@ -1404,6 +1399,7 @@ All our VIF values are obviously quite close to 1. This means that the predictor
 
 We can confidently say that the interaction between learning direction and proficiency is a genuine effect, not an artifact of overlapping predictors. The models are behaving well in terms of collinearity.
 
+
 # Conclusion
 
 You are now familiar with handling generalized linear mixed models! You have learned how to fit them, interpret their main effects and interactions, as well as checking their assumptions with VIFs. GLMMs are powerful tools for analyzing binary outcomes such as accuracy (SOURCE??), which allows us to account for repeated measures across participants and items. It is completely normal that at times GLMMs can feel intimidating: coding contrasts and interpreting the outcomes are not always straightforward. But, similar to plotting, there is always a
@@ -1412,22 +1408,11 @@ solution. The insights we can gain from a nicely fitted model make all the effor
 This chapter's analysis revealed that the effect of the learning
 direction is not fixed, but rather depends on L2 proficiency. In the L1 Production Test, learners with a lower-proficiency appeared to benefit more from L1 to L2 practice, while learners with a higher-proficiency showed the opposite pattern. In the L2 Production Test we observed a similar trend, though the interaction was weaker. These results suggest that the learning direction may shift as learners' vocabulary knowledge grows.
 
-In this chapter, we combined descriptive statistics, mixed-effects modeling, and visualizations to answer the study's research question. The answer is nuanced: both learning directions can be effective, but their relative benefits change across proficiency level. While working on this, we also figured out how model comparison (AIC) and diagnostics (VIFs) helped ensure that our conclusions are statistically sound (?).
+In this chapter, we combined descriptive statistics, mixed-effects modeling, and visualizations to answer the study's research question. The answer is nuanced: both learning directions can be effective, but their benefits change from proficiency level to proficiency level. While working on this, we also figured out how model comparison (AIC) and diagnostics (VIFs) helped ensure that our conclusions are statistically right.
 
 It seems that vocabulary learning is not something that can be
-generalized. While retrieval practice is robustly effective, the
-direction of practice depends on who the learner is. Due to the
-extensive research by Terai, Yamashita and Pasich (2021) who published their data set and code along with the paper, we were able to reproduce their findings and gain hands-on experience with modeling. This not only helps with our understanding of the research, but it also sharpens our skills as analysts of second-language data.
+generalized. While retrieval practice is quite effective, the
+direction of practice depends on who the learner is and how much this learner knows of that language. Due to the extensive research by Terai, Yamashita and Pasich (2021) who published their data set and code along with the paper, we were able to reproduce their findings and gain hands-on experience with modeling. This not only helps with our understanding of the research, but it also sharpens our skills as analysts of second-language data.
 
-------------------------------------------------------------------------
 
--   No overall difference in accuracy between L1 -\> L2 and L2 -\> L1
-    learning (RQ1)
--   A significant interaction between learning direction and L2
-    proficiency for L1 production scores (RQ2)
-    -   lower-proficiency learners benefited more from L2-\>L1 learning
-    -   higher-proficiency learners benefited more from L1-\>L2 learning
-
-Statistical takeaway (maybe???): Mixed-effects logistic regression
-allows us to model data with both fixed effects (e.g. condition) and
-random effects (e.g. participant and item variability)
+##Sources
