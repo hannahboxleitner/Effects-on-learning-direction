@@ -84,18 +84,6 @@ significant difference between the two learning directions and that the
 effect of learning direction depends on the learner’s L2 proficiency
 **(p. 1121-1122).**
 
-In this chapter, we will:
-
--   load and explore the data set made available by the authors,
--   prepare the variables for analysis,
--   run generalized linear mixed models (GLMMs) to answer the two
-    research questions,
--   and learn how to interpret and visualize the results.
-
-Our aim in this chapter is not only to replicate the study by Terai et
-al. (2021), but also to learn how to apply mixed-effect modeling in R to
-research questions in second language acquisition.
-
 # Retrieving the authors' data
 
 We will use the authors' original data for our reproduction, which they
@@ -323,20 +311,20 @@ tab_L1 <- rbind(
 Great! You are almost done building the table for the descriptive statistics. In the next step, we will round the numbers to two decimals to make the table more comprehensible.
 
 ```{r}
-tab_L2$Mean <- round(tab_L2$Mean, 2)
-tab_L2$SD <- round(tab_L2$SD, 2)
-tab_L2$Median <- round(tab_L2$Median, 2)
-tab_L2$Minimum <- round(tab_L2$Minimum, 2)
-tab_L2$Maximum <- round(tab_L2$Maximum, 2)
-tab_L2$Skew <- round(tab_L2$Skew, 2)
+tab_L2$Mean     <- round(tab_L2$Mean, 2)
+tab_L2$SD       <- round(tab_L2$SD, 2)
+tab_L2$Median   <- round(tab_L2$Median, 2)
+tab_L2$Minimum  <- round(tab_L2$Minimum, 2)
+tab_L2$Maximum  <- round(tab_L2$Maximum, 2)
+tab_L2$Skew     <- round(tab_L2$Skew, 2)
 tab_L2$Kurtosis <- round(tab_L2$Kurtosis, 2)
 
-tab_L1$Mean <- round(tab_L1$Mean, 2)
-tab_L1$SD <- round(tab_L1$SD, 2)
-tab_L1$Median <- round(tab_L1$Median, 2)
-tab_L1$Minimum <- round(tab_L1$Minimum, 2)
-tab_L1$Maximum <- round(tab_L1$Maximum, 2)
-tab_L1$Skew <- round(tab_L1$Skew, 2)
+tab_L1$Mean     <- round(tab_L1$Mean, 2)
+tab_L1$SD       <- round(tab_L1$SD, 2)
+tab_L1$Median   <- round(tab_L1$Median, 2)
+tab_L1$Minimum  <- round(tab_L1$Minimum, 2)
+tab_L1$Maximum  <- round(tab_L1$Maximum, 2)
+tab_L1$Skew     <- round(tab_L1$Skew, 2)
 tab_L1$Kurtosis <- round(tab_L1$Kurtosis, 2)
 ```
 
@@ -1149,8 +1137,6 @@ Before we work through and understand the code step by step like the author's di
 
 ##L1 Production test
 
-With a second model the scores of the L1 production test were analyzed. This second model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127). Here the authors analyzed the data with interaction and without interaction, to find out the AIC, p and z scores there are a few steps we need to take.
-
 We begin by focusing only on the L1 production data. This can be done by first loading our data with the command read.csv() and then the command filter() which only keeps the rows for the L1 Production test. We filter this data because while each participant took both L1 and L2 production tests, the authors of this study found different patterns for both test types which is why they chose to analyze them separately (p. 1126). This is the part where participants of the study had to produce the L1 (Japanese) word when shown the L2 (English) word.
 ```{r}
 dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
@@ -1159,21 +1145,20 @@ dat1.L1<-filter(dat1, Test=="L1 Production")
 
 ```
 
-To check whether you understood the filter function completely, use the 'nrow()' function to find out! How many rows were in the original dataset compared to the filtered dataset? 
+To check whether you understood the filter() function completely, use the 'nrow()' function to find out! How many rows were in the original dataset compared to the filtered dataset? 
 
 ```{r}
 nrow(dat1)
 nrow(dat1.L1)
 ```
-Next, we want to declare the learning direction (Condition) as a factor. Here we need to tell R that 'Condition' represents categories and not numbers. This is why we convert the categories (L1->L2 vs. L2->L1) into factors, that way R will treat it as a categorical variable. Converting our variables into factors now will also be useful for any other statistical analysis such as an ANOVA which we will be doing in a later step. 
+Next, we want to declare the learning direction 'Condition' as a factor. Here we need to tell R that 'Condition' represents categories and not numbers. This is why we convert the categories (L1 -> L2 vs. L2 -> L1) into factors, that way R will treat it as a categorical variable. Converting our variables into factors now will also be useful for any other statistical analysis such as an ANOVA which we will be doing in a later step. 
 
 ```{r}
-#Make the categorical factors factorial: this means qualitative data is encoded into numeric data so that we can work with it and use the data for statistical analysis. 
-#Very basic: We set Condition (Learning direction) as a factor; Condition represents the learning direction (L1 -> L2 or L2 -> L1)
+#Very basic: We set Condition (Learning direction) as a factor
 dat1.L1$Condition <- as.factor(dat1.L1$Condition)
 ```
 
-We also apply contrast coding, also called "treatment coding" (Chambers & Hastie 1992). While it may look confusing and maybe even unnecessary, it is actually quite the important step. Basically, one of our groups gets coded as 0 and the other as 1. In our case, we want to use 'simple coding' where our first Condition (L1 -> L2) gets coded as -0.5 and our second Condition 2 (L2 -> L1) as +0.5. This makes interpretations easier when we have interactions since the intercept represents the overall mean across conditions (Barlaz ???).
+We also apply contrast coding, also called "treatment coding" (Chambers & Hastie 1992). While it may look confusing and maybe intimidating, it is actually quite the important step. Basically, we want to compare our two groups (L1 -> L2 vs. L2 -> L1). We use 'simple coding' where our first Condition (L1 -> L2) gets coded as -0.5 and our second Condition 2 (L2 -> L1) as +0.5. This makes interpretations easier when we have interactions since the intercept represents the overall mean across conditions (Barlaz 2022).
 
 ```{r}
 
@@ -1185,7 +1170,7 @@ print(my.simple)
 contrasts(dat1.L1$Condition)<-my.simple
 
 ```
-In the next step, we want to scale the continuous predictor. This converts the vocabulary scores to have a mean of 0 and standard deviation of 1 which is helpful for interpretation! (UNSURE)
+In the next step, we want to scale the continuous predictor. This converts the vocabulary scores to have a mean of 0 and standard deviation of 1 which is helpful for interpretation!
 
 ```{r}
 
@@ -1350,8 +1335,6 @@ The same trend seems to appear for L2 production (flatter L2 -> L1 slope, steepe
 
 Generally, L1 production showed that lower proficiency learners benefitted from L2 -> L1 learning direction, while higher proficiency speakers benefitted from L1 -> L2 learning direction. For the L2 production similar things were observed but were not statistically significant. Vocabulary proficiency shapes how effectively retrieval practice works, and the optimal learning direction may differ for learners with higher vs. lower proficiency. The optimal learning direction is clearly not a one-size-fits-all matter, it depends on learner proficiency.
 
-Why do we use mixed-effects models at all when they appear to be so complicated? Mixed-effects models can be really useful, especially for studies like the one by Terai et al. (2021). We have multiple responses from the same participant and multiple participants responding to the same items. This can quickly become complicate and also creates a lot of dependencies. With mixed-effect models you are able to include random effects for participants and items while also accounting for the fact that some participants may be generally better or worse, or the fact that some items might be easier or harder. With the random effects we used before, each participant gets their own intercept adjustment, just like each item. With the model we get an estimae of how much variation exists between participants and between items.
-
 What you learned in this section: 
 - Adding a continous predictor (s.vocab) to a GLMM. 
 - Testing and interpreting interactions. 
@@ -1360,38 +1343,31 @@ What you learned in this section:
 
 #Model Diagnostics
 
-Now, we checked our GLMMs and have our results. But before interpreting
-these results too confidently, we should also check whether the
-predictors are highly correlated with one another which is a problem
-called multicollinearity. Multicollinearity might affect the results of
-our GLMMs.
+Now, we checked our GLMMs and have our results. But before interpreting these results too confidently, we should also check whether the predictors are highly correlated with one another which is a problem called multicollinearity. Multicollinearity might affect the results of our GLMMs.
 
 Why does this matter?
 
 -   If our predictors are strongly correlated, the model has trouble keeping apart their unique contributions.
 -   This inflates standard errors, making estimates unreliable.
 
-A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 1 means predictors are not collinear. Rules: -> VIF = 1: perfect independence -> VIF > 5: potential concern -> VIF > 10: serious multicollinearity
+A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 1 means predictors are not collinear. Rules: 
+-> VIF = 1: perfect independence 
+-> VIF > 5: potential concern 
+-> VIF > 10: serious multicollinearity
 
 #Calculating VIFs for the Models
 
 We use a helper function vif.mer() to calculate VIFs for mixed models.
 
 ```{r}
+source("https://raw.githubusercontent.com/aufrank/R-hacks/master/mer-utils.R")
+
 vif.mer(fit1.1)
 
 vif.mer(fit2.1)
 
 vif.mer(fit3.1)
 ```
-
-Output:
-
-fit1.1 (Test x Condition):
-
-fit2.1 (L1 Production):
-
-fit3.1 (L2 Production):
 
 #Interpreting the VIFs
 
@@ -1402,17 +1378,13 @@ We can confidently say that the interaction between learning direction and profi
 
 # Conclusion
 
-You are now familiar with handling generalized linear mixed models! You have learned how to fit them, interpret their main effects and interactions, as well as checking their assumptions with VIFs. GLMMs are powerful tools for analyzing binary outcomes such as accuracy (SOURCE??), which allows us to account for repeated measures across participants and items. It is completely normal that at times GLMMs can feel intimidating: coding contrasts and interpreting the outcomes are not always straightforward. But, similar to plotting, there is always a
-solution. The insights we can gain from a nicely fitted model make all the effort worthwhile.
+You are now familiar with handling generalized linear mixed models! You have learned how to fit them, interpret their main effects and interactions, as well as checking their assumptions with VIFs. GLMMs are powerful tools for analyzing binary outcomes such as accuracy (SOURCE??), which allows us to account for repeated measures across participants and items. It is completely normal that at times GLMMs can feel intimidating: coding contrasts and interpreting the outcomes are not always straightforward. But, similar to plotting, there is always a solution. The insights we can gain from a nicely fitted model make all the effort worthwhile.
 
-This chapter's analysis revealed that the effect of the learning
-direction is not fixed, but rather depends on L2 proficiency. In the L1 Production Test, learners with a lower-proficiency appeared to benefit more from L1 to L2 practice, while learners with a higher-proficiency showed the opposite pattern. In the L2 Production Test we observed a similar trend, though the interaction was weaker. These results suggest that the learning direction may shift as learners' vocabulary knowledge grows.
+This chapter's analysis revealed that the effect of the learning direction is not fixed, but rather depends on L2 proficiency. In the L1 Production Test, learners with a lower-proficiency appeared to benefit more from L1 to L2 practice, while learners with a higher-proficiency showed the opposite pattern. In the L2 Production Test we observed a similar trend, though the interaction was weaker. These results suggest that the learning direction may shift as learners' vocabulary knowledge grows.
 
 In this chapter, we combined descriptive statistics, mixed-effects modeling, and visualizations to answer the study's research question. The answer is nuanced: both learning directions can be effective, but their benefits change from proficiency level to proficiency level. While working on this, we also figured out how model comparison (AIC) and diagnostics (VIFs) helped ensure that our conclusions are statistically right.
 
-It seems that vocabulary learning is not something that can be
-generalized. While retrieval practice is quite effective, the
-direction of practice depends on who the learner is and how much this learner knows of that language. Due to the extensive research by Terai, Yamashita and Pasich (2021) who published their data set and code along with the paper, we were able to reproduce their findings and gain hands-on experience with modeling. This not only helps with our understanding of the research, but it also sharpens our skills as analysts of second-language data.
+It seems that vocabulary learning is not something that can be generalized. While retrieval practice is quite effective, the direction of practice depends on who the learner is and how much this learner knows of that language. Due to the extensive research by Terai, Yamashita and Pasich (2021) who published their data set and code along with the paper, we were able to reproduce their findings and gain hands-on experience with modeling. This not only helps with our understanding of the research, but it also sharpens our skills as analysts of second-language data.
 
 
 ##Sources
