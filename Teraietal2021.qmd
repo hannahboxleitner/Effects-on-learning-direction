@@ -1100,7 +1100,6 @@ L1 to L2 learning.
 ```{r}
 # Extension (Hannah)
 # To extend the work on this model, I want to plot the results using the ggplot() function instead. I will explain later why this could be of advantage. First, we need to load lme4, gglpot2 and paletteer libraries:
-
 library(lme4)
 library(ggplot2)
 library(paletteer)
@@ -1140,23 +1139,22 @@ specific elements are modified. This makes the plot more reproducible and easier
 
 # Effects of Learning Directions and L2 Proficiency (RQ2)
 
-As introduced above, the second research question asks: How does learners' L2 proficiency change the relative benefits of L2 -> L1 vs. L1 -> L2 learning?
+As introduced above, the second research question asks: How does learners' L2 proficiency change the benefits and effectiveness of L2 -> L1 vs. L1 -> L2 learning?
 
-Terai et al. (2021) hypothesized that the effect of learning direction might be dependant on the learner's proficiency in English. Meaning, lower-proficiency learners might benefit more from practicing in the L2 -> L1 direction, whilst higher-proficiency learners might benefit more from the L1 -> L2 direction.
+Terai et al. (2021) hypothesized that the effectiveness of learning direction or word pairs might be dependant on the learners' proficiency in English. Meaning, lower-proficiency learners might benefit more from practicing in the L2 -> L1 direction, whilst higher-proficiency learners might benefit more from the L1 -> L2 direction.
 
 To answer and test this question, the authors once again use generalized linear mixed models (GLMMs) separately for the L1 and L2 production tests, with Condition (learning direction), scaled vocabulary size (s.vocab), and their interaction as fixed effects, and Subject/Item random intercepts.
 
-Below, we will go through the code step by step to try and understand what the authors did to answer this research question.
+Before we work through and understand the code step by step like the author's did, we need to know what we are working with here: We have a response variable which in our case is the accuracy on production tests and predictor variables which were learning direction (L1 -> L2 vs. L2 -> L1) and vocabulary size (English proficiency). Our random effects were Participant ID and Item ID so that we can account for individual differences.
 
 ##L1 Production test
 
 With a second model the scores of the L1 production test were analyzed. This second model contained Learning Condition and Vocabulary Size (English proficiency) as explanatory variables and Accuracy of the L1 production test as the response variable (Terai et al. 2021 : 1127). Here the authors analyzed the data with interaction and without interaction, to find out the AIC, p and z scores there are a few steps we need to take.
 
-We begin by focusing only on the L1 production data. This can be done by first loading our data with the command read.csv() and then the command filter() which only keeps the rows for the L1 Production test. We filter this data because while each participant took both L1 and L2 production tests, the authors of this study found different patterns for both test types which is why they chose to analyze them separately (p. 1126).
+We begin by focusing only on the L1 production data. This can be done by first loading our data with the command read.csv() and then the command filter() which only keeps the rows for the L1 Production test. We filter this data because while each participant took both L1 and L2 production tests, the authors of this study found different patterns for both test types which is why they chose to analyze them separately (p. 1126). This is the part where participants of the study had to produce the L1 (Japanese) word when shown the L2 (English) word.
 ```{r}
 dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 
-#Then, we filter the data so that only the relevant test type (L1 or L2 Production) remains. Then, we ensure that categorical predictors are properly set as factors and that numeric predictors are scaled (standardized).
 dat1.L1<-filter(dat1, Test=="L1 Production")
 
 ```
@@ -1167,8 +1165,7 @@ To check whether you understood the filter function completely, use the 'nrow()'
 nrow(dat1)
 nrow(dat1.L1)
 ```
-
-Next we want to declare the learning direction (Condition) as a factor. Factors are how R represents categorical predictors such as the learning direction. GLMMs need these to create the matrix correctly. The as.factor() function is used to convert a vector into a factor, which is a data type specifically designed for categorical data. It is essential to use factors for statistical data analysis such as an ANOVA or a regression which we will be doing in a later step. At this point, we need factors for a summary of our data. (REWRITE)
+Next, we want to declare the learning direction (Condition) as a factor. Here we need to tell R that 'Condition' represents categories and not numbers. This is why we convert the categories (L1->L2 vs. L2->L1) into factors, that way R will treat it as a categorical variable. Converting our variables into factors now will also be useful for any other statistical analysis such as an ANOVA which we will be doing in a later step. 
 
 ```{r}
 #Make the categorical factors factorial: this means qualitative data is encoded into numeric data so that we can work with it and use the data for statistical analysis. 
@@ -1349,13 +1346,13 @@ AIC(fit3.1)
 ```
 
 #Model Comparison 
-To formally check whether the model with the interaction is better than the simpler model, we compare them with a likelihood ratio test:
+To formally check whether the model with the interaction is better than the simpler model without the interaction, we compare them with test:
 
 ```{r}
 anova(fit3,fit3.1)
 ```
 
-##Plotting/Visualizing the Effect using the effects package
+##Visualisation
 
 ```{r}
 plot(allEffects(fit3.1),multiline=T,ci.style="bands", xlab="Vocabulary Size", ylab="Accuracy Rate",
@@ -1399,11 +1396,11 @@ A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 
 We use a helper function vif.mer() to calculate VIFs for mixed models.
 
 ```{r}
-vif.mer(fit1.1)
+##vif.mer(fit1.1)
 
-vif.mer(fit2.1)
+v##if.mer(fit2.1)
 
-vif.mer(fit3.1)
+##vif.mer(fit3.1)
 ```
 
 Output:
