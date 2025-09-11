@@ -1640,8 +1640,7 @@ working on this, we also figured out how model comparison (AIC) and
 diagnostics (VIFs) helped ensure that our conclusions are statistically
 right.
 
-It seems that vocabulary learning is not something that can be
-generalized. While retrieval practice is quite effective, the direction
+It seems that vocabulary learning is not something that can be generalized. While retrieval practice is quite effective, the direction
 of practice depends on who the learner is and how much this learner
 knows of that language. Due to the extensive research by Terai,
 Yamashita and Pasich (2021) who published their data set and code along
