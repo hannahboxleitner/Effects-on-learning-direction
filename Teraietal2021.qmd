@@ -1665,3 +1665,13 @@ understanding of the research, but it also sharpens our skills as
 analysts of second-language data.
 
 # Sources
+
+## Packages used in this chapter
+
+```{r}
+#| echo: false
+
+print(sessionInfo())
+
+```
+
