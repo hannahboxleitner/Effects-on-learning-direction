@@ -241,12 +241,7 @@ dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE
 dat$ItemID <- trimws(dat$ItemID)
 ```
 
-In the paper by Terai et al. (2021) we can see that the variables used
-are, for L2-related variables: Frequency, Syllables, and Letters. For
-L1-related variables: Frequency, Letters, and Mora (syllables) as well
-as Familiarity (Fami B). The Fami A and Frequency for L1-related
-variables that we see in the table are the familiarity ratings and
-frequencies taken from another study by Amano & Kondo (1999).
+In the paper by Terai et al. (2021) we can see that the variables used are, for L2-related variables: Frequency, Syllables, and Letters. For L1-related variables: Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami A). We were not able to reproduce Fami (B) as the data was not made public. Also, important to note: "L1 frequency and L1 familiarity were retrieved from Amano and Kondo (2000)" **(Terai et al. 2021 : 1123).**
 
 First, we need to take a look at the data the authors have uploaded for
 us. The column names may differ from what we want to see in the table
@@ -317,6 +312,7 @@ desc <- function(x) {
 }
 ```
 
+
 Now that we have most of what we need for the tables, we can start to build them up! There are two subtables we need.
 
 The code below does this with two important functions: rbind() which stacks the rows we want to create on top of each other to build the final table which we will print in the next step. And cbind() which creates columns that stick together side by side. For example 'cbind(Variable = "Frequency", desc(items\$L2Frequency)' creates a column with the name "Variable" with the value "Frequency" next to the summary of the output of 'desc()'. With our helper function 'desc()' we then insert the the statistics from our data, in this case it is the 'L2Frequency'. Basically, we are creating here three rows stacked on top of each other for tab_L2, and four rows for tab_L1. As you see we only have to run our helper function 'desc()' seven times!
@@ -333,7 +329,7 @@ tab_L1 <- rbind(
   cbind(Variable = "Frequency", desc(items$L1Frequency)),
   cbind(Variable = "Letters", desc(items$WordLength)),
   cbind(Variable = "Mora (syllables)", desc(items$mora)),
-  cbind(Variable = "Fami (B)", desc(items$familiarity))
+  cbind(Variable = "Fami (A)", desc(items$familiarity))
 )
 
 ```
@@ -370,13 +366,28 @@ kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item
   kable_classic(full_width = FALSE)
 ```
 
+Our reproduced tables now closely match Table 3 in Terai et al. (2021)! The L2 frequency has a mean of about 1025 with a quite large SD (~852), which shows us that some English words were quite frequent while others were much rarer. The skewness here is positive (~1.51), although slightly different than the one reported in the paper (~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. Syllables in English have an average mean of 2, and range from 1 to 5 with only a slight positive skewness which means that most words are short and only a few are longer, again there is a small difference in skewness. Letters average around 6.2 again with a positive skewness. For the L1 variables, the frequency distribution also shows a strong positive skew, which means that few Japanese translations are very common, but many are quite rare. Fami (A)) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar. 
+
+Our skewness values match the original paper closely, with only small differences. However, our kurtosis values differ quite a lot from the published results. This may seem like a huge issue at first, but is actually quite normal. Kurtosis calculations can vary between packages, for example the 'moments' package we used calculates excess kurtosis, while the authors of the original paper might have used different methods.
+
+For the reproduction of the kurtosis numbers we tried several methods, but there seems to be an issue somewhere. We calculated both the excess kurtosis and the pearson kurtosis (see in the chunk below) in case we first focused on the wrong one, although no numbers match the ones in the paper.
+
+```{r}
+excess_kurt <- kurtosis(dat$mora, na.rm = TRUE) #instead of mora any other Variable of table 3 can be added to caluclate kurtosis
+pearson_kurt <- excess_kurt + 3
+round(c(excess = excess_kurt, pearson = pearson_kurt), 3)
+```
+
+There are several possibilities why this is the case. There might be an outlier that may have been removed, or maybe the authors used another method. Strangely, it is unclear why the authors calculate skewness and kurtosis at all, as they do not mention it apart from in the tables. The issue with the differences in our numbers and the ones by Terai et al. (2021) is that the differences are so big the graphs are going to look quite different, especially for the Fami (A) variable. In the paper the kurtosis shows -0.02 which would be a slightly flatter graph, while our kurtosis number 4.29 would be sharper. This is why, in an extension, we have added some graphs to show the importance of skewness and kurtosis and what exactly these numbers show.
+
+
 ## Extension (Beyhan)
 
 ### Visualizations of Table 3
 
 With Table 3 we were shown a summary of many numbers (mean, SD, range, skewness, kurtosis) for the 40 target words, but these numbers are much easier to understand when we actually see them visualized. Below we want to turn some key variables of Table 3 into quick histograms to visually connect the ideas of skew and kurtosis to the actual items used in this study.
 
-Please note that in this extension our reloading of the data may seem repetitive, but it simply ensures that this section can work on its own if needed.
+Please note that in this extension our reloading of the data may seem repetitive, but it simply ensures that this section can work on its own if needed, but to you it is optional.
 
 ```{r}
 library(tidyverse)
@@ -399,127 +410,44 @@ items <- dat |>
 ##if you want you can quickly check the item number with 'nrow(items)' it should be 40!
 ```
 
-Now, before creating our histograms, we will add some kind of tiny helper for style. It will also keep our histograms consistent. The commands 'fill_blue' and 'line_blue' store the colors we want that we will use for all following histograms. 'base_theme' here creates a clean appearance by removing any unnecessary gridlines and then setting a readable font size (12).
+We will start with a graph of L2 Frequencies. To do this we use the ggplot() command. Our first line of code here 'ggplot(data = items, aes(x = L2Frequency))' tells ggplot to basically use the 'items' dataset and put the L2 frequencies of each word onto the x-axis. 'geom_density(...) creates the actual density plot. To fully understand where our numbers in the table come from, we add reference lines: 'geom_vline(xintercept = mean(...))' for the mean value, and 'geom_vline(xintercept = median(...), linetype = "dashed"...)' for a dashed line at the median.
 
-```{r}
-fill_blue <- "#A6D8FF"
-line_blue <- "#2B6FA6"
-base_theme <- theme_minimal(base_size = 12) + theme(panel.grid.minor = element_blank())
-```
-
-We will start with a histogram of L2 Frequencies. To do this we use the
-ggplot() command. Our first line of code here 'ggplot(data = items,
-aes(x = L2Frequency))' tells ggplot to basically use the 'items' dataset
-and put the L2 frequencies of each word onto the x-axis.
-'geom_histogram(bins = 15, ...) creates the actual histogram bars,
-dividing the data into 15 groups. To fully understand where our numbers
-in the table come from, we add reference lines: 'geom_vline(xintercept =
-mean(...))' for the mean value, and 'geom_vline(xintercept =
-median(...), linetype = "dashed"...)' for a dashed line at the median.
+Do not be too confused by the numbers on the y-axis. Since our focus here is to see in the density plot what skewness and kurtosis are, our curve simple shows the proportions on the x-axis. The values can be read as a kind of probability, a higher peak means more words are around that frequency, while a lower peak means fewer words around that frequency.
 
 ```{r}
 ggplot(items, aes(x = L2Frequency)) +
-  geom_histogram(bins = 15, fill = fill_blue, color = line_blue, linewidth = 0.4) +
+  geom_density(fill = "lightblue") +
   geom_vline(xintercept = mean(items$L2Frequency), linewidth = 0.7) +
   geom_vline(xintercept = median(items$L2Frequency), linetype = "dashed", linewidth = 0.7) +
+  scale_y_continuous(labels = scales::comma) +
   scale_x_continuous(labels = scales::comma) +
   labs(title = "Distribution of L2 frequencies",
        x = "L2 frequency (COCA)",
-       y = "Number of words",
+       y = "Probability",
        caption = "Solid line = mean; dashed line = median") +
-base_theme
+theme_minimal()
 ```
 
-In this histogram we can clearly see a right-skewed distribution which
-we saw in the table with the positive skewness values (\~1.51). This
-means most words are lower or medium frequency with only a few really
-high-frequency words (see the long right tail). The mean sits to the
-right of the median which is another characteristic of positive skew.
+In this graph can clearly see a right-skewed distribution which we saw in the table with the positive skewness values (\~1.51). As you can probably recall, a normally distributed graph would be a symmetric curve, nothing asymmetric, which is exactly what we see with skewness. This means most words are lower or medium frequency with only a few really high-frequency words (see the long right tail). The mean sits to the right of the median which is another characteristic of positive skew. The number of our kurtosis (~5.21) shows us the sharpness or peakedness of our curve which you can see quite nicely when you compare the graph for L2 frequency to the one for L1 frequency.
 
-Now, we want to do the exact same for the L1 frequencies to compare our
-numbers and outcomes.
+For that, we have to do the exact same for the L1 frequencies.
 
 ```{r}
 ggplot(items, aes(x = L1Frequency)) +
-  geom_histogram(bins = 15, fill = fill_blue, color = line_blue, linewidth = 0.4) +
+  geom_density(fill = "lightblue") +
   geom_vline(xintercept = mean(items$L1Frequency), linewidth = 0.7) +
   geom_vline(xintercept = median(items$L1Frequency), linetype = "dashed", linewidth = 0.7) +
   scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma) +
   labs(title = "Distribution of L1 frequencies",
        x = "L1 frequency (Amano & Kondo 1999)",
-       y = "Number of words",
+       y = "Probability",
        caption = "Solid line = mean; dashed line = median") +
-base_theme
+theme_minimal()
 ```
 
-Again, we see a right-skew even stronger than for L2. This means there
-are a few very common L1 forms.
+Again, we see a right-skew even stronger than for L2 (skew ~3.59). This shows once again that most words are lower-frequency, there are only very few high-frequency words. Here, with a kurtosis number of ~18.10 we can see that with higher positive numbers the peak becomes sharper and sharper.
 
-Just to be sure we understand how to build and understand these
-histograms, we want to create two more. For L2 letters and L1 letters
-Japanese orthographic length).
-
-```{r}
-ggplot(items, mapping = aes(x = Letters_L2)) +
-  geom_histogram(binwidth = 1, boundary = 0.5,
-                 fill = fill_blue, color = line_blue, linewidth = 0.4) +
-  geom_vline(xintercept = mean(items$Letters_L2), linewidth = 0.7) +
-  geom_vline(xintercept = median(items$Letters_L2), linetype = "dashed", linewidth = 0.7) +
-  scale_x_continuous(breaks = 3:12) +
-  labs(title = "Distribution of letter counts (L2)",
-    x = "Letters (L2)", y = "Number of words") +
-  base_theme
-```
-
-Great! Here we can clearly see that many items are around 5 to 7 letters
-with very few short and long words. The table already showed that there
-was a slight right-skew which we can now see in the histogram as well
-(\~0.97).
-
-Lastly we want to compare the L2 letters to the L1 letters of Japanese.
-Here we use nearly the same code:
-
-```{r}
-ggplot(items, mapping = aes(x = Letters_L1)) +
-  geom_histogram(binwidth = 1, boundary = 0.5,
-                 fill = fill_blue, color = line_blue, linewidth = 0.4) +
-  geom_vline(xintercept = mean(items$Letters_L1), linewidth = 0.7) +
-  geom_vline(xintercept = median(items$Letters_L1), linetype = "dashed", linewidth = 0.7) +
-  scale_x_continuous(breaks = 3:12) +
-  labs(title = "Distribution of letter counts (L1)",
-    x = "Letters (L1)", y = "Number of words") +
-  base_theme
-```
-
-Amazing, here we clearly see that there is a cluster around 3 to four,
-showing that the distribution is quite compact with only a slight right
-skew (\~0.17).
-
-Our reproduced tables now closely match Table 3 in Terai et al. (2021)! The L2 frequency has a mean of about \~1025 with a quite large SD (~852), which shows us that some English words were quite frequent while others were much rarer. The skewness here is positive (\~1.51), although different than the one reported in the paper (\~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. Syllables in English have an average mean of 
-2, and range from 1 to 5 with only a slight positive skewness which
-means that most words are short and only a few are longer, again there
-is a small difference in skewness. Letters average around 6.2 again with
-a positive skewness. For the L1 variables, the frequency distribution
-also shows a strong positive skew, which means that few Japanese
-translations are very common, but many are quite rare. Fami (B) averages
-about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the
-words were mostly familiar.
-
-Our skewness values match the original paper closely, with only small
-differences. However, our kurtosis values differ quite a lot from the
-published results. This may seem like a huge issue at first, but is
-actually quite normal. Kurtosis calculations can vary between packages,
-for example the 'moments' package we used calculates excess kurtosis,
-while the authors of the original paper might have used different
-methods. (SOURCEEE)
-
-In summary, our reproduction shows the same patterns as the published
-table: most words are short, quite familiar, and positively skewed in
-their distributions. The small differences in skewness and especially in
-kurtosis are due to different calculation methods, not because our
-analysis is wrong. This is also a nice reminder that in statistics,
-sometimes numbers can vary slightly depending on the software or
-definitions used, but the overall interpretations remain the same.
 
 ## Descriptive statistics of the tests and reliability testing
 
