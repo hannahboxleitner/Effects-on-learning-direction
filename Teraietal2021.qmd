@@ -225,12 +225,8 @@ for the two tables, so we have some kind of "toolbox" that contains
 every function we might need:
 
 ```{r}
-#Install these once if you do not already have them:
-#install.packages("readr")
-#install.packages("dplyr")
-#install.packages("moments")
-#install.packages("knitr")
-#install.packages("kableExtra")
+#| warning: false
+# Load libraries (packages need to be installed if they aren't already)
 
 library(readr) #read csv
 library(dplyr) #data wrangling
@@ -238,10 +234,10 @@ library(moments) #for skewness and kurtosis
 library(knitr) #for the command kable()
 library(kableExtra) #for nicer tables
 
-#We load our data again which was provided in the IRIS repository
+# Load data again which was provided in the IRIS repository
 dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 
-#trimws() removes space from the beginning and end of the text which helps to prevent issues like "berth " vs. "berth" being treated as different
+# trimws() removes space from the beginning and end of the text which helps to prevent issues like "berth " vs. "berth" being treated as different
 dat$ItemID <- trimws(dat$ItemID)
 ```
 
@@ -482,7 +478,7 @@ repetitive, but it simply ensures that this section can work on its own
 if needed, but to you it is optional.
 
 ```{r}
-library(tidyverse)
+library(tidyverse) #double: loaded before
 dat<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 dat$ItemID <- trimws(dat$ItemID)
 
@@ -574,10 +570,11 @@ Cronbach's α to test reliability.
 ### Reliability analysis
 
 ```{r}
+#| warning: false
+
 # Vocabulary A (L1 production)
 
-# In this chunk, we conduct a reliability analysis for Vocabulary A scores of the L1 production dataset. For this to work, the psych package has to be installed and loaded:
-# install.packages("psych", dependencies = TRUE)
+# In this chunk, we conduct a reliability analysis for Vocabulary A scores of the L1 production dataset. For this to work, we need the psych package:
 
 library(psych) # -> reliability analysis/testing
 
@@ -620,12 +617,16 @@ reliability analyses are in regard to.
 
 ### Accuracy
 
-```{r}
-# To investigate accuracy, we first introduce our data set as the variable dat.acc and load the dplyr library. In accordance with the previous data imports, we are using the here package in this case as well: 
+To investigate accuracy, we first need to load our data set and the dplyr library (in accordance with previous data imports, we are using the here package in this case as well). We want to process the collected results for each participant — their ID, how many items they answered, and how many they got right — and visualize them in a boxplot.
 
+```{r}
+#| warning: false
+
+# load data set as dat.acc using the here package
 dat.acc<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
-library(dplyr) # -> for data manipulation
+# load dplyr library
+library(dplyr) # double: loaded before
 
 ```
 
@@ -633,7 +634,7 @@ library(dplyr) # -> for data manipulation
 ## L1 production test
 # L2 -> L1
 
-# This code chunk, referring to L2 -> L1 of the L1 production set, processes the collected results for each participant — their ID, how many items they answered, and how many they got right — and organizes them into a clean table. Therefore, it gives us the core numbers necessary to describe and analyze accuracy. We want to take the time to explain this chunk of code in detail. 
+# This code chunk, referring to L2 -> L1 of the L1 production set, processes the results for each participant — their ID, answered items, correct answers — and puts them into a clean table. Therefore, it gives us the core numbers necessary to describe and analyze accuracy. We want to take the time to explain this chunk of code in detail. 
 
 
 #L2→L1 (L1 production test)
@@ -655,13 +656,13 @@ for (i in z){
   try<-c(try,c)
 }
 
-# The first line of code takes unique IDs from dat.acc and wraps them into a data frame called "ids". The column is then named "id" using the names() function. In the next step, that column is extracted as a vector, meaning that z is a vector of unique IDs. Further, a for loop is used to iterate over elements of this vector z and assigning the IDs to the variable "i". Inside this loop, for each i (a unique ID) the data is filtered for that participant under certain conditions and then the Answer column is selected. The result is stored as the object acc_recT, which is further converted into a vector a. With b and c, the processed answers are computed and lastly, these results are appended into three vectors Score, IDes, and try. 
+# The first line of code takes unique IDs from dat.acc and wraps them into a data frame called "ids". The column is then named "id" using the names() function. In the next step, it is extracted as a vector, meaning that z is a vector of unique IDs. Further, a for loop is used to iterate over elements of this vector z and assigning the IDs to the variable "i". Inside this loop, for each i (a unique ID) the data is filtered for that participant under certain conditions, and then the Answer column is selected. The result is stored as the object acc_recT, which is further converted into a vector a. With b and c, the processed answers are computed and lastly, these results are appended into three vectors: Score, IDes, and try. 
 
 accu_L2L1_L1Pro<-data.frame(IDes,try, Score)
 names(accu_L2L1_L1Pro)<-c("ID", "Try", "Score")
 accu_L2L1_L1Pro
 
-# In the last part, the three vectors built before are combined into a final data frame, where each vector becomes a column in a table, each row corresponding to one participant. These columns are renamed and the table is printed. If we want to properly see the table outside of the console, we can use the View() function:
+# In the last part, the three vectors are combined into a final data frame, where each vector becomes a column in a table, each row corresponding to one participant. These columns are renamed and the table is printed. If we want to properly see the table outside of the console, we can use the View() function:
 
 View(accu_L2L1_L1Pro)
 
@@ -697,6 +698,8 @@ accu_L1L2_L1Pro
 ```
 
 ```{r}
+#| warning: false
+
 # L1 production: Statistics and plot
 
 # To provide descriptive statistics, we now want to use the describe() function on the Score column, which returns a rich set of stats.
@@ -710,9 +713,6 @@ describe(accu_L1L2_L1Pro$Score)
 # Plot (L1 production)
 
 # To visualize this, we want to create a boxplot comparing the two learning directions. For this to work, the beeswarm package has to be installed and loaded:
-
-# install.packages("beeswarm")
-
 library(beeswarm)
 
 # For this plot, we want to assign a data frame L1pro that contains the scores from both learning directions in the L1 production test. After changing the names of the columns to how we want them to appear on the x-axis, we create a side-by-side boxplot for the learning conditions. Finally, we add the beeswarm() function specifying add=T, which lets the individual scores appear as jittered dots that don't overlap.
@@ -822,17 +822,23 @@ values below the median are more spread out, indicating more variety.
 Comparing L1 and L2 production tests, L1 production scores appear to be
 generally higher and more consistent across learning directions.
 
+### Reproducing Table 4 and 5
+
+After conducting reliability testing and descriptive statistics for the tests, we want to display the results in tables resembling Table 4 and 5 in Terai et al. (2021), p. 1126. As with the target items, there was no code accessible for creating the tables. But with the available data, we can find a way to reproduce them anyway!
+
 ```{r}
+#| warning: false
+
 # Summarized results: Descriptive statistics of the tests
 
-# In this chunk, we want to create a table that summarizes results of descriptive statistics, similar to the Table 4 in the paper (p. 1126). As with the target items, there was no code available for creating the tables. But with the available data, we can find a way to reproduce them anyway!
+# In this chunk, we want to create a table that summarizes results of descriptive statistics of tests, similar to Table 4 in the paper.
 
-# First, we need to load the knitr and kableExtra packages.
+# knitr and kableExtra packages have to be loaded for this to work.
 
-library(knitr)
-library(kableExtra)
+library(knitr) # double: loaded before
+library(kableExtra) # double: loaded before
 
-# Next, we want to assign a variable that contains the scores for both data sets (L1 and L2 production) and use the describe() function to get all the important measures.
+# We assign a variable that contains the scores for both data sets (L1 and L2 production) and use the describe() function to get all the important measures.
 
 descriptive_stats_tests <- data.frame(L1pro, L2pro) |> 
   describe()
@@ -854,10 +860,12 @@ kable(descriptive_stats_tests_trimmed,
 
 ```
 
-Now we have a table that summarizes the descriptive statistics of the
+We have created a table that summarizes the descriptive statistics of the
 two types of post-tests, where the measures of scores in the two
 production tests can be easily compared. In the L1 production test,
 scores were shown to be generally higher than in L2 production test.
+
+Now we want to do the same with the results reliability testing, namely the alpha coefficients.
 
 ```{r}
 # Summarized results: Alpha coefficients for L1 and L2 production tests
@@ -971,12 +979,10 @@ included, and production test answers were used as the response variable
 (p. 1125).
 
 ```{r}
+#| warning: false
+
 # Before starting on the model, we install and load the packages we need. These seem to be from an older Rstudio version, but they still work just fine!
 
-# install.packages("lme4", discrepancies = TRUE)
-# install.packages("effects", discrepancies = TRUE)
-# install.packages("emmeans", discrepancies = TRUE)
-# install.packages("phia", discrepancies = TRUE)
 library(lme4) ##leading required package:Matrix/ this package is for mixed models
 library(effects) # -> package is for plotting model effects
 library(emmeans) # -> package is for post-hoc comparisons
@@ -987,7 +993,7 @@ library(phia) # same as emmeans
 ### Model 1 without interaction
 
 Now, we fit a logistic mixed-effects regression model predicting
-Accuracy (Answer) from Test, Condition, and their interaction. We want
+Accuracy (Answer) from Test, Condition, and their interaction with the glmer() function. We want
 to go through the process step by step, and connect the code with the
 interpretation of data in the paper.
 
@@ -997,14 +1003,15 @@ interpretation of data in the paper.
 # Model without interaction
 fit1<-glmer(Answer~Test+Condition+(1|ID)+(1|ItemID),family=binomial, data=dat, glmerControl(optimizer="bobyqa"))
 
+# Produce result summary
 summary(fit1)
-
-# With the glmer() function, we fit a GLLM. In the formula of this function, both fixed effects (Test answers and Condition) and random effects (ID and ItemID) are specified. (1 | ID) allows for a random intercept for each level of the variable ID (participants), (1 | ItemID) does the same for each level of the variable ItemID (test items). This accounts for repeated measures and inter-individual and inter-item variability. With specifying family=binomial, we tell the glmer() function that our response variable is binary (correct answer = 1, incorrect answer = 0). The last argument specifies an optimizing algorithm. We use the summarize() function to look at the output of this model.
 
 # Setting number of significant digits and calculating AIC
 options(digits=7)
 AIC(fit1)
 ```
+
+Since it is so important for our study, we want to take a closer look at this step. With the glmer() function, we fit a GLLM. In its formula, both fixed effects (Test answers and Condition) and random effects (ID and ItemID) are specified. (1 | ID) allows for a random intercept for each level of the variable ID (participants), (1 | ItemID) does the same for each level of the variable ItemID (test items). This accounts for repeated measures and inter-individual and inter-item variability. With specifying family=binomial, we tell the glmer() function that our response variable is binary (correct answer = 1, incorrect answer = 0). The last argument specifies an optimizing algorithm. We use the summary() function to look at the output of this model. Additionally, we calculate AIC, which is used to compare models, and will therefore be of interest later.
 
 Without interaction, the model assumes that the effects of Test and
 Condition are additive and do not depend on each other. AIC (Akike
@@ -1446,7 +1453,7 @@ likelihood ratio is statistically significant (χ² = 6.70, p = .009),
 indicating and confirming that the model with the Condition x
 Proficiency interaction fits best.
 
-### Visualisation
+### Visualization
 
 ```{r}
 plot(allEffects(fit2.1), multiline=T, ci.style="bands",
@@ -1533,7 +1540,7 @@ the simpler model without the interaction, we compare them with test:
 anova(fit3,fit3.1)
 ```
 
-### Visualisation
+### Visualization
 
 ```{r}
 plot(allEffects(fit3.1),multiline=T,ci.style="bands", xlab="Vocabulary Size", ylab="Accuracy Rate",
