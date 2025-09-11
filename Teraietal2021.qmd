@@ -1098,14 +1098,16 @@ present, the accuracy is even lower than when only one of them is. The
 p-value of .030 indicates that the interaction effect is unlikely due to
 chance.
 
-### Testing interaction
+### Model comparison
 
+We want to move on to further analyze and compare the two models. 
 ```{r}
-# In this chunk, we want to move on to further analyze the two models and their results. We will start with comparing the model with and without interaction using the anova() function:
+# In this chunk, we want to compare the model with and without interaction, using the anova() function:
 
 anova(fit1,fit1.1)
 
-# Checking simple main effects in both directions
+# Checking simple main effects in both directions with testInteractions():
+
 testInteractions(fit1.1, fixed="Test", across="Condition")
 
 testInteractions(fit1.1, fixed="Condition", across="Test")
@@ -1133,12 +1135,12 @@ take **Condition** as the fixed variable, p-values are very small (L1L2:
 
 ### Multiple comparisons
 
-After testing the interaction, we want to conduct pairwise comparisons
+After comparing the models and testing the interaction, we want to conduct pairwise comparisons
 on the effects of Condition and Test.
 
 ```{r}
-
 # Through computing estimated marginal means using the emmeans() function, we want to conduct pairwise comparisons of Condition levels within each level of Test, and assign it to a variable a.
+
 a<-emmeans(fit1.1, pairwise~Condition|Test, adjust="tukey")
   a
   
