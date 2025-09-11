@@ -152,10 +152,14 @@ dat$Condition<-as.factor(dat$Condition)
 
 ```
 
-We also apply contrast coding, also called "treatment coding" (Chambers & Hastie 1992). While it may look confusing and maybe intimidating, it
-is actually quite the important step. Basically, we want to compare our two groups (L1 -\> L2 vs. L2 -\> L1). We use 'simple coding' where our
-first Condition (L1 -\> L2) gets coded as -0.5 and our second Condition (L2 -\> L1) as +0.5. This makes interpretations easier when we have
-interactions since the intercept represents the overall mean across conditions (Barlaz 2022).
+We also apply contrast coding, also called "treatment coding" (Chambers
+& Hastie 1992). While it may look confusing and maybe intimidating, it
+is actually quite the important step. Basically, we want to compare our
+two groups (L1 -\> L2 vs. L2 -\> L1). We use 'simple coding' where our
+first Condition (L1 -\> L2) gets coded as -0.5 and our second Condition
+(L2 -\> L1) as +0.5. This makes interpretations easier when we have
+interactions since the intercept represents the overall mean across
+conditions (Barlaz 2022).
 
 ```{r}
 c<-contr.treatment(2)
@@ -195,16 +199,16 @@ data set in qualitative methods. Skewness measures the asymmetry of
 distribution. Simply put, it describes the amount of which the
 distribution differs from a completely symmetric shape (SOURCE).
 
-Skew = 0 -\> perfectly symmetrical. 
-Negative Skew -\> longer "tail" on the left.
-Positive Skew -\> longer "tail" on the right.
+Skew = 0 -\> perfectly symmetrical. Negative Skew -\> longer "tail" on
+the left. Positive Skew -\> longer "tail" on the right.
 
 Kurtosis then is a measure of peaks of a distribution. Basically, it is
-a description of how the peaks compare to a normal distribution (SOURCE).
+a description of how the peaks compare to a normal distribution
+(SOURCE).
 
-Kurtosis = 0 -\> similar to a normal distribution. 
-Positive kurtosis -\> sharper peak (more concentrated in the center). 
-Negative kurtosis -\> flatter peak.
+Kurtosis = 0 -\> similar to a normal distribution. Positive kurtosis -\>
+sharper peak (more concentrated in the center). Negative kurtosis -\>
+flatter peak.
 
 ## Table 3 Reproduction
 
@@ -217,8 +221,8 @@ Thus, we will learn how to reproduce the data of Table 3 step by step.
 
 We have already loaded the data we will need for our table, but just to
 be sure, we will do it again and also load all the necessary libraries
-for the two tables, so we have some kind of "toolbox" that contains every
-function we might need:
+for the two tables, so we have some kind of "toolbox" that contains
+every function we might need:
 
 ```{r}
 #Install these once if you do not already have them:
@@ -241,7 +245,13 @@ dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE
 dat$ItemID <- trimws(dat$ItemID)
 ```
 
-In the paper by Terai et al. (2021) we can see that the variables used are, for L2-related variables: Frequency, Syllables, and Letters. For L1-related variables: Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami A). We were not able to reproduce Fami (B) as the data was not made public. Also, important to note: "L1 frequency and L1 familiarity were retrieved from Amano and Kondo (2000)" **(Terai et al. 2021 : 1123).**
+In the paper by Terai et al. (2021) we can see that the variables used
+are, for L2-related variables: Frequency, Syllables, and Letters. For
+L1-related variables: Frequency, Letters, and Mora (syllables) as well
+as Familiarity (Fami A). We were not able to reproduce Fami (B) as the
+data was not made public. Also, important to note: "L1 frequency and L1
+familiarity were retrieved from Amano and Kondo (2000)" **(Terai et al.
+2021 : 1123).**
 
 First, we need to take a look at the data the authors have uploaded for
 us. The column names may differ from what we want to see in the table
@@ -262,12 +272,23 @@ names(dat)
 
 ```
 
-Basically, what we are doing next is shaping our data from participant-focused to item-focused. The raw data set has multiple rows per
-word because each participant contributed responses and thus has their own row per word. For example, the word "weasel" actually appears many times, one time for each participant. But for descriptive statistics of the items, we only want one row per word.
+Basically, what we are doing next is shaping our data from
+participant-focused to item-focused. The raw data set has multiple rows
+per word because each participant contributed responses and thus has
+their own row per word. For example, the word "weasel" actually appears
+many times, one time for each participant. But for descriptive
+statistics of the items, we only want one row per word.
 
-To solve this issue we use the commands group_by() and summarise() to turn all those rows into just a single one per word. The command
-'group_by(ItemID)' we use in the code groups all rows together that contain the same word. The function summarise() then creates our new
-dataset by calculating the information everything we need and want to look at, so L2Frequency, Syllables, Alphabet, etc. The function 'first()' is fairly simple, since the frequencies, syllables etc. of the words do not change, we just take the first occurence without any repetition. Only for the familiarity ratings we calculated the mean() across all participants for each word.
+To solve this issue we use the commands group_by() and summarise() to
+turn all those rows into just a single one per word. The command
+'group_by(ItemID)' we use in the code groups all rows together that
+contain the same word. The function summarise() then creates our new
+dataset by calculating the information everything we need and want to
+look at, so L2Frequency, Syllables, Alphabet, etc. The function
+'first()' is fairly simple, since the frequencies, syllables etc. of the
+words do not change, we just take the first occurence without any
+repetition. Only for the familiarity ratings we calculated the mean()
+across all participants for each word.
 
 ```{r}
 items <- dat |>
@@ -292,11 +313,16 @@ command should print 40:
 nrow(items)
 ```
 
-In order to avoid repeating code (and because we are lazy), we create our own function that computes all the statistics (mean, SD, median,
-min, max, skew, kurtosis) we need for each variable. We build our own small machine that we will name desc(), it will do the calculations
-for us. 'desc \<- funcion(x) creates this function with the input 'x' which represents whichever variable we want to analyze. Inside of our
-function, we use 'data.frame()' for organization of our statistics before we begin the calculations. Each calculation takes our input
-variable 'x' and computes the statistics. The functions skewness() and kurtosis() come from the 'moments' package we loaded earlier.
+In order to avoid repeating code (and because we are lazy), we create
+our own function that computes all the statistics (mean, SD, median,
+min, max, skew, kurtosis) we need for each variable. We build our own
+small machine that we will name desc(), it will do the calculations for
+us. 'desc \<- funcion(x) creates this function with the input 'x' which
+represents whichever variable we want to analyze. Inside of our
+function, we use 'data.frame()' for organization of our statistics
+before we begin the calculations. Each calculation takes our input
+variable 'x' and computes the statistics. The functions skewness() and
+kurtosis() come from the 'moments' package we loaded earlier.
 
 ```{r}
 desc <- function(x) {
@@ -312,11 +338,20 @@ desc <- function(x) {
 }
 ```
 
+Now that we have most of what we need for the tables, we can start to
+build them up! There are two subtables we need.
 
-Now that we have most of what we need for the tables, we can start to build them up! There are two subtables we need.
-
-The code below does this with two important functions: rbind() which stacks the rows we want to create on top of each other to build the final table which we will print in the next step. And cbind() which creates columns that stick together side by side. For example 'cbind(Variable = "Frequency", desc(items\$L2Frequency)' creates a column with the name "Variable" with the value "Frequency" next to the summary of the output of 'desc()'. With our helper function 'desc()' we then insert the the statistics from our data, in this case it is the 'L2Frequency'. Basically, we are creating here three rows stacked on top of each other for tab_L2, and four rows for tab_L1. As you see we only have to run our helper function 'desc()' seven times!
-
+The code below does this with two important functions: rbind() which
+stacks the rows we want to create on top of each other to build the
+final table which we will print in the next step. And cbind() which
+creates columns that stick together side by side. For example
+'cbind(Variable = "Frequency", desc(items\$L2Frequency)' creates a
+column with the name "Variable" with the value "Frequency" next to the
+summary of the output of 'desc()'. With our helper function 'desc()' we
+then insert the the statistics from our data, in this case it is the
+'L2Frequency'. Basically, we are creating here three rows stacked on top
+of each other for tab_L2, and four rows for tab_L1. As you see we only
+have to run our helper function 'desc()' seven times!
 
 ```{r}
 tab_L2 <- rbind(
@@ -334,7 +369,9 @@ tab_L1 <- rbind(
 
 ```
 
-Great! You are almost done building the table for the descriptive statistics. In the next step, we will round the numbers to two decimals to make the table actually readable.
+Great! You are almost done building the table for the descriptive
+statistics. In the next step, we will round the numbers to two decimals
+to make the table actually readable.
 
 ```{r}
 tab_L2$Mean     <- round(tab_L2$Mean, 2)
@@ -354,7 +391,22 @@ tab_L1$Skew     <- round(tab_L1$Skew, 2)
 tab_L1$Kurtosis <- round(tab_L1$Kurtosis, 2)
 ```
 
-Perfect, the next and easiest part of building up our two subtables is captioning them and then finally printing them. Here we need the kable() and the kable_classic() function. We use these functions to make the tables look easy to read. The kable() function is quite nice because it helps to make R's output look a little more professional. The function comes from the knitr package. kable(tab_L2, ...) takes our tab_2 data frame and converts it into a formatted table which we then caption with the command 'caption = "...". With the command 'align = "lrrrrrr" we control the way the text is aligned in each column. the 'l' means left-aligned, while every added 'r' means the remaining columns should be right-aligned. The kable_classics function comes from the kableExtra package we loaded earlier. It is also another function to tidy up our table style. The command 'full_width = FALSE' makes sure that the table does not stretch too wide. When you run this code, you will see a nice table with clear structure and formatting which will make it easier to read and interpret, it also looks ready to be published.
+Perfect, the next and easiest part of building up our two subtables is
+captioning them and then finally printing them. Here we need the kable()
+and the kable_classic() function. We use these functions to make the
+tables look easy to read. The kable() function is quite nice because it
+helps to make R's output look a little more professional. The function
+comes from the knitr package. kable(tab_L2, ...) takes our tab_2 data
+frame and converts it into a formatted table which we then caption with
+the command 'caption = "...". With the command 'align = "lrrrrrr" we
+control the way the text is aligned in each column. the 'l' means
+left-aligned, while every added 'r' means the remaining columns should
+be right-aligned. The kable_classics function comes from the kableExtra
+package we loaded earlier. It is also another function to tidy up our
+table style. The command 'full_width = FALSE' makes sure that the table
+does not stretch too wide. When you run this code, you will see a nice
+table with clear structure and formatting which will make it easier to
+read and interpret, it also looks ready to be published.
 
 ```{r}
 kable(tab_L2, caption = "Table 3a. Descriptive statistics for L2 (English) item properties.",
@@ -366,11 +418,35 @@ kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item
   kable_classic(full_width = FALSE)
 ```
 
-Our reproduced tables now closely match Table 3 in Terai et al. (2021)! The L2 frequency has a mean of about 1025 with a quite large SD (~852), which shows us that some English words were quite frequent while others were much rarer. The skewness here is positive (~1.51), although slightly different than the one reported in the paper (~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. Syllables in English have an average mean of 2, and range from 1 to 5 with only a slight positive skewness which means that most words are short and only a few are longer, again there is a small difference in skewness. Letters average around 6.2 again with a positive skewness. For the L1 variables, the frequency distribution also shows a strong positive skew, which means that few Japanese translations are very common, but many are quite rare. Fami (A)) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar. 
+Our reproduced tables now closely match Table 3 in Terai et al. (2021)!
+The L2 frequency has a mean of about 1025 with a quite large SD (\~852),
+which shows us that some English words were quite frequent while others
+were much rarer. The skewness here is positive (\~1.51), although
+slightly different than the one reported in the paper (\~1.57). The
+difference is only small and still shows that the distribution has a
+"long tail" of very high-frequency words. Syllables in English have an
+average mean of 2, and range from 1 to 5 with only a slight positive
+skewness which means that most words are short and only a few are
+longer, again there is a small difference in skewness. Letters average
+around 6.2 again with a positive skewness. For the L1 variables, the
+frequency distribution also shows a strong positive skew, which means
+that few Japanese translations are very common, but many are quite rare.
+Fami (A)) averages about 5.2 on a 7-point scale, with a pretty low SD,
+suggesting that the words were mostly familiar.
 
-Our skewness values match the original paper closely, with only small differences. However, our kurtosis values differ quite a lot from the published results. This may seem like a huge issue at first, but is actually quite normal. Kurtosis calculations can vary between packages, for example the 'moments' package we used calculates excess kurtosis, while the authors of the original paper might have used different methods.
+Our skewness values match the original paper closely, with only small
+differences. However, our kurtosis values differ quite a lot from the
+published results. This may seem like a huge issue at first, but is
+actually quite normal. Kurtosis calculations can vary between packages,
+for example the 'moments' package we used calculates excess kurtosis,
+while the authors of the original paper might have used different
+methods.
 
-For the reproduction of the kurtosis numbers we tried several methods, but there seems to be an issue somewhere. We calculated both the excess kurtosis and the pearson kurtosis (see in the chunk below) in case we first focused on the wrong one, although no numbers match the ones in the paper.
+For the reproduction of the kurtosis numbers we tried several methods,
+but there seems to be an issue somewhere. We calculated both the excess
+kurtosis and the pearson kurtosis (see in the chunk below) in case we
+first focused on the wrong one, although no numbers match the ones in
+the paper.
 
 ```{r}
 excess_kurt <- kurtosis(dat$mora, na.rm = TRUE) #instead of mora any other Variable of table 3 can be added to caluclate kurtosis
@@ -378,16 +454,32 @@ pearson_kurt <- excess_kurt + 3
 round(c(excess = excess_kurt, pearson = pearson_kurt), 3)
 ```
 
-There are several possibilities why this is the case. There might be an outlier that may have been removed, or maybe the authors used another method. Strangely, it is unclear why the authors calculate skewness and kurtosis at all, as they do not mention it apart from in the tables. The issue with the differences in our numbers and the ones by Terai et al. (2021) is that the differences are so big the graphs are going to look quite different, especially for the Fami (A) variable. In the paper the kurtosis shows -0.02 which would be a slightly flatter graph, while our kurtosis number 4.29 would be sharper. This is why, in an extension, we have added some graphs to show the importance of skewness and kurtosis and what exactly these numbers show.
-
+There are several possibilities why this is the case. There might be an
+outlier that may have been removed, or maybe the authors used another
+method. Strangely, it is unclear why the authors calculate skewness and
+kurtosis at all, as they do not mention it apart from in the tables. The
+issue with the differences in our numbers and the ones by Terai et al.
+(2021) is that the differences are so big the graphs are going to look
+quite different, especially for the Fami (A) variable. In the paper the
+kurtosis shows -0.02 which would be a slightly flatter graph, while our
+kurtosis number 4.29 would be sharper. This is why, in an extension, we
+have added some graphs to show the importance of skewness and kurtosis
+and what exactly these numbers show.
 
 ## Extension (Beyhan)
 
 ### Visualizations of Table 3
 
-With Table 3 we were shown a summary of many numbers (mean, SD, range, skewness, kurtosis) for the 40 target words, but these numbers are much easier to understand when we actually see them visualized. Below we want to turn some key variables of Table 3 into quick histograms to visually connect the ideas of skew and kurtosis to the actual items used in this study.
+With Table 3 we were shown a summary of many numbers (mean, SD, range,
+skewness, kurtosis) for the 40 target words, but these numbers are much
+easier to understand when we actually see them visualized. Below we want
+to turn some key variables of Table 3 into quick histograms to visually
+connect the ideas of skew and kurtosis to the actual items used in this
+study.
 
-Please note that in this extension our reloading of the data may seem repetitive, but it simply ensures that this section can work on its own if needed, but to you it is optional.
+Please note that in this extension our reloading of the data may seem
+repetitive, but it simply ensures that this section can work on its own
+if needed, but to you it is optional.
 
 ```{r}
 library(tidyverse)
@@ -410,9 +502,21 @@ items <- dat |>
 ##if you want you can quickly check the item number with 'nrow(items)' it should be 40!
 ```
 
-We will start with a graph of L2 Frequencies. To do this we use the ggplot() command. Our first line of code here 'ggplot(data = items, aes(x = L2Frequency))' tells ggplot to basically use the 'items' dataset and put the L2 frequencies of each word onto the x-axis. 'geom_density(...) creates the actual density plot. To fully understand where our numbers in the table come from, we add reference lines: 'geom_vline(xintercept = mean(...))' for the mean value, and 'geom_vline(xintercept = median(...), linetype = "dashed"...)' for a dashed line at the median.
+We will start with a graph of L2 Frequencies. To do this we use the
+ggplot() command. Our first line of code here 'ggplot(data = items,
+aes(x = L2Frequency))' tells ggplot to basically use the 'items' dataset
+and put the L2 frequencies of each word onto the x-axis.
+'geom_density(...) creates the actual density plot. To fully understand
+where our numbers in the table come from, we add reference lines:
+'geom_vline(xintercept = mean(...))' for the mean value, and
+'geom_vline(xintercept = median(...), linetype = "dashed"...)' for a
+dashed line at the median.
 
-Do not be too confused by the numbers on the y-axis. Since our focus here is to see in the density plot what skewness and kurtosis are, our curve simple shows the proportions on the x-axis. The values can be read as a kind of probability, a higher peak means more words are around that frequency, while a lower peak means fewer words around that frequency.
+Do not be too confused by the numbers on the y-axis. Since our focus
+here is to see in the density plot what skewness and kurtosis are, our
+curve simple shows the proportions on the x-axis. The values can be read
+as a kind of probability, a higher peak means more words are around that
+frequency, while a lower peak means fewer words around that frequency.
 
 ```{r}
 ggplot(items, aes(x = L2Frequency)) +
@@ -428,7 +532,16 @@ ggplot(items, aes(x = L2Frequency)) +
 theme_minimal()
 ```
 
-In this graph can clearly see a right-skewed distribution which we saw in the table with the positive skewness values (\~1.51). As you can probably recall, a normally distributed graph would be a symmetric curve, nothing asymmetric, which is exactly what we see with skewness. This means most words are lower or medium frequency with only a few really high-frequency words (see the long right tail). The mean sits to the right of the median which is another characteristic of positive skew. The number of our kurtosis (~5.21) shows us the sharpness or peakedness of our curve which you can see quite nicely when you compare the graph for L2 frequency to the one for L1 frequency.
+In this graph can clearly see a right-skewed distribution which we saw
+in the table with the positive skewness values (\~1.51). As you can
+probably recall, a normally distributed graph would be a symmetric
+curve, nothing asymmetric, which is exactly what we see with skewness.
+This means most words are lower or medium frequency with only a few
+really high-frequency words (see the long right tail). The mean sits to
+the right of the median which is another characteristic of positive
+skew. The number of our kurtosis (\~5.21) shows us the sharpness or
+peakedness of our curve which you can see quite nicely when you compare
+the graph for L2 frequency to the one for L1 frequency.
 
 For that, we have to do the exact same for the L1 frequencies.
 
@@ -446,8 +559,11 @@ ggplot(items, aes(x = L1Frequency)) +
 theme_minimal()
 ```
 
-Again, we see a right-skew even stronger than for L2 (skew ~3.59). This shows once again that most words are lower-frequency, there are only very few high-frequency words. Here, with a kurtosis number of ~18.10 we can see that with higher positive numbers the peak becomes sharper and sharper.
-
+Again, we see a right-skew even stronger than for L2 (skew \~3.59). This
+shows once again that most words are lower-frequency, there are only
+very few high-frequency words. Here, with a kurtosis number of \~18.10
+we can see that with higher positive numbers the peak becomes sharper
+and sharper.
 
 ## Descriptive statistics of the tests and reliability testing
 
@@ -709,7 +825,7 @@ generally higher and more consistent across learning directions.
 ```{r}
 # Summarized results: Descriptive statistics of the tests
 
-# In this chunk, we want to create a table that displays the summarized results of descriptive statistics, similar to the Table 4 in the paper (p. 1126). As with the target items, there was no code available for creating the tables. But with the available data, we can find a way to reproduce them anyway!
+# In this chunk, we want to create a table that summarizes results of descriptive statistics, similar to the Table 4 in the paper (p. 1126). As with the target items, there was no code available for creating the tables. But with the available data, we can find a way to reproduce them anyway!
 
 # First, we need to load the knitr and kableExtra packages.
 
@@ -736,10 +852,12 @@ kable(descriptive_stats_tests_trimmed,
   pack_rows(index = c("L1 production test" = 2, "L2 production test" = 2)) |> 
   kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
-
-# Now we have a table that summarizes the descriptive statistics of the two types of post-tests, where the measures of scores in the two production tests can be easily compared. In the L1 production test, scores were shown to be generally higher than in L2 production test.
-
 ```
+
+Now we have a table that summarizes the descriptive statistics of the
+two types of post-tests, where the measures of scores in the two
+production tests can be easily compared. In the L1 production test,
+scores were shown to be generally higher than in L2 production test.
 
 ```{r}
 # Summarized results: Alpha coefficients for L1 and L2 production tests
@@ -828,13 +946,13 @@ L2) based on the results of the production tests (RQ2). They are pretty
 similar, except that the third and last model also used L2 production
 test scores.
 
-Generalized linear mixed-models (GLMMs) are an extension of linear mixed
-models. They are tools that help us to analyze not normally distributed
-data, such as binary and count data, when observations are clustered in
-some way. GLMMs are mostly used to include some models that are used
-commonly, such as logistic regression or linear regression. What is
-great about these models, is that they allow for analysis of clustered
-or longitudinal data that is not continuous (Gurka & Edwards 2011).
+Generalized linear mixed-models are an extension of linear mixed models.
+They are tools that help us to analyze not normally distributed data,
+such as binary and count data, when observations are clustered in some
+way. GLMMs are mostly used to include some models that are commonly
+used, such as logistic regression or linear regression. What is great
+about these models, is that they allow for analysis of clustered or
+longitudinal data that is not continuous (Gurka & Edwards 2011).
 
 MAYBE A BETTER EXPLANATION NEEDED??? BETTER SOURCE TOO
 
@@ -965,7 +1083,12 @@ chance.
 
 ### Model comparison
 
-We want to move on to further analyze and compare the two models. 
+We want to further analyze and compare the two models, using the command
+anova(), which is an analysis of variance (a statistical formula which
+compares variances across the means (or average) of different groups),
+and testInteractions(), which makes it possible to perform simple main
+effects analysis.
+
 ```{r}
 # In this chunk, we want to compare the model with and without interaction, using the anova() function:
 
@@ -1000,8 +1123,8 @@ take **Condition** as the fixed variable, p-values are very small (L1L2:
 
 ### Multiple comparisons
 
-After comparing the models and testing the interaction, we want to conduct pairwise comparisons
-on the effects of Condition and Test.
+After comparing the models and testing the interaction, we want to
+conduct pairwise comparisons on the effects of Condition and Test.
 
 ```{r}
 # Through computing estimated marginal means using the emmeans() function, we want to conduct pairwise comparisons of Condition levels within each level of Test, and assign it to a variable a.
@@ -1312,9 +1435,7 @@ Vocabulary Size or learning condition by themselves.
 ### Model comparison
 
 To formally check which model fits better using AIC and a likelihood
-ratio, we use the command anova(), which is an analysis of variance (a
-statistical formula which compares variances across the means (or
-average) of different groups).
+ratio, again using the command anova().
 
 ```{r}
 anova(fit2,fit2.1)
@@ -1542,47 +1663,89 @@ print(sessionInfo())
 
 ## Package references
 
-D. Bates, M. Mächler, B. Bolker, S. Walker (2015). *Fitting Linear Mixed-Effects Models Using lme4.* Journal of Statistical Software, 67(1), 1–48. doi:10.18637/jss.v067.i01. R package version 1.1-37. <https://github.com/lme4/lme4/>.
+D. Bates, M. Mächler, B. Bolker, S. Walker (2015). *Fitting Linear
+Mixed-Effects Models Using lme4.* Journal of Statistical Software,
+67(1), 1–48. doi:10.18637/jss.v067.i01. R package version 1.1-37.
+<https://github.com/lme4/lme4/>.
 
-D. Bates, M. Maechler, M. Jagan, T. A. Davis (2025). *Sparse and Dense Matrix Classes and Methods.* R package version 1.7-3. <https://matrix.r-forge.r-project.org/>.
+D. Bates, M. Maechler, M. Jagan, T. A. Davis (2025). *Sparse and Dense
+Matrix Classes and Methods.* R package version 1.7-3.
+<https://matrix.r-forge.r-project.org/>.
 
-H. De Rosario-Martinez, J. Fox, R Core Team, P. Chalmers (2025). *Post-Hoc Interaction Analysis.* R package version 0.3-2. <https://github.com/heliosdrm/phia?tab=readme-ov-file>.
+H. De Rosario-Martinez, J. Fox, R Core Team, P. Chalmers (2025).
+*Post-Hoc Interaction Analysis.* R package version 0.3-2.
+<https://github.com/heliosdrm/phia?tab=readme-ov-file>.
 
-J. Fox and S. Weisberg (2019). *An R Companion to Applied Regression*, Third Edition, Sage. R package version car 3.1-3, carData 3.0-5, effects 4.2-4. <https://r-forge.r-project.org/projects/car/>.
+J. Fox and S. Weisberg (2019). *An R Companion to Applied Regression*,
+Third Edition, Sage. R package version car 3.1-3, carData 3.0-5, effects
+4.2-4. <https://r-forge.r-project.org/projects/car/>.
 
-G. Grolemund, H. Wickham (2011). *Dates and Times Made Easy with lubridate.* Journal of Statistical Software, 40(3), 1-25. R package version 1.9.4. <https://www.jstatsoft.org/v40/i03/>.
+G. Grolemund, H. Wickham (2011). *Dates and Times Made Easy with
+lubridate.* Journal of Statistical Software, 40(3), 1-25. R package
+version 1.9.4. <https://www.jstatsoft.org/v40/i03/>.
 
-E. Hvitfeldt (2021). *paletteer: Comprehensive Collection of Color Palettes.* R package version 1.6.0. <https://github.com/EmilHvitfeldt/paletteer>.
+E. Hvitfeldt (2021). *paletteer: Comprehensive Collection of Color
+Palettes.* R package version 1.6.0.
+<https://github.com/EmilHvitfeldt/paletteer>.
 
-R. Lenth (2025). *emmeans: Estimated Marginal Means, aka Least-Squares Means.* R package version 1.11.2-80001, <https://rvlenth.github.io/emmeans/>.
+R. Lenth (2025). *emmeans: Estimated Marginal Means, aka Least-Squares
+Means.* R package version 1.11.2-80001,
+<https://rvlenth.github.io/emmeans/>.
 
-K. Müller (2025). *here: A Simpler Way to Find Your Files.* R package version 1.0.1, <https://here.r-lib.org/>. 
+K. Müller (2025). *here: A Simpler Way to Find Your Files.* R package
+version 1.0.1, <https://here.r-lib.org/>.
 
-K. Müller, H. Wickham (2023). *tibble: Simple Data Frames.* R package version 3.2.1, https://tibble.tidyverse.org/. 
+K. Müller, H. Wickham (2023). *tibble: Simple Data Frames.* R package
+version 3.2.1, https://tibble.tidyverse.org/.
 
-R Core Team (2025). *R: A Language and Environment for Statistical Computing.* R Foundation for Statistical Computing. Vienna, Austria. <https://www.R-project.org/>.
+R Core Team (2025). *R: A Language and Environment for Statistical
+Computing.* R Foundation for Statistical Computing. Vienna, Austria.
+<https://www.R-project.org/>.
 
-W. Revelle (2025). *psych: Procedures for Psychological, Psychometric, and Personality Research.* Northwestern University, Evanston, Illinois. R package version 2.5.6, <https://CRAN.R-project.org/package=psych>. 
+W. Revelle (2025). *psych: Procedures for Psychological, Psychometric,
+and Personality Research.* Northwestern University, Evanston, Illinois.
+R package version 2.5.6, <https://CRAN.R-project.org/package=psych>.
 
-H. Wickham, M. Averick, J. Bryan, W. Chang, L. D. McGowan, R. François, G. Grolemund, A. Hayes, L. Henry, J. Hester, M. Kuhn, T. L. Pedersen, E. Miller, S. M. Bache, K. Müller, J. Ooms, D. Robinson, D. P. Seidel, V. Spinu, K. Takahashi, D. Vaughan, C. Wilke, K. Woo, H. Yutani (2019). *Welcome to the tidyverse.* Journal of Open Source Software, 4(43), 1686. doi:10.21105/joss.01686. <https://tidyverse.tidyverse.org/>.
+H. Wickham, M. Averick, J. Bryan, W. Chang, L. D. McGowan, R. François,
+G. Grolemund, A. Hayes, L. Henry, J. Hester, M. Kuhn, T. L. Pedersen, E.
+Miller, S. M. Bache, K. Müller, J. Ooms, D. Robinson, D. P. Seidel, V.
+Spinu, K. Takahashi, D. Vaughan, C. Wilke, K. Woo, H. Yutani (2019).
+*Welcome to the tidyverse.* Journal of Open Source Software, 4(43),
+1686. doi:10.21105/joss.01686. <https://tidyverse.tidyverse.org/>.
 
-H. Wickham, R. François, L. Henry, K. Müller, D. Vaughan (2025). *dplyr: A Grammar of Data Manipulation.* R package version 1.1.4, <https://dplyr.tidyverse.org>.
+H. Wickham, R. François, L. Henry, K. Müller, D. Vaughan (2025). *dplyr:
+A Grammar of Data Manipulation.* R package version 1.1.4,
+<https://dplyr.tidyverse.org>.
 
-H. Wickham, L. Henry (2025). *purrr: Functional Programming Tools.* R package version 1.0.4, <https://purrr.tidyverse.org/>. 
+H. Wickham, L. Henry (2025). *purrr: Functional Programming Tools.* R
+package version 1.0.4, <https://purrr.tidyverse.org/>.
 
-H. Wickham, J. Hester, J. Bryan (2024). *readr: Read Rectangular Text Data.* R package version 2.1.5, <https://github.com/tidyverse/readr, https://readr.tidyverse.org>.
+H. Wickham, J. Hester, J. Bryan (2024). *readr: Read Rectangular Text
+Data.* R package version 2.1.5, \<https://github.com/tidyverse/readr,
+https://readr.tidyverse.org\>.
 
-H. Wickham (2023). *forcats: Tools for Working with Categorical Variables (Factors).* R package version 1.0.0, <https://github.com/tidyverse/forcats, https://forcats.tidyverse.org/>.
+H. Wickham (2023). *forcats: Tools for Working with Categorical
+Variables (Factors).* R package version 1.0.0,
+\<https://github.com/tidyverse/forcats,
+https://forcats.tidyverse.org/\>.
 
-H. Wickham (2016). *ggplot2: Elegant Graphics for Data Analysis.* Springer-Verlag New York. <https://forcats.tidyverse.org/>.
+H. Wickham (2016). *ggplot2: Elegant Graphics for Data Analysis.*
+Springer-Verlag New York. <https://forcats.tidyverse.org/>.
 
-H. Wickham (2023). *stringr: Simple, Consistent Wrappers for Common String Operations.* R package version 1.5.1, <https://github.com/tidyverse/stringr>, <https://stringr.tidyverse.org>.
+H. Wickham (2023). *stringr: Simple, Consistent Wrappers for Common
+String Operations.* R package version 1.5.1,
+<https://github.com/tidyverse/stringr>, <https://stringr.tidyverse.org>.
 
-H. Wickham, D. Vaughan, M. Girlich (2025). *tidyr: Tidy Messy Data.* R package version 1.3.1, <https://tidyr.tidyverse.org>.
+H. Wickham, D. Vaughan, M. Girlich (2025). *tidyr: Tidy Messy Data.* R
+package version 1.3.1, <https://tidyr.tidyverse.org>.
 
-L. Wilkinson (1999). *Dot plots. The American Statistician. 53(3):276-281.* R package version 0.4.0. <https://github.com/aroneklund/beeswarm>.
+L. Wilkinson (1999). *Dot plots. The American Statistician.
+53(3):276-281.* R package version 0.4.0.
+<https://github.com/aroneklund/beeswarm>.
 
-Y. Xie (2024). *knitr: A General-Purpose Package for Dynamic Report Generation in R.* R package version 1.50. https://yihui.org/knitr/.
+Y. Xie (2024). *knitr: A General-Purpose Package for Dynamic Report
+Generation in R.* R package version 1.50. <https://yihui.org/knitr/>.
 
-H. Zhu (2023). *kableExtra: Construct Complex Table with 'kable' and Pipe Syntax.* R package version 1.4.0, <https://github.com/haozhu233/kableextra>. 
-
+H. Zhu (2023). *kableExtra: Construct Complex Table with 'kable' and
+Pipe Syntax.* R package version 1.4.0,
+<https://github.com/haozhu233/kableextra>.
