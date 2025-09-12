@@ -117,7 +117,7 @@ direction L2 -\> L1 or L1 -\> L2), and so on. But more on that later.
 
 Before importing the data set and starting on our project, we need to
 load all the packages that we will need. Some of these packages may have
-to installed first **(maybe include textbook reference 13.10)**.
+to be installed first (using the install.packages("") command in your console.
 
 ```{r}
 #| label: setup
@@ -482,7 +482,8 @@ repetitive, but it simply ensures that this section can work on its own
 if needed, but to you it is optional.
 
 ```{r}
-library(tidyverse) #double: loaded before
+# Tidyverse library needs to be loaded if you have not done it before.
+
 dat<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 dat$ItemID <- trimws(dat$ItemID)
 
@@ -580,7 +581,7 @@ Cronbach's α to test reliability.
 
 # In this chunk, we conduct a reliability analysis for Vocabulary A scores of the L1 production dataset. For this to work, we need the psych package:
 
-library(psych) # -> reliability analysis/testing
+library(psych) # -> reliability analysis
 
 # We apply the alpha() function for reliability testing.
 
@@ -629,8 +630,7 @@ To investigate accuracy, we first need to load our data set and the dplyr librar
 # load data set as dat.acc using the here package
 dat.acc<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
-# load dplyr library
-library(dplyr) # double: loaded before
+# In case you haven't, load dplyr library for the next steps.
 
 ```
 
@@ -837,10 +837,7 @@ After conducting reliability testing and descriptive statistics for the tests, w
 
 # In this chunk, we want to create a table that summarizes results of descriptive statistics of tests, similar to Table 4 in the paper.
 
-# knitr and kableExtra packages have to be loaded for this to work.
-
-library(knitr) # double: loaded before
-library(kableExtra) # double: loaded before
+# knitr and kableExtra packages have to be loaded.
 
 # We assign a variable that contains the scores for both data sets (L1 and L2 production) and use the describe() function to get all the important measures.
 
@@ -984,10 +981,10 @@ included, and production test answers were used as the response variable
 
 # Before starting on the model, we install and load the packages we need. These seem to be from an older Rstudio version, but they still work just fine!
 
-library(lme4) ##leading required package:Matrix/ this package is for mixed models
-library(effects) # -> package is for plotting model effects
-library(emmeans) # -> package is for post-hoc comparisons
-library(phia) # same as emmeans
+library(lme4) # package for mixed models
+library(effects) # package for plotting model effects
+library(emmeans) # package for post-hoc comparisons
+library(phia) # similar to emmeans
 
 ```
 
@@ -1239,10 +1236,12 @@ ggplot() function instead. I will explain later why this could be of
 advantage.
 
 ```{r}
+#| warning: false
+
 # Visualizing with ggplot2
 
-# First, we need to load lme4, gglpot2 and paletteer libraries:
-library(lme4)
+# First, we need to load gglpot2 and paletteer libraries. The lme4 package, which has been loaded before, and is necessary here as well.
+
 library(ggplot2)
 library(paletteer)
 
