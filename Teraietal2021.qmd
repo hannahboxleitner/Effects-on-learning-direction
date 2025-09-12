@@ -41,7 +41,8 @@ will walk you through how to:
 -   Fit a generalized linear mixed-effects model to explore the
     influence of L2 proficiency on the two types of learning
 
--   Interpret and compare the results with those printed in Terai et al. (2021) 
+-   Interpret and compare the results with those printed in Terai et al.
+    (2021)
 
 -   Visualize the results with different kinds of plots to facilitate
     interpretation
@@ -1719,7 +1720,7 @@ K. Müller (2025). *here: A Simpler Way to Find Your Files.* R package
 version 1.0.1, <https://here.r-lib.org/>.
 
 K. Müller, H. Wickham (2023). *tibble: Simple Data Frames.* R package
-version 3.2.1, https://tibble.tidyverse.org/.
+version 3.2.1, <https://tibble.tidyverse.org/>.
 
 R Core Team (2025). *R: A Language and Environment for Statistical
 Computing.* R Foundation for Statistical Computing. Vienna, Austria.
@@ -1744,13 +1745,11 @@ H. Wickham, L. Henry (2025). *purrr: Functional Programming Tools.* R
 package version 1.0.4, <https://purrr.tidyverse.org/>.
 
 H. Wickham, J. Hester, J. Bryan (2024). *readr: Read Rectangular Text
-Data.* R package version 2.1.5, \<https://github.com/tidyverse/readr,
-https://readr.tidyverse.org\>.
+Data.* R package version 2.1.5, <https://github.com/tidyverse/readr>,<https://readr.tidyverse.org>.
 
 H. Wickham (2023). *forcats: Tools for Working with Categorical
 Variables (Factors).* R package version 1.0.0,
-\<https://github.com/tidyverse/forcats,
-https://forcats.tidyverse.org/\>.
+<https://github.com/tidyverse/forcats>,<https://forcats.tidyverse.org/>.
 
 H. Wickham (2016). *ggplot2: Elegant Graphics for Data Analysis.*
 Springer-Verlag New York. <https://forcats.tidyverse.org/>.
