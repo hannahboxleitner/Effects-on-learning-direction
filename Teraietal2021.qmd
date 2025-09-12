@@ -34,20 +34,9 @@ Based on the data from Terai et al. (@2021), we will introduce the application o
 -   Fit a generalized linear mixed-effects model to explore the
     influence of L2 proficiency on the two types of learning
 
-<<<<<<< HEAD
 -   Interpret and compare the results with those printed in Terai et al. (@2021) 
-=======
--   Interpret and compare the results with those printed in Terai et al.
-    (2021)
-<<<<<<< HEAD
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
 
 -   Visualize the results with different kinds of plots to facilitate interpretation
-=======
-
--   Visualize the results with different kinds of plots to facilitate
-    interpretation
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
 
 By the end of this chapter, it should become clear how to fit and
 interpret mixed-effects logistics regression models in R for
@@ -92,14 +81,10 @@ direction L2 -\> L1 or L1 -\> L2), and so on. But more on that later.
 
 # Importing and setting up the data
 
-<<<<<<< HEAD
-Before importing the data set and starting on our project, we need to load all the packages that we will need. Some of these packages may have to installed first.
-=======
 Before importing the data set and starting on our project, we need to
 load all the packages that we will need. Some of these packages may have
 to be installed first (using the install.packages("") command in your
 console.
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
 
 ```{r}
 #| label: setup
@@ -113,20 +98,8 @@ library(tidyverse)
 
 ```
 
-<<<<<<< HEAD
 Next, we can import the data. In contrast to the authors' approach in their code, we used the here package for importing the data. This package creates paths relative to the top-level directory and therefore makes it easier to reference files regardless of how they are organized inside a project. We also want to declare the learning direction (Condition) as a factor.
 Here we need to tell R that our variables represent categories and not numbers.  Converting our variables into factors now will also be useful for any other statistical analysis such as an ANOVA which we will be doing in later steps.
-=======
-Next, we can import the data. In contrast to the authors' approach in
-their code, we used the here package for importing the data. This
-package creates paths relative to the top-level directory and therefore
-makes it easier to reference files regardless of how they are organized
-inside a project. We also want to declare the learning direction
-(Condition) as a factor. Here we need to tell R that our variables
-represent categories and not numbers. Converting our variables into
-factors now will also be useful for any other statistical analysis such
-as an ANOVA which we will be doing in later steps.
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
 
 ```{r}
 VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
@@ -198,7 +171,7 @@ a description of how the peaks compare to a normal distribution
 
 Kurtosis = 0 -\> similar to a normal distribution. Positive kurtosis -\>
 sharper peak (more concentrated in the center). Negative kurtosis -\>
-flatter peak.
+flatter peak. (Parajuli @2023)
 
 ## Table 3 Reproduction
 
@@ -818,15 +791,8 @@ generally higher and more consistent across learning directions.
 
 ### Reproducing Table 4 and 5
 
-<<<<<<< HEAD
+
 After conducting reliability testing and descriptive statistics for the tests, we want to display the results in tables resembling Table 4 and 5 in Terai et al. (@2021: 1126). As with the target items, there was no code accessible for creating the tables. But with the available data, we can find a way to reproduce them anyway!
-=======
-After conducting reliability testing and descriptive statistics for the
-tests, we want to display the results in tables resembling Table 4 and 5
-in Terai et al. (2021), p. 1126. As with the target items, there was no
-code accessible for creating the tables. But with the available data, we
-can find a way to reproduce them anyway!
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
 
 ```{r}
 #| warning: false
@@ -942,22 +908,8 @@ adequate reliability of all the tests.
 
 # Generalized linear mixed-effects models
 
-<<<<<<< HEAD
 Terai et al. (@2021) used generalized linear mixed-effect models (GLMM) to analyze and examine three variables: Learning Condition (L2 to L1 and L1 to L2), Test Type (L1 production and L2 production), and Vocabulary Size (L2 Proficiency), as well as interaction between two variables (p.1125).Three models were chosen for this analysis, the first one to analyze the relationship between learning conditions and production
-tests (RQ1) (Terai et al. @2021: 1125). The second and third model analyzed the effects of the two learning directions (L2 to L1 and L1 to L2) based on the results of the production tests (RQ2). They are pretty similar, except that the third and last model also used L2 production test scores.
-=======
-Terai et al. (2021) used generalized linear mixed-effect models (GLMM)
-to analyze and examine three variables: Learning Condition (L2 to L1 and
-L1 to L2), Test Type (L1 production and L2 production), and Vocabulary
-Size (L2 Proficiency), as well as interaction between two variables
-(p.1125).Three models were chosen for this analysis, the first one to
-analyze the relationship between learning conditions and production
-tests (RQ1) (Terai et al. 2021 : 1125). The second and third model
-analyzed the effects of the two learning directions (L2 to L1 and L1 to
-L2) based on the results of the production tests (RQ2). They are pretty
-similar, except that the third and last model also used L2 production
-test scores. The first model (RQ 1) will be elaborated in more detail.
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
+tests (RQ1) (Terai et al. @2021: 1125). The second and third model analyzed the effects of the two learning directions (L2 to L1 and L1 to L2) based on the results of the production tests (RQ2). They are pretty similar, except that the third and last model also used L2 production test scores. The first model (RQ 1) will be elaborated in more detail.
 
 Generalized linear mixed-models are an extension of linear mixed models. They are tools that help us to analyze not normally distributed data, such as binary and count data, when observations are clustered in some way. GLMMs are mostly used to include some models that are commonly used, such as logistic regression or linear regression. What is great about these models, is that they allow for analysis of clustered or
 longitudinal data that is not continuous (Bolker @2015).
@@ -981,14 +933,9 @@ library(phia) # similar to emmeans
 
 ### Model 1 without interaction
 
-Now, we fit a logistic mixed-effects regression model predicting
-<<<<<<< HEAD
-Accuracy (Answer) from Test, Condition, and their interaction with the glmer() function. We want to go through the process step by step, and connect the code with the interpretation of data in the paper.
-=======
-Accuracy (Answer) from Test, Condition, and their interaction with the
-glmer() function. We want to go through the process step by step, and
-connect the code with the interpretation of data in the paper.
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
+Now, we fit a logistic mixed-effects regression model predicting Accuracy (Answer) from Test, Condition, and their interaction with the 
+glmer() function. We want to go through the process step by step, and connect the code with the interpretation of data in the paper.
+
 
 ```{r}
 # First, we fit the model without interaction, using the glmer() function.
@@ -1392,20 +1339,16 @@ AIC(fit2)
 ```
 
 <<<<<<< HEAD
-The model predicts the probability of a correct response (Answer), using logistic regression. The random intercepts (1|ID) and (1|ItemID) account for individual differences between participants and between vocabulary items. The output of this model without interaction shows that 's.vocab' is not significant with p = .57, this means that proficiency by itself did not strongly predict L1 Production accuracy of the participants.
-For 'Condition' the model also showed that it was not significant p = .18, meaning that learning direction alone also did not explain differences. So if we look at each predictor separately, there seems to be no clear effect.
-=======
-The model predicts the probability of a correct response (Answer), using
-logistic regression. The random intercepts (1\|ID) and (1\|ItemID)
-account for individual differences between participants and between
-vocabulary items. The output of this model without interaction shows
-that 's.vocab' is not significant with p = .57, this means that
-proficiency by itself did not strongly predict L1 Production accuracy of
-the participants. For 'Condition' the model also showed that it was not
-significant p = .18, meaning that learning direction alone also did not
-explain differences. So if we look at each predictor separately, there
+The model predicts the probability of a correct response (Answer), using 
+logistic regression. The random intercepts (1|ID) and (1|ItemID) 
+account for individual differences between participants and between 
+vocabulary items. The output of this model without interaction shows 
+that 's.vocab' is not significant with p = .57, this means that 
+proficiency by itself did not strongly predict L1 Production accuracy of 
+the participants. For 'Condition' the model also showed that it was not 
+significant p = .18, meaning that learning direction alone also did not 
+explain differences. So if we look at each predictor separately, there 
 seems to be no clear effect.
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
 
 ### Model with Interaction
 
@@ -1424,19 +1367,7 @@ options(digits=7)
 AIC(fit2.1)
 ```
 
-<<<<<<< HEAD
-The main difference in this model is that s.vocab * Condition here includes both main effects and their interaction. We tested whether the effect of vocabulary differs between the learning conditions. Just as we read in the paper, the interaction of Learning Condition and Vocabulary Size is significant with an estimate of about -0.37, SE = 0.141, z = -2.596, p = .009, which means that the effect of vocabulary proficiency depends on the learning direction. There were no significant effects of Vocabulary Size or learning condition by themselves, so the interaction is what matters here.
-=======
-The main difference in this model is that s.vocab \* Condition here
-includes both main effects and their interaction. We tested whether the
-effect of vocabulary differs between the learning conditions. Just as we
-read in the paper, the interaction of Learning Condition and Vocabulary
-Size is significant with an estimate of about -0.37, SE = 0.141, z =
--2.596, p = .009, which means that the effect of vocabulary proficiency
-depends on the learning direction. There were no significant effects of
-Vocabulary Size or learning condition by themselves, so the interaction
-is what matters here.
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
+The main difference in this model is that 's.vocab * Condition' here includes both main effects and their interaction. We tested whether the effect of vocabulary differs between the learning conditions. Just as we read in the paper, the interaction of Learning Condition and Vocabulary Size is significant with an estimate of about -0.37, SE = 0.141, z = -2.596, p = .009, which means that the effect of vocabulary proficiency depends on the learning direction. There were no significant effects of Vocabulary Size or learning condition by themselves, so the interaction is what matters here.
 
 ### Model comparison
 
@@ -1465,24 +1396,20 @@ plot(allEffects(fit2.1), multiline=T, ci.style="bands",
     rescale.axis=F, ylim = c(0,1), colors="black", asp=1)
 ```
 
-<<<<<<< HEAD
-We see a solid line which represents the L1 -> L2 learning condition and a dotted line which represents the L2 -> L1 learning condition. The y-axis showsL1 production accuracy rates of the test, and the x-axis the scaled scores of the vocabulary size tests (Terai et al. @2021: 1128). Looking at the plot you see a nearly flat line for L2 -\> L1 and a positive, steeper line for L1 -\> L2 which cross at intermediate proficiency (\~5.419 as reported in the paper, p. 1127). The crossover point at ~5.419 suggests that for learners in the L1 -> L2 direction a score of over ~5.419 on the test for vocabulary size was more beneficial than for L2 -> L1 learners. The fact that the line for L2 -> L1 learning is nearly flat shows that proficiency in L2 did not have a big influence. Basically, the plot tells us that for lower proficiency learners, L2 -\> L1 is better, and for higher proficiency learners L1 -\> L2 is more beneficial **(Terai et al. 2021).**
-=======
-We see a solid line which represents the L1 -\> L2 learning condition
-and a dotted line which represents the L2 -\> L1 learning condition. The
-y-axis showsL1 production accuracy rates of the test, and the x-axis the
-scaled scores of the vocabulary size tests (p. 1128). Looking at the
-plot you see a nearly flat line for L2 -\> L1 and a positive, steeper
-line for L1 -\> L2 which cross at intermediate proficiency (\~5.419 as
-reported in the paper, p. 1127). The crossover point at \~5.419 suggests
-that for learners in the L1 -\> L2 direction a score of over \~5.419 on
-the test for vocabulary size was more beneficial than for L2 -\> L1
-learners. The fact that the line for L2 -\> L1 learning is nearly flat
-shows that proficiency in L2 did not have a big influence. Basically,
-the plot tells us that for lower proficiency learners, L2 -\> L1 is
-better, and for higher proficiency learners L1 -\> L2 is more beneficial
-**(Terai et al. 2021).**
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
+We see a solid line which represents the L1 -> L2 learning condition 
+and a dotted line which represents the L2 -> L1 learning condition. The 
+y-axis shows L1 production accuracy rates of the test, and the x-axis the 
+scaled scores of the vocabulary size tests (Terai et al. @2021: 1128). Looking at the 
+plot you see a nearly flat line for L2 -\> L1 and a positive, steeper 
+line for L1 -\> L2 which cross at intermediate proficiency (\~5.419 as 
+reported in the paper, p. 1127). The crossover point at ~5.419 suggests 
+that for learners in the L1 -> L2 direction a score of over ~5.419 on 
+the test for vocabulary size was more beneficial than for L2 -> L1 
+learners. The fact that the line for L2 -> L1 learning is nearly flat 
+shows that proficiency in L2 did not have a big influence. Basically, 
+the plot tells us that for lower proficiency learners, L2 -\> L1 is 
+better, and for higher proficiency learners L1 -\> L2 is more beneficial 
+(Terai et al. @2021).
 
 ### Testing simple effects
 
@@ -1549,7 +1476,8 @@ confint(fit3.1)
 options(digits=7)
 AIC(fit3.1)
 ```
-Similarl to our first research question we have calculated AICs for both versions of the model, with and without interaction. We can see that the model **with** interaction showed a lower AIC (1145.32) than the one without interaction (1146.52), which as we remember means that the model with the interaction is a better fit. Now, taking a look at the output of our summary, we see that the Vocabulary Size estimate is -0.227 (SE = 0.193, z = 1.179, p = .238). Our p-value is greater than 0.05 which means the effect is not statistically significant and proficiency on its can not predict accuracy on the L2 production test. We see something nearly identical for learning condition with an estimate of -0.262 (SE = 0.154, z = -1.699, p = 0.089). This means that the perforance does not significantly differ between our two learning directions. In a final step, we considered the interaction term 's.vocab * Condition' which was also not statistically significant (Estimate = -0.278, SE = 0.154, z = -1.810, p = .070).
+
+Similar to our first research question we have calculated AICs for both versions of the model, with and without interaction. We can see that the model **with** interaction showed a lower AIC (1145.32) than the one without interaction (1146.52), which as we remember means that the model with the interaction is a better fit. Now, taking a look at the output of our summary, we see that the Vocabulary Size estimate is -0.227 (SE = 0.193, z = 1.179, p = .238). Our p-value is greater than 0.05 which means the effect is not statistically significant and proficiency on its can not predict accuracy on the L2 production test. We see something nearly identical for learning condition with an estimate of -0.262 (SE = 0.154, z = -1.699, p = 0.089). This means that the perforance does not significantly differ between our two learning directions. In a final step, we considered the interaction term 's.vocab * Condition' which was also not statistically significant (Estimate = -0.278, SE = 0.154, z = -1.810, p = .070).
 
 ### Model Comparison
 
@@ -1558,6 +1486,7 @@ To formally check whether the model with the interaction is better than the simp
 ```{r}
 anova(fit3,fit3.1)
 ```
+
 Here the authors once again use an anova test to decide if maybe the interaction term improves the model. The output reports a p-value of .0073 which means the model **with** interaction does not really outperform the simpler model. But we see that the value is close to 0.05, this suggests a slight trend toward significance which matches what the authors reported in their paper. While they did not find a significant interaction, there was a similar trend as they found in the L1 production test where proficiency mattered a bit more for learning direction. This can be seen better in a plot which we will print in our next step. 
 
 ### Visualization
@@ -1613,13 +1542,11 @@ It seems that vocabulary learning is not something that can be generalized. Whil
 [@2000]
 Amano, S., & Kondo, T. (2000). Nihongo-no-Goitokusei Hindo [Lexical properties of Japanese: Frequency]. Sanseido.
 
-<<<<<<< HEAD
 [@2022]
 Barlaz, M. (2022). *Contrast coding in R.* <https://marissabarlaz.github.io/portfolio/contrastcoding/#contrast-coding>
 
 [@2015]
 Bolker, Benjamin M. 2015. '13 Linear and generalized linear mixed models', in Gordon A. Fox, Simoneta Negrete-Yankelevich, and Vinicio J. Sosa (eds), *Ecological Statistics: Contemporary theory and application.* Oxford Academic. <https://doi.org/10.1093/acprof:oso/9780199672547.003.0014> 
-
 [@1992]
 Chambers, John M., & Hastie, Trevor J. (1992). *Statistical models in S*. New York, Routledge.
 
@@ -1632,18 +1559,6 @@ Pennsylvania State University. 2018. *10.7 - Detecting Multicollinearity Using V
 
 [@2021]
 Terai, Masato, Junko Yamashita, and Kelly E. Pasich. 2021. *EFFECTS OF LEARNING DIRECTION IN RETRIEVAL PRACTICE ON EFL VOCABULARY LEARNING. Studies in Second Language Acquisition 43*(5): 1116–1137. <https://doi.org/10.1017/S0272263121000346>.
-=======
-It seems that vocabulary learning is not something that can be
-generalized. While retrieval practice is quite effective, the direction
-of practice depends on who the learner is and how much this learner
-knows of that language. Due to the extensive research by Terai,
-Yamashita and Pasich (2021) who published their data set and code along
-with the paper, we were able to reproduce their findings and gain
-hands-on experience with modeling. This not only helps with our
-understanding of the research, but it also sharpens our skills as
-analysts of second-language data.
->>>>>>> 7064b6271442d0211d1097aaf4175dde6f437337
-
 
 ## Packages used in this chapter
 
