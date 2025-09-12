@@ -135,7 +135,11 @@ Next, we can import the data. In contrast to the authors' approach in
 their code, we used the here package for importing the data. This
 package creates paths relative to the top-level directory and therefore
 makes it easier to reference files regardless of how they are organized
-inside a project.
+inside a project. We also want to declare the learning direction (Condition) as a factor.
+Here we need to tell R that our variables represent categories and not
+numbers.  Converting our variables into factors now will also be useful for any
+other statistical analysis such as an ANOVA which we will be doing in
+later steps.
 
 ```{r}
 VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
@@ -159,7 +163,7 @@ two groups (L1 -\> L2 vs. L2 -\> L1). We use 'simple coding' where our
 first Condition (L1 -\> L2) gets coded as -0.5 and our second Condition
 (L2 -\> L1) as +0.5. This makes interpretations easier when we have
 interactions since the intercept represents the overall mean across
-conditions (Barlaz 2022).
+conditions **(Barlaz 2022)**.
 
 ```{r}
 c<-contr.treatment(2)
@@ -962,9 +966,6 @@ used, such as logistic regression or linear regression. What is great
 about these models, is that they allow for analysis of clustered or
 longitudinal data that is not continuous (Gurka & Edwards 2011).
 
-MAYBE A BETTER EXPLANATION NEEDED??? BETTER SOURCE TOO
-
-phia package (De Rosario-Martinze 2015) emmeans package (Lenth 2019)
 
 ## Effects of Learning Condition (Research Question 1)
 
@@ -1297,20 +1298,16 @@ to update or change later on.
 Terai et al. (2021) hypothesized that the effectiveness of learning
 direction or word pairs might be dependant on the learners' proficiency
 in English. Meaning, lower-proficiency learners might benefit more from
-practicing in the L2 -\> L1 direction, whilst higher-proficiency
-learners might benefit more from the L1 -\> L2 direction.
+practicing in the L2 -> L1 direction, whilst higher-proficiency
+learners might benefit more from the L1 -> L2 direction.
 
 To answer and test this question, the authors once again use generalized
 linear mixed models (GLMMs) separately for the L1 and L2 production
-tests, with Condition (learning direction), scaled vocabulary size
-(s.vocab), and their interaction as fixed effects, and Subject/Item
-random intercepts.
-
-Before we work through and understand the code step by step like the
+tests. Before we work through and understand the code step by step like the
 author's did, we need to know what we are working with here: We have a
 response variable which in our case is the accuracy on production tests
-and predictor variables which were learning direction (L1 -\> L2 vs. L2
--\> L1) and vocabulary size (English proficiency). Our random effects
+and predictor variables which were learning direction (L1 -> L2 vs. L2
+-> L1) and vocabulary size (English proficiency). Our random effects
 were Participant ID and Item ID so that we can account for individual
 differences.
 
@@ -1341,23 +1338,16 @@ nrow(dat1)
 nrow(dat1.L1)
 ```
 
-Next, we want to declare the learning direction 'Condition' as a factor.
-Here we need to tell R that 'Condition' represents categories and not
-numbers. This is why we convert the categories (L1 -\> L2 vs. L2 -\> L1)
-into factors, that way R will treat it as a categorical variable.
-Converting our variables into factors now will also be useful for any
-other statistical analysis such as an ANOVA which we will be doing in a
-later step.
+Next, we want to declare the learning direction (Condition) as a factor again. We convert the categories (L1 -> L2 vs. L2 -> L1) into factors, that way R will treat it as a categorical variable.
 
 ```{r}
-#Very basic: We set Condition (Learning direction) as a factor
+#We set Condition (Learning direction) as a factor
 dat1.L1$Condition <- as.factor(dat1.L1$Condition)
 ```
 
 We make use of contrast coding once more:
 
 ```{r}
-
 c <- contr.treatment(2)
 my.coding <- matrix(rep(1/2,2,ncol=1))
 my.simple <- c-my.coding
@@ -1365,16 +1355,8 @@ print(my.simple)
 
 contrasts(dat1.L1$Condition) <- my.simple
 
-```
-
-In the next step, we want to scale the continuous predictor. This
-converts the vocabulary scores to have a mean of 0 and standard
-deviation of 1 which is helpful for interpretation!
-
-```{r}
-
+#Next, we standardize vocabulary scores
 dat1.L1$s.vocab <- scale(dat1.L1$Vocab)
-
 ```
 
 ### Model without interaction
@@ -1393,21 +1375,20 @@ fit2<-glmer(Answer ~ s.vocab + Condition + (1|ID) + (1|ItemID),
             glmerControl(optimizer="bobyqa"))
 
 summary(fit2)
-
 ```
 
 ```{r}
 options(digits=7)
 AIC(fit2) 
-##This command prints AIC, a fit index (the lower the better)
+#This command prints AIC, a fit index (the lower the better)
 ```
 
 The model predicts the probability of a correct response (Answer), using
-logistic regression. The random intercepts (1\|ID) and (1\|ItemID)
+logistic regression. The random intercepts (1|ID) and (1|ItemID)
 account for individual differences between participants and between
 vocabulary items. The output of this model without interaction shows
-that s.vocab is not significant with p = .57, this means that
-proficiency by itself did not strongly predict L1 Production accuracy.
+that 's.vocab' is not significant with p = .57, this means that
+proficiency by itself did not strongly predict L1 Production accuracy of the participants.
 For 'Condition' the model also showed that it was not significant p =
 .18, meaning that learning direction alone also did not explain
 differences. So if we look at each predictor separately, there seems to
@@ -1416,7 +1397,7 @@ be no clear effect.
 ### Model with Interaction
 
 What if proficiency only matters depending on the learning direction? To
-figure this out, we add an interaction term: s.vocab \* Condition.
+figure this out, we add an interaction term: s.vocab * Condition.
 
 ```{r}
 fit2.1<-glmer(Answer ~ s.vocab * Condition + (1|ID) + (1|ItemID),
@@ -1430,30 +1411,31 @@ options(digits=7)
 AIC(fit2.1)
 ```
 
-The main difference in this model is that s.vocab \* Condition here
+The main difference in this model is that s.vocab * Condition here
 includes both main effects and their interaction. We tested whether the
 effect of vocabulary differs between the learning conditions. Just as we
 read in the paper, the interaction of Learning Condition and Vocabulary
 Size is significant with an estimate of about -0.37, SE = 0.141, z =
 -2.596, p = .009, which means that the effect of vocabulary proficiency
 depends on the learning direction. There were no significant effects of
-Vocabulary Size or learning condition by themselves.
+Vocabulary Size or learning condition by themselves, so the interaction is what matters here.
 
 ### Model comparison
 
-To formally check which model fits better using AIC and a likelihood
-ratio, again using the command anova().
+To formally check which model fits better we use the command anova() just as we did for RQ1.
 
 ```{r}
 anova(fit2,fit2.1)
 ```
 
 The AIC favors the interaction model (1311.6 vs. 1316.3), and the
-likelihood ratio is statistically significant (χ² = 6.70, p = .009),
-indicating and confirming that the model with the Condition x
+outcome is statistically significant with a p-value of .009,
+indicating and confirming that the model with Condition and
 Proficiency interaction fits best.
 
 ### Visualization
+
+Next, we look at the results of vocabulary size and learning direction for our L1 production in a plot since a visualization of the outcomes of our calculations can be understood better.
 
 ```{r}
 plot(allEffects(fit2.1), multiline=T, ci.style="bands",
@@ -1462,36 +1444,28 @@ plot(allEffects(fit2.1), multiline=T, ci.style="bands",
     rescale.axis=F, ylim = c(0,1), colors="black", asp=1)
 ```
 
-Looking at the plot you see a nearly flat line for L2 -\> L1 and a
-positive, steeper line for L1 -\> L2 which cross at intermediate
-proficiency (\~5.419 as reported in the paper, p. 1127). This plot shows
-that accuracy increases with proficiency. The slope differs by
-condition. It is much steeper for L1 -\> L2. For lower proficiency
-learners, L2 -\> L1 is better, and for higher proficiency learners L1
--\> L2 is more beneficial. Learners in one learning direction seem to
-benefit more strongly from larger vocabularies.
+We see a solid line which represents the L1 -> L2 learning condition and a dotted line which represents the L2 -> L1 learning condition. The y-axis showsL1 production accuracy rates of the test, and the x-axis the scaled scores of the vocabulary size tests (p. 1128). Looking at the plot you see a nearly flat line for L2 -\> L1 and a positive, steeper line for L1 -\> L2 which cross at intermediate proficiency (\~5.419 as reported in the paper, p. 1127). The crossover point at ~5.419 suggests that for learners in the L1 -> L2 direction a score of over ~5.419 on the test for vocabulary size was more beneficial than for L2 -> L1 learners. The fact that the line for L2 -> L1 learning is nearly flat shows that proficiency in L2 did not have a big influence. Basically, the plot tells us that for lower proficiency learners, L2 -\> L1 is better, and for higher proficiency learners L1 -\> L2 is more beneficial **(Terai et al. 2021).**
 
 ### Testing simple effects
 
-You can also test whether the slope of proficiency differs significantly
-between conditions as predicted by the authors. This is very basically a
-Chi-square test.
+You can also test whether the slope of proficiency differs significantly between conditions as predicted by the authors. 
 
 ```{r}
 testInteractions(fit2.1, fixed="s.vocab", across="Condition")
 ```
 
-## L2 Production Test
+### L2 Production Test
 
-We now repeat all the same steps for the L2 production test, but now we
-predict accuracy for when the participants had to produce English words
-after learning Japanese-English pairs.
+We now repeat all the same steps for the L2 production test, but now we predict accuracy for when the participants had to produce English words after learning Japanese-English pairs.
 
 ```{r}
+#Load our data
 dat2 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"))
 
+#Filter the data we need
 dat2.L2 <- filter(dat2, Test == "L2 Production")
 
+#Setting Condition as factors
 dat2.L2$Condition <- as.factor(dat2.L2$Condition)
 
 c<-contr.treatment(2)
@@ -1501,8 +1475,10 @@ print(my.simple)
 ```
 
 ```{r}
+#Here we contrast our data once again
 contrasts(dat2.L2$Condition) <- my.simple 
 
+#Then we scale our Vocab scores
 dat2.L2$s.vocab <- scale(dat2.L2$Vocab)
 
 
