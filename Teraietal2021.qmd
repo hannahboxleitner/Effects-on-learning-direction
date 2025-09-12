@@ -449,7 +449,7 @@ first focused on the wrong one, although no numbers match the ones in
 the paper.
 
 ```{r}
-excess_kurt <- kurtosis(dat$mora, na.rm = TRUE) #instead of mora any other Variable of table 3 can be added to caluclate kurtosis
+excess_kurt <- kurtosis(dat$mora, na.rm = TRUE) #instead of mora any other Variable of table 3 can be added to calculate kurtosis
 pearson_kurt <- excess_kurt + 3
 round(c(excess = excess_kurt, pearson = pearson_kurt), 3)
 ```
