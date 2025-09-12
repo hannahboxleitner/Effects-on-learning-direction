@@ -8,110 +8,67 @@ format:
     number-sections: true
     embed-resources: true
     fig-dpi: 300
+    include-in-header: 
+    <style>
+      .quarto-article p, .quarto-article li {
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
+     }
+    </style>
 editor: 
   markdown: 
     wrap: 72
 bibliography: references.bib
-link-citations: true
 ---
 
 # Chapter overview {.unnumbered}
 
 This chapter is based on data published in:
 
--   Terai, Masato, Junko Yamashita, and Kelly E. Pasich. 2021. EFFECTS
-    OF LEARNING DIRECTION IN RETRIEVAL PRACTICE ON EFL VOCABULARY
-    LEARNING. Studies in Second Language Acquisition 43(5): 1116–1137.
-    <https://doi.org/10.1017/S0272263121000346>.
+-   Terai, Masato, Junko Yamashita, and Kelly E. Pasich. 2021. EFFECTS OF LEARNING DIRECTION IN RETRIEVAL PRACTICE ON EFL VOCABULARY LEARNING. Studies in Second Language Acquisition 43(5): 1116–1137. <https://doi.org/10.1017/S0272263121000346>.
 
-Based on the data from Terai et al. ([@2021]), we will introduce the
-application of R in Second Language Acquisition research. This chapter
-will walk you through how to:
+Based on the data from Terai et al. [-@2021], we will introduce the application of R in Second Language Acquisition research. This chapter will walk you through how to:
 
 -   Retrieve the authors' data and import it in R
 
--   Conduct descriptive statistics concerning target items, test types
-    and alpha coefficients for tests
+-   Conduct descriptive statistics concerning target items, test types and alpha coefficients for tests
 
--   Reproduce tables 3, 4 and 5 in Terai et al. ([@2021])
+-   Reproduce tables 3, 4 and 5 in Terai et al. [-@2021]
 
--   Fit a generalized linear mixed-effects model to investigate the
-    effectiveness of learning direction
+-   Fit a generalized linear mixed-effects model to investigate the effectiveness of learning direction
 
 -   Compare models with and without interaction
 
--   Fit a generalized linear mixed-effects model to explore the
-    influence of L2 proficiency on the two types of learning
+-   Fit a generalized linear mixed-effects model to explore the influence of L2 proficiency on the two types of learning
 
--   Interpret and compare the results with those printed in Terai et al.
-    ([@2021])
+-   Interpret and compare the results with those printed in Terai et al. [-@2021]
 
--   Visualize the results with different kinds of plots to facilitate
-    interpretation
+-   Visualize the results with different kinds of plots to facilitate interpretation
 
-By the end of this chapter, it should become clear how to fit and
-interpret mixed-effects logistics regression models in R for
-experimental data.
+By the end of this chapter, it should become clear how to fit and interpret mixed-effects logistics regression models in R for experimental data.
 
 # Introducing the study
 
-In this chapter, we attempt to reproduce the results of a linguistics
-study by Terai et al. ([@2021]). The study focuses on learning
-directions in pair-associated vocabulary learning: L2 to L1, where L2
-words are used as stimuli and responses are given in L1, vs. L1 to L2,
-where it is the other way around. Opposed to studying practices, where
-both a target and the answer are simultaneously presented,
-pair-associated learning includes *retrieval*. Retrieval is defined as
-the process of accessing stored information and plays a crucial role in
-retaining a learned word in memory (Terai et al. [@2021]: 1116-1117).
-Previous findings regarding the efficacy of the two types of learning
-directions are inconsistent. The study focuses on the relationship
-between L2 proficiency and the effectiveness of the two learning
-directions in paired-associate learning in L2 vocabulary acquisition,
-and follows two research questions: 1. Which learning direction is more
-effective for vocabulary acquisition, L1 to L2 learning or L2 to L1
-learning? 2. How does L2 proficiency influence the effects of L2 to L1
-and L1 to L2 earning?
+In this chapter, we attempt to reproduce the results of a linguistics study by Terai et al. [-@2021]. The study focuses on learning directions in pair-associated vocabulary learning: L2 to L1, where L2 words are used as stimuli and responses are given in L1, vs. L1 to L2, where it is the other way around. Opposed to studying practices, where both a target and the answer are simultaneously presented, pair-associated learning includes *retrieval*. Retrieval is defined as the process of accessing stored information and plays a crucial role in retaining a learned word in memory (Terai et al. [-@2021]: 1116-1117). Previous findings regarding the efficacy of the two types of learning directions are inconsistent. The study focuses on the relationship between L2 proficiency and the effectiveness of the two learning directions in paired-associate learning in L2 vocabulary acquisition, and follows two research questions: 1. Which learning direction is more effective for vocabulary acquisition, L1 to L2 learning or L2 to L1 learning? 2. How does L2 proficiency influence the effects of L2 to L1 and L1 to L2 earning?
 
-To answer these questions, the authors designed an experiment where
-Japanese EFL learners studied word pairs and then completed retrieval
-practive tasks in different conditions. After learning, students were
-tested on their ability to produce the target vocabulary items both in
-L1 and L2.
+To answer these questions, the authors designed an experiment where Japanese EFL learners studied word pairs and then completed retrieval practive tasks in different conditions. After learning, students were tested on their ability to produce the target vocabulary items both in L1 and L2.
 
-Therefore, the authors established the hypotheses that there is no
-significant difference between the two learning directions and that the
-effect of learning direction depends on the learner’s L2 proficiency
-(Terai et al. [@2021]: 1121-1122).
+Therefore, the authors established the hypotheses that there is no significant difference between the two learning directions and that the effect of learning direction depends on the learner’s L2 proficiency (Terai et al. [-@2021]: 1121-1122).
 
 # Retrieving the authors' data
 
-We will use the authors' original data for our reproduction, which they
-have made openly accessible on IRIS, a free database for language
-research:
+We will use the authors' original data for our reproduction, which they have made openly accessible on IRIS, a free database for language research:
 
--   [Terai, M., Yamashita, J. & Pasich, K. E. (2021). Effects of
-    Learning Direction in Retrieval Practice on EFL Vocabulary Learning.
-    Studies in Second Language Acquisition. 43(5).
-    1116–1137)](https://www.iris-database.org/search/?s_publicationAPAInlineReference=Terai%20et%20al.%20(2021))
+-   [Terai, M., Yamashita, J. & Pasich, K. E. (2021). Effects of Learning Direction in Retrieval Practice on EFL Vocabulary Learning. Studies in Second Language Acquisition. 43(5). 1116–1137)](https://www.iris-database.org/search/?s_publicationAPAInlineReference=Terai%20et%20al.%20(2021))
 
-In this particular case, you cannot just access the data, but also the
-authors' R code. Our further reproduction will use this R code to
-investigate and interpret the statistical analysis and results presented
-in the paper.
+In this particular case, you cannot just access the data, but also the authors' R code. Our further reproduction will use this R code to investigate and interpret the statistical analysis and results presented in the paper.
 
-The data set (dataset1_ssla_20210313.csv) contains data for each
-participant and item, including Answer (whether the participant gave the
-correct answer (1 = correct, 0 = incorrect)), Test (distinguishing two
-test types: L1 Production or L2 Production), Condition (learning
-direction L2 -\> L1 or L1 -\> L2), and so on. But more on that later.
+The data set (dataset1_ssla_20210313.csv) contains data for each participant and item, including Answer (whether the participant gave the correct answer (1 = correct, 0 = incorrect)), Test (distinguishing two test types: L1 Production or L2 Production), Condition (learning direction L2 -\> L1 or L1 -\> L2), and so on. But more on that later.
 
 # Importing and setting up the data
 
-Before importing the data set and starting on our project, we need to
-load all the packages that we will need. Some of these packages may have
-to be installed first (using the install.packages("") command in your
-console.
+Before importing the data set and starting on our project, we need to load all the packages that we will need. Some of these packages may have to be installed first (using the install.packages("") command in your console.
 
 ```{r}
 #| label: setup
@@ -125,15 +82,7 @@ library(tidyverse)
 
 ```
 
-Next, we can import the data. In contrast to the authors' approach in
-their code, we used the here package for importing the data. This
-package creates paths relative to the top-level directory and therefore
-makes it easier to reference files regardless of how they are organized
-inside a project. We also want to declare the learning direction
-(Condition) as a factor. Here we need to tell R that our variables
-represent categories and not numbers. Converting our variables into
-factors now will also be useful for any other statistical analysis such
-as an ANOVA which we will be doing in later steps.
+Next, we can import the data. In contrast to the authors' approach in their code, we used the here package for importing the data. This package creates paths relative to the top-level directory and therefore makes it easier to reference files regardless of how they are organized inside a project. We also want to declare the learning direction (Condition) as a factor. Here we need to tell R that our variables represent categories and not numbers. Converting our variables into factors now will also be useful for any other statistical analysis such as an ANOVA which we will be doing in later steps.
 
 ```{r}
 VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
@@ -150,14 +99,7 @@ dat$Condition<-as.factor(dat$Condition)
 
 ```
 
-We also apply contrast coding, also called "treatment coding" (Chambers
-& Hastie @1992). While it may look confusing and maybe intimidating, it
-is actually quite the important step. Basically, we want to compare our
-two groups (L1 -\> L2 vs. L2 -\> L1). We use 'simple coding' where our
-first Condition (L1 -\> L2) gets coded as -0.5 and our second Condition
-(L2 -\> L1) as +0.5. This makes interpretations easier when we have
-interactions since the intercept represents the overall mean across
-conditions (Barlaz @2022).
+We also apply contrast coding, also called "treatment coding" (Chambers & Hastie [-@1992]). While it may look confusing and maybe intimidating, it is actually quite the important step. Basically, we want to compare our two groups (L1 -\> L2 vs. L2 -\> L1). We use 'simple coding' where our first Condition (L1 -\> L2) gets coded as -0.5 and our second Condition (L2 -\> L1) as +0.5. This makes interpretations easier when we have interactions since the intercept represents the overall mean across conditions (Barlaz [-@2022]).
 
 ```{r}
 c<-contr.treatment(2)
@@ -176,53 +118,23 @@ dat$s.vocab<-scale(dat$Vocab)
 
 # Descriptive statistics
 
-Before we dive into the descriptive statistics conducted in this study,
-we need to explain that one part of it will not be reproduced. While
-descriptive statistics about the participants (age, years of learning
-etc.) are mentioned in the paper by Terai et al. ([@2021]), the data to
-reproduce these findings cannot be found. It is neither part of the data
-set accessible on IRIS, nor does it come up anywhere in the authors' R
-code. Therefore, we will only focus on the descriptive statistics of the
-target items (40 English words used in the study), test types and the
-reliability testing. We'll start with target items, which is found in
-Table 3 in Terai et al. ([@2021]: 1123).
+Before we dive into the descriptive statistics conducted in this study, we need to explain that one part of it will not be reproduced. While descriptive statistics about the participants (age, years of learning etc.) are mentioned in the paper by Terai et al. [-@2021], the data to reproduce these findings cannot be found. It is neither part of the data set accessible on IRIS, nor does it come up anywhere in the authors' R code. Therefore, we will only focus on the descriptive statistics of the target items (40 English words used in the study), test types and the reliability testing. We'll start with target items, which is found in Table 3 in Terai et al. [-@2021]: 1123.
 
-Most of the statistics that we will be looking at are things we are
-already familiar with: the mean, median, maximum and minimum, as well as
-the standard deviation (SD). In addition, the authors also reported
-skewness and kurtosis.
+Most of the statistics that we will be looking at are things we are already familiar with: the mean, median, maximum and minimum, as well as the standard deviation (SD). In addition, the authors also reported skewness and kurtosis.
 
-Skewness and Kurtosis are both measures of shapes and distribution of a
-data set in qualitative methods. Skewness measures the asymmetry of
-distribution. Simply put, it describes the amount of which the
-distribution differs from a completely symmetric shape (Parajuli
-[@2023]).
+Skewness and Kurtosis are both measures of shapes and distribution of a data set in qualitative methods. Skewness measures the asymmetry of distribution. Simply put, it describes the amount of which the distribution differs from a completely symmetric shape (Parajuli [-@2023]).
 
-Skew = 0 -\> perfectly symmetrical. Negative Skew -\> longer "tail" on
-the left. Positive Skew -\> longer "tail" on the right.
+Skew = 0 -\> perfectly symmetrical. Negative Skew -\> longer "tail" on the left. Positive Skew -\> longer "tail" on the right.
 
-Kurtosis then is a measure of peaks of a distribution. Basically, it is
-a description of how the peaks compare to a normal distribution
-(Parajuli [@2023]).
+Kurtosis then is a measure of peaks of a distribution. Basically, it is a description of how the peaks compare to a normal distribution (Parajuli [-@2023]).
 
-Kurtosis = 0 -\> similar to a normal distribution. Positive kurtosis -\>
-sharper peak (more concentrated in the center). Negative kurtosis -\>
-flatter peak. (Parajuli [@2023])
+Kurtosis = 0 -\> similar to a normal distribution. Positive kurtosis -\> sharper peak (more concentrated in the center). Negative kurtosis -\> flatter peak. (Parajuli [-@2023])
 
 ## Table 3 Reproduction
 
-We want to reproduce Table 3 in Terai et al. ([@2021]), which shows us
-the descriptive statistics of the target items of the study.
-Unfortunately, the code for all the tables was not included in the R
-code published by the authors. But since we have the data in the form of
-a .csv file, this is not a problem! We have the organized data ready for
-us to analyze. Thus, we will learn how to reproduce the data of Table 3
-step by step.
+We want to reproduce Table 3 in Terai et al. [-@2021], which shows us the descriptive statistics of the target items of the study. Unfortunately, the code for all the tables was not included in the R code published by the authors. But since we have the data in the form of a .csv file, this is not a problem! We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step by step.
 
-We have already loaded the data we will need for our table, but just to
-be sure, we will do it again and also load all the necessary libraries
-for the two tables, so we have some kind of "toolbox" that contains
-every function we might need:
+We have already loaded the data we will need for our table, but just to be sure, we will do it again and also load all the necessary libraries for the two tables, so we have some kind of "toolbox" that contains every function we might need:
 
 ```{r}
 #| warning: false
@@ -241,18 +153,9 @@ dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE
 dat$ItemID <- trimws(dat$ItemID)
 ```
 
-In the paper by Terai et al. ([@2021]) we can see that the variables
-used are, for L2-related variables: Frequency, Syllables, and Letters.
-For L1-related variables: Frequency, Letters, and Mora (syllables) as
-well as Familiarity (Fami A). We were not able to reproduce Fami (B) as
-the data was not made public. Also, important to note: "L1 frequency and
-L1 familiarity were retrieved from Amano and Kondo ([@2000])" (Terai et
-al. [@2021]: 1123).
+In the paper by Terai et al. [-@2021] we can see that the variables used are, for L2-related variables: Frequency, Syllables, and Letters. For L1-related variables: Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami A). We were not able to reproduce Fami (B) as the data was not made public. Also, important to note: "L1 frequency and L1 familiarity were retrieved from Amano and Kondo [-@2000]" (Terai et al. [-@2021]: 1123).
 
-First, we need to take a look at the data the authors have uploaded for
-us. The column names may differ from what we want to see in the table
-later on which is why we briefly want to check them by having them
-printed:
+First, we need to take a look at the data the authors have uploaded for us. The column names may differ from what we want to see in the table later on which is why we briefly want to check them by having them printed:
 
 ```{r}
 names(dat)
@@ -268,23 +171,9 @@ names(dat)
 
 ```
 
-Basically, what we are doing next is shaping our data from
-participant-focused to item-focused. The raw data set has multiple rows
-per word because each participant contributed responses and thus has
-their own row per word. For example, the word "weasel" actually appears
-many times, one time for each participant. But for descriptive
-statistics of the items, we only want one row per word.
+Basically, what we are doing next is shaping our data from participant-focused to item-focused. The raw data set has multiple rows per word because each participant contributed responses and thus has their own row per word. For example, the word "weasel" actually appears many times, one time for each participant. But for descriptive statistics of the items, we only want one row per word.
 
-To solve this issue we use the commands group_by() and summarise() to
-turn all those rows into just a single one per word. The command
-'group_by(ItemID)' we use in the code groups all rows together that
-contain the same word. The function summarise() then creates our new
-dataset by calculating the information everything we need and want to
-look at, so L2Frequency, Syllables, Alphabet, etc. The function
-'first()' is fairly simple, since the frequencies, syllables etc. of the
-words do not change, we just take the first occurence without any
-repetition. Only for the familiarity ratings we calculated the mean()
-across all participants for each word.
+To solve this issue we use the commands group_by() and summarise() to turn all those rows into just a single one per word. The command 'group_by(ItemID)' we use in the code groups all rows together that contain the same word. The function summarise() then creates our new dataset by calculating the information everything we need and want to look at, so L2Frequency, Syllables, Alphabet, etc. The function 'first()' is fairly simple, since the frequencies, syllables etc. of the words do not change, we just take the first occurence without any repetition. Only for the familiarity ratings we calculated the mean() across all participants for each word.
 
 ```{r}
 items <- dat |>
@@ -302,23 +191,13 @@ items <- dat |>
 
 ```
 
-A quick check before we continue, we expect 40 items in total so this
-command should print 40:
+A quick check before we continue, we expect 40 items in total so this command should print 40:
 
 ```{r}
 nrow(items)
 ```
 
-In order to avoid repeating code (and because we are lazy), we create
-our own function that computes all the statistics (mean, SD, median,
-min, max, skew, kurtosis) we need for each variable. We build our own
-small machine that we will name desc(), it will do the calculations for
-us. 'desc \<- funcion(x) creates this function with the input 'x' which
-represents whichever variable we want to analyze. Inside of our
-function, we use 'data.frame()' for organization of our statistics
-before we begin the calculations. Each calculation takes our input
-variable 'x' and computes the statistics. The functions skewness() and
-kurtosis() come from the 'moments' package we loaded earlier.
+In order to avoid repeating code (and because we are lazy), we create our own function that computes all the statistics (mean, SD, median, min, max, skew, kurtosis) we need for each variable. We build our own small machine that we will name desc(), it will do the calculations for us. 'desc \<- funcion(x) creates this function with the input 'x' which represents whichever variable we want to analyze. Inside of our function, we use 'data.frame()' for organization of our statistics before we begin the calculations. Each calculation takes our input variable 'x' and computes the statistics. The functions skewness() and kurtosis() come from the 'moments' package we loaded earlier.
 
 ```{r}
 desc <- function(x) {
@@ -334,20 +213,9 @@ desc <- function(x) {
 }
 ```
 
-Now that we have most of what we need for the tables, we can start to
-build them up! There are two subtables we need.
+Now that we have most of what we need for the tables, we can start to build them up! There are two subtables we need.
 
-The code below does this with two important functions: rbind() which
-stacks the rows we want to create on top of each other to build the
-final table which we will print in the next step. And cbind() which
-creates columns that stick together side by side. For example
-'cbind(Variable = "Frequency", desc(items\$L2Frequency)' creates a
-column with the name "Variable" with the value "Frequency" next to the
-summary of the output of 'desc()'. With our helper function 'desc()' we
-then insert the the statistics from our data, in this case it is the
-'L2Frequency'. Basically, we are creating here three rows stacked on top
-of each other for tab_L2, and four rows for tab_L1. As you see we only
-have to run our helper function 'desc()' seven times!
+The code below does this with two important functions: rbind() which stacks the rows we want to create on top of each other to build the final table which we will print in the next step. And cbind() which creates columns that stick together side by side. For example 'cbind(Variable = "Frequency", desc(items\$L2Frequency)' creates a column with the name "Variable" with the value "Frequency" next to the summary of the output of 'desc()'. With our helper function 'desc()' we then insert the the statistics from our data, in this case it is the 'L2Frequency'. Basically, we are creating here three rows stacked on top of each other for tab_L2, and four rows for tab_L1. As you see we only have to run our helper function 'desc()' seven times!
 
 ```{r}
 tab_L2 <- rbind(
@@ -365,9 +233,7 @@ tab_L1 <- rbind(
 
 ```
 
-Great! You are almost done building the table for the descriptive
-statistics. In the next step, we will round the numbers to two decimals
-to make the table actually readable.
+Great! You are almost done building the table for the descriptive statistics. In the next step, we will round the numbers to two decimals to make the table actually readable.
 
 ```{r}
 tab_L2$Mean     <- round(tab_L2$Mean, 2)
@@ -387,22 +253,7 @@ tab_L1$Skew     <- round(tab_L1$Skew, 2)
 tab_L1$Kurtosis <- round(tab_L1$Kurtosis, 2)
 ```
 
-Perfect, the next and easiest part of building up our two subtables is
-captioning them and then finally printing them. Here we need the kable()
-and the kable_classic() function. We use these functions to make the
-tables look easy to read. The kable() function is quite nice because it
-helps to make R's output look a little more professional. The function
-comes from the knitr package. kable(tab_L2, ...) takes our tab_2 data
-frame and converts it into a formatted table which we then caption with
-the command 'caption = "...". With the command 'align = "lrrrrrr" we
-control the way the text is aligned in each column. the 'l' means
-left-aligned, while every added 'r' means the remaining columns should
-be right-aligned. The kable_classics function comes from the kableExtra
-package we loaded earlier. It is also another function to tidy up our
-table style. The command 'full_width = FALSE' makes sure that the table
-does not stretch too wide. When you run this code, you will see a nice
-table with clear structure and formatting which will make it easier to
-read and interpret, it also looks ready to be published.
+Perfect, the next and easiest part of building up our two subtables is captioning them and then finally printing them. Here we need the kable() and the kable_classic() function. We use these functions to make the tables look easy to read. The kable() function is quite nice because it helps to make R's output look a little more professional. The function comes from the knitr package. kable(tab_L2, ...) takes our tab_2 data frame and converts it into a formatted table which we then caption with the command 'caption = "...". With the command 'align = "lrrrrrr" we control the way the text is aligned in each column. the 'l' means left-aligned, while every added 'r' means the remaining columns should be right-aligned. The kable_classics function comes from the kableExtra package we loaded earlier. It is also another function to tidy up our table style. The command 'full_width = FALSE' makes sure that the table does not stretch too wide. When you run this code, you will see a nice table with clear structure and formatting which will make it easier to read and interpret, it also looks ready to be published.
 
 ```{r}
 kable(tab_L2, caption = "Table 3a. Descriptive statistics for L2 (English) item properties.",
@@ -414,35 +265,11 @@ kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item
   kable_classic(full_width = FALSE)
 ```
 
-Our reproduced tables now closely match Table 3 in Terai et al.
-([@2021])! The L2 frequency has a mean of about 1025 with a quite large
-SD (\~852), which shows us that some English words were quite frequent
-while others were much rarer. The skewness here is positive (\~1.51),
-although slightly different than the one reported in the paper (\~1.57).
-The difference is only small and still shows that the distribution has a
-"long tail" of very high-frequency words. Syllables in English have an
-average mean of 2, and range from 1 to 5 with only a slight positive
-skewness which means that most words are short and only a few are
-longer, again there is a small difference in skewness. Letters average
-around 6.2 again with a positive skewness. For the L1 variables, the
-frequency distribution also shows a strong positive skew, which means
-that few Japanese translations are very common, but many are quite rare.
-Fami (A)) averages about 5.2 on a 7-point scale, with a pretty low SD,
-suggesting that the words were mostly familiar.
+Our reproduced tables now closely match Table 3 in Terai et al. [-@2021]! The L2 frequency has a mean of about 1025 with a quite large SD (\~852), which shows us that some English words were quite frequent while others were much rarer. The skewness here is positive (\~1.51), although slightly different than the one reported in the paper (\~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. Syllables in English have an average mean of 2, and range from 1 to 5 with only a slight positive skewness which means that most words are short and only a few are longer, again there is a small difference in skewness. Letters average around 6.2 again with a positive skewness. For the L1 variables, the frequency distribution also shows a strong positive skew, which means that few Japanese translations are very common, but many are quite rare. Fami (A)) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar.
 
-Our skewness values match the original paper closely, with only small
-differences. However, our kurtosis values differ quite a lot from the
-published results. This may seem like a huge issue at first, but is
-actually quite normal. Kurtosis calculations can vary between packages,
-for example the 'moments' package we used calculates excess kurtosis,
-while the authors of the original paper might have used different
-methods.
+Our skewness values match the original paper closely, with only small differences. However, our kurtosis values differ quite a lot from the published results. This may seem like a huge issue at first, but is actually quite normal. Kurtosis calculations can vary between packages, for example the 'moments' package we used calculates excess kurtosis, while the authors of the original paper might have used different methods.
 
-For the reproduction of the kurtosis numbers we tried several methods,
-but there seems to be an issue somewhere. We calculated both the excess
-kurtosis and the pearson kurtosis (see in the chunk below) in case we
-first focused on the wrong one, although no numbers match the ones in
-the paper.
+For the reproduction of the kurtosis numbers we tried several methods, but there seems to be an issue somewhere. We calculated both the excess kurtosis and the pearson kurtosis (see in the chunk below) in case we first focused on the wrong one, although no numbers match the ones in the paper.
 
 ```{r}
 excess_kurt <- kurtosis(dat$mora, na.rm = TRUE) #instead of mora any other Variable of table 3 can be added to calculate kurtosis
@@ -450,32 +277,15 @@ pearson_kurt <- excess_kurt + 3
 round(c(excess = excess_kurt, pearson = pearson_kurt), 3)
 ```
 
-There are several possibilities why this is the case. There might be an
-outlier that may have been removed, or maybe the authors used another
-method. Strangely, it is unclear why the authors calculate skewness and
-kurtosis at all, as they do not mention it apart from in the tables. The
-issue with the differences in our numbers and the ones by Terai et al.
-([@2021]) is that the differences are so big the graphs are going to
-look quite different, especially for the Fami (A) variable. In the paper
-the kurtosis shows -0.02 which would be a slightly flatter graph, while
-our kurtosis number 4.29 would be sharper. This is why, in an extension,
-we have added some graphs to show the importance of skewness and
-kurtosis and what exactly these numbers show.
+There are several possibilities why this is the case. There might be an outlier that may have been removed, or maybe the authors used another method. Strangely, it is unclear why the authors calculate skewness and kurtosis at all, as they do not mention it apart from in the tables. The issue with the differences in our numbers and the ones by Terai et al. [-@2021] is that the differences are so big the graphs are going to look quite different, especially for the Fami (A) variable. In the paper the kurtosis shows -0.02 which would be a slightly flatter graph, while our kurtosis number 4.29 would be sharper. This is why, in an extension, we have added some graphs to show the importance of skewness and kurtosis and what exactly these numbers show.
 
 ## Extension (Beyhan)
 
 ### Visualizations of Table 3
 
-With Table 3 we were shown a summary of many numbers (mean, SD, range,
-skewness, kurtosis) for the 40 target words, but these numbers are much
-easier to understand when we actually see them visualized. Below we want
-to turn some key variables of Table 3 into quick histograms to visually
-connect the ideas of skew and kurtosis to the actual items used in this
-study.
+With Table 3 we were shown a summary of many numbers (mean, SD, range, skewness, kurtosis) for the 40 target words, but these numbers are much easier to understand when we actually see them visualized. Below we want to turn some key variables of Table 3 into quick histograms to visually connect the ideas of skew and kurtosis to the actual items used in this study.
 
-Please note that in this extension our reloading of the data may seem
-repetitive, but it simply ensures that this section can work on its own
-if needed, but to you it is optional.
+Please note that in this extension our reloading of the data may seem repetitive, but it simply ensures that this section can work on its own if needed, but to you it is optional.
 
 ```{r}
 # Tidyverse library needs to be loaded if you have not done it before.
@@ -499,21 +309,9 @@ items <- dat |>
 ##if you want you can quickly check the item number with 'nrow(items)' it should be 40!
 ```
 
-We will start with a graph of L2 Frequencies. To do this we use the
-ggplot() command. Our first line of code here 'ggplot(data = items,
-aes(x = L2Frequency))' tells ggplot to basically use the 'items' dataset
-and put the L2 frequencies of each word onto the x-axis.
-'geom_density(...) creates the actual density plot. To fully understand
-where our numbers in the table come from, we add reference lines:
-'geom_vline(xintercept = mean(...))' for the mean value, and
-'geom_vline(xintercept = median(...), linetype = "dashed"...)' for a
-dashed line at the median.
+We will start with a graph of L2 Frequencies. To do this we use the ggplot() command. Our first line of code here 'ggplot(data = items, aes(x = L2Frequency))' tells ggplot to basically use the 'items' dataset and put the L2 frequencies of each word onto the x-axis. 'geom_density(...) creates the actual density plot. To fully understand where our numbers in the table come from, we add reference lines: 'geom_vline(xintercept = mean(...))' for the mean value, and 'geom_vline(xintercept = median(...), linetype = "dashed"...)' for a dashed line at the median.
 
-Do not be too confused by the numbers on the y-axis. Since our focus
-here is to see in the density plot what skewness and kurtosis are, our
-curve simple shows the proportions on the x-axis. The values can be read
-as a kind of probability, a higher peak means more words are around that
-frequency, while a lower peak means fewer words around that frequency.
+Do not be too confused by the numbers on the y-axis. Since our focus here is to see in the density plot what skewness and kurtosis are, our curve simple shows the proportions on the x-axis. The values can be read as a kind of probability, a higher peak means more words are around that frequency, while a lower peak means fewer words around that frequency.
 
 ```{r}
 ggplot(items, aes(x = L2Frequency)) +
@@ -529,16 +327,7 @@ ggplot(items, aes(x = L2Frequency)) +
 theme_minimal()
 ```
 
-In this graph can clearly see a right-skewed distribution which we saw
-in the table with the positive skewness values (\~1.51). As you can
-probably recall, a normally distributed graph would be a symmetric
-curve, nothing asymmetric, which is exactly what we see with skewness.
-This means most words are lower or medium frequency with only a few
-really high-frequency words (see the long right tail). The mean sits to
-the right of the median which is another characteristic of positive
-skew. The number of our kurtosis (\~5.21) shows us the sharpness or
-peakedness of our curve which you can see quite nicely when you compare
-the graph for L2 frequency to the one for L1 frequency.
+In this graph can clearly see a right-skewed distribution which we saw in the table with the positive skewness values (\~1.51). As you can probably recall, a normally distributed graph would be a symmetric curve, nothing asymmetric, which is exactly what we see with skewness. This means most words are lower or medium frequency with only a few really high-frequency words (see the long right tail). The mean sits to the right of the median which is another characteristic of positive skew. The number of our kurtosis (\~5.21) shows us the sharpness or peakedness of our curve which you can see quite nicely when you compare the graph for L2 frequency to the one for L1 frequency.
 
 For that, we have to do the exact same for the L1 frequencies.
 
@@ -556,17 +345,11 @@ ggplot(items, aes(x = L1Frequency)) +
 theme_minimal()
 ```
 
-Again, we see a right-skew even stronger than for L2 (skew \~3.59). This
-shows once again that most words are lower-frequency, there are only
-very few high-frequency words. Here, with a kurtosis number of \~18.10
-we can see that with higher positive numbers the peak becomes sharper
-and sharper.
+Again, we see a right-skew even stronger than for L2 (skew \~3.59). This shows once again that most words are lower-frequency, there are only very few high-frequency words. Here, with a kurtosis number of \~18.10 we can see that with higher positive numbers the peak becomes sharper and sharper.
 
 ## Descriptive statistics of the tests and reliability testing
 
-In this chapter, we will attempt to reproduce the authors' descriptive
-statistics regarding the two types of post tests and calculate
-Cronbach's α to test reliability.
+In this chapter, we will attempt to reproduce the authors' descriptive statistics regarding the two types of post tests and calculate Cronbach's α to test reliability.
 
 ### Reliability analysis
 
@@ -610,19 +393,11 @@ alpha(VocabularyB_L2production[,-1], warnings=FALSE)
 
 ```
 
-These reliability analyses put out Cronbach’s α, a measure of internal
-consistency of tests. It indicates whether responses are consistent
-between items. Before interpreting these results, we will get to the
-descriptive statistics of the two types of post-tests, which the
-reliability analyses are in regard to.
+These reliability analyses put out Cronbach’s α, a measure of internal consistency of tests. It indicates whether responses are consistent between items. Before interpreting these results, we will get to the descriptive statistics of the two types of post-tests, which the reliability analyses are in regard to.
 
 ### Accuracy
 
-To investigate accuracy, we first need to load our data set and the
-dplyr library (in accordance with previous data imports, we are using
-the here package in this case as well). We want to process the collected
-results for each participant — their ID, how many items they answered,
-and how many they got right — and visualize them in a boxplot.
+To investigate accuracy, we first need to load our data set and the dplyr library (in accordance with previous data imports, we are using the here package in this case as well). We want to process the collected results for each participant — their ID, how many items they answered, and how many they got right — and visualize them in a boxplot.
 
 ```{r}
 #| warning: false
@@ -727,16 +502,7 @@ boxplot(L1pro,col="grey91", outline = T)
 beeswarm(L1pro,add=T)
 ```
 
-Boxplots are a way to visualize both the central tendency (median) of a
-variable and the spread around this central tendency (IQR). The median
-is represented by the thick line inside the box, while the box
-represents interquartile range, meaning the range of the middle 50% of
-the data. The whiskers outside the box extend to the highest and
-smallest values, and the jittered dots represent individual data points.
-As we can see here, the median is similar in both learning directions.
-L2→L1 displays slightly greater variability and a higher concentration
-of upper outliers. Overall, performance appears comparable between the
-two groups.
+Boxplots are a way to visualize both the central tendency (median) of a variable and the spread around this central tendency (IQR). The median is represented by the thick line inside the box, while the box represents interquartile range, meaning the range of the middle 50% of the data. The whiskers outside the box extend to the highest and smallest values, and the jittered dots represent individual data points. As we can see here, the median is similar in both learning directions. L2→L1 displays slightly greater variability and a higher concentration of upper outliers. Overall, performance appears comparable between the two groups.
 
 ```{r}
 ## L2 production test
@@ -819,20 +585,11 @@ beeswarm(L2pro,add=T)
 
 ```
 
-Median scores in the L2 production test are similar for both learning
-directions (L2→L1 and L1→L2), suggesting comparable central performance.
-L1→L2 learning shows a slightly higher median. In the L2→L1 group,
-values below the median are more spread out, indicating more variety.
-Comparing L1 and L2 production tests, L1 production scores appear to be
-generally higher and more consistent across learning directions.
+Median scores in the L2 production test are similar for both learning directions (L2→L1 and L1→L2), suggesting comparable central performance. L1→L2 learning shows a slightly higher median. In the L2→L1 group, values below the median are more spread out, indicating more variety. Comparing L1 and L2 production tests, L1 production scores appear to be generally higher and more consistent across learning directions.
 
 ### Reproducing Table 4 and 5
 
-After conducting reliability testing and descriptive statistics for the
-tests, we want to display the results in tables resembling Table 4 and 5
-in Terai et al. ([@2021]: 1126). As with the target items, there was no
-code accessible for creating the tables. But with the available data, we
-can find a way to reproduce them anyway!
+After conducting reliability testing and descriptive statistics for the tests, we want to display the results in tables resembling Table 4 and 5 in Terai et al. ([-@2021]: 1126). As with the target items, there was no code accessible for creating the tables. But with the available data, we can find a way to reproduce them anyway!
 
 ```{r}
 #| warning: false
@@ -865,13 +622,9 @@ kable(descriptive_stats_tests_trimmed,
 
 ```
 
-We have created a table that summarizes the descriptive statistics of
-the two types of post-tests, where the measures of scores in the two
-production tests can be easily compared. In the L1 production test,
-scores were shown to be generally higher than in L2 production test.
+We have created a table that summarizes the descriptive statistics of the two types of post-tests, where the measures of scores in the two production tests can be easily compared. In the L1 production test, scores were shown to be generally higher than in L2 production test.
 
-Now we want to do the same with the results reliability testing, namely
-the alpha coefficients.
+Now we want to do the same with the results reliability testing, namely the alpha coefficients.
 
 ```{r}
 # Summarized results: Alpha coefficients for L1 and L2 production tests
@@ -923,64 +676,19 @@ alpha_table %>%
 
 ```
 
-If we compare this table about alpha coefficients with the one in the
-paper (Terai et al. [@2021]: 1126), we notice a difference in confidence
-intervals, specifically in the hundredths place. If we look at the
-output of alpha(), we see that it puts out two kinds of confidence
-intervals: Feldt and Duhachek. Reading up in the help file of the
-alpha() function, it becomes clear that alpha.ci (used to access CIs
-from alpha function) finds CIs using the Feldt procedure, which is based
-on the mean covariance, while Duhachek procedure considers the variance
-of the covariances. In the help file it is stated that in March, 2022,
-alpha.ci was finally fixed to follow the Feldt procedure. Since the
-paper was published in [@2021], this might explain the deviating CIs
-here. If one would like to look at Duhachek's CI instead, it can either
-be seen in the output of alpha(), or one might install an earlier
-version of the package. Since we want to use the current psych package
-for our project and the differences don't change our outcome, we decided
-to stick with Feldt's CI and simply wanted to note why this difference
-occurs here.
+If we compare this table about alpha coefficients with the one in the paper (Terai et al. [-@2021]: 1126), we notice a difference in confidence intervals, specifically in the hundredths place. If we look at the output of alpha(), we see that it puts out two kinds of confidence intervals: Feldt and Duhachek. Reading up in the help file of the alpha() function, it becomes clear that alpha.ci (used to access CIs from alpha function) finds CIs using the Feldt procedure, which is based on the mean covariance, while Duhachek procedure considers the variance of the covariances. In the help file it is stated that in March, 2022, alpha.ci was finally fixed to follow the Feldt procedure. Since the paper was published in [-@2021], this might explain the deviating CIs here. If one would like to look at Duhachek's CI instead, it can either be seen in the output of alpha(), or one might install an earlier version of the package. Since we want to use the current psych package for our project and the differences don't change our outcome, we decided to stick with Feldt's CI and simply wanted to note why this difference occurs here.
 
-As mentioned before, Cronbach's alpha indicates whether responses are
-consistent between items, and ranges between 0 and 1, a higher value
-meaning higher reliability. As we can see in the results of the
-reliability analysis, alpha coefficients range from .73 to .84, showing
-adequate reliability of all the tests.
+As mentioned before, Cronbach's alpha indicates whether responses are consistent between items, and ranges between 0 and 1, a higher value meaning higher reliability. As we can see in the results of the reliability analysis, alpha coefficients range from .73 to .84, showing adequate reliability of all the tests.
 
 # Generalized linear mixed-effects models
 
-Terai et al. ([@2021]) used generalized linear mixed-effect models
-(GLMM) to analyze and examine three variables: Learning Condition (L2 to
-L1 and L1 to L2), Test Type (L1 production and L2 production), and
-Vocabulary Size (L2 Proficiency), as well as interaction between two
-variables (p.1125).Three models were chosen for this analysis, the first
-one to analyze the relationship between learning conditions and
-production tests (RQ1) (Terai et al. [@2021]: 1125). The second and
-third model analyzed the effects of the two learning directions (L2 to
-L1 and L1 to L2) based on the results of the production tests (RQ2).
-They are pretty similar, except that the third and last model also used
-L2 production test scores. The first model (RQ 1) will be elaborated in
-more detail.
+Terai et al. [-@2021] used generalized linear mixed-effect models (GLMM) to analyze and examine three variables: Learning Condition (L2 to L1 and L1 to L2), Test Type (L1 production and L2 production), and Vocabulary Size (L2 Proficiency), as well as interaction between two variables (p.1125).Three models were chosen for this analysis, the first one to analyze the relationship between learning conditions and production tests (RQ1) (Terai et al. [-@2021]: 1125). The second and third model analyzed the effects of the two learning directions (L2 to L1 and L1 to L2) based on the results of the production tests (RQ2). They are pretty similar, except that the third and last model also used L2 production test scores. The first model (RQ 1) will be elaborated in more detail.
 
-Generalized linear mixed-models are an extension of linear mixed models.
-They are tools that help us to analyze not normally distributed data,
-such as binary and count data, when observations are clustered in some
-way. GLMMs are mostly used to include some models that are commonly
-used, such as logistic regression or linear regression. What is great
-about these models, is that they allow for analysis of clustered or
-longitudinal data that is not continuous (Bolker @2015).
+Generalized linear mixed-models are an extension of linear mixed models. They are tools that help us to analyze not normally distributed data, such as binary and count data, when observations are clustered in some way. GLMMs are mostly used to include some models that are commonly used, such as logistic regression or linear regression. What is great about these models, is that they allow for analysis of clustered or longitudinal data that is not continuous (Bolker [-@2015]).
 
 ## Effects of Learning Condition (Research Question 1)
 
-As we recall from the introduction, the first research question of Terai
-et al.'s ([@2021]) study is: Which learning direction is more effective
-for vocabulary acquisition, L1 to L2 learning or L2 to L1 learning?
-Therefore, the first model was built to analyze the relationship between
-the production tests and learning conditions. It contained Learning
-Condition and Test Type as explanatory variables, as well as the
-interaction of the two variables. Random effects (Subject and Item) were
-included, and production test answers were used as the response variable
-(p. 1125).
+As we recall from the introduction, the first research question of Terai et al.'s [-@2021] study is: Which learning direction is more effective for vocabulary acquisition, L1 to L2 learning or L2 to L1 learning? Therefore, the first model was built to analyze the relationship between the production tests and learning conditions. It contained Learning Condition and Test Type as explanatory variables, as well as the interaction of the two variables. Random effects (Subject and Item) were included, and production test answers were used as the response variable (p. 1125).
 
 ```{r}
 #| warning: false
@@ -996,10 +704,7 @@ library(phia) # similar to emmeans
 
 ### Model 1 without interaction
 
-Now, we fit a logistic mixed-effects regression model predicting
-Accuracy (Answer) from Test, Condition, and their interaction with the
-glmer() function. We want to go through the process step by step, and
-connect the code with the interpretation of data in the paper.
+Now, we fit a logistic mixed-effects regression model predicting Accuracy (Answer) from Test, Condition, and their interaction with the glmer() function. We want to go through the process step by step, and connect the code with the interpretation of data in the paper.
 
 ```{r}
 # First, we fit the model without interaction, using the glmer() function.
@@ -1015,44 +720,15 @@ options(digits=7)
 AIC(fit1)
 ```
 
-Since it is so important for our study, we want to take a closer look at
-this step. With the glmer() function, we fit a GLLM. In its formula,
-both fixed effects (Test answers and Condition) and random effects (ID
-and ItemID) are specified. (1 \| ID) allows for a random intercept for
-each level of the variable ID (participants), (1 \| ItemID) does the
-same for each level of the variable ItemID (test items). This accounts
-for repeated measures and inter-individual and inter-item variability.
-With specifying family=binomial, we tell the glmer() function that our
-response variable is binary (correct answer = 1, incorrect answer = 0).
-The last argument specifies an optimizing algorithm. We use the
-summary() function to look at the output of this model. Additionally, we
-calculate AIC, which is used to compare models, and will therefore be of
-interest later.
+Since it is so important for our study, we want to take a closer look at this step. With the glmer() function, we fit a GLLM. In its formula, both fixed effects (Test answers and Condition) and random effects (ID and ItemID) are specified. (1 \| ID) allows for a random intercept for each level of the variable ID (participants), (1 \| ItemID) does the same for each level of the variable ItemID (test items). This accounts for repeated measures and inter-individual and inter-item variability. With specifying family=binomial, we tell the glmer() function that our response variable is binary (correct answer = 1, incorrect answer = 0). The last argument specifies an optimizing algorithm. We use the summary() function to look at the output of this model. Additionally, we calculate AIC, which is used to compare models, and will therefore be of interest later.
 
-Without interaction, the model assumes that the effects of Test and
-Condition are additive and do not depend on each other. AIC (Akike
-Information Criterion) was calculated for both variants of the model. It
-is used to estimate the quality of a model in comparison to another one,
-with a lower AIC indicating higher quality. Therefore, we will get back
-to this after fitting the model with interaction, and compare the two.
+Without interaction, the model assumes that the effects of Test and Condition are additive and do not depend on each other. AIC (Akike Information Criterion) was calculated for both variants of the model. It is used to estimate the quality of a model in comparison to another one, with a lower AIC indicating higher quality. Therefore, we will get back to this after fitting the model with interaction, and compare the two.
 
-If we look at the output of the summary() function for our model, the
-output includes *scaled residuals*. Residuals are the differences
-between observed and predicted values. This section shows summary
-statistics of the model's residuals after scaling: Minimum, first
-quartile (25^th^ percentile), median (50^th^ percentile), third quartile
-(75^th^ percentile), and maximum. These values give an impression of how
-well the model fits the data. The *Random effects* section puts out the
-estimated variability in the intercept across subjects (ID) and items
-(ItemID), accounting for differences in overall accuracy between
-participants and between items.
+If we look at the output of the summary() function for our model, the output includes *scaled residuals*. Residuals are the differences between observed and predicted values. This section shows summary statistics of the model's residuals after scaling: Minimum, first quartile (25^th^ percentile), median (50^th^ percentile), third quartile (75^th^ percentile), and maximum. These values give an impression of how well the model fits the data. The *Random effects* section puts out the estimated variability in the intercept across subjects (ID) and items (ItemID), accounting for differences in overall accuracy between participants and between items.
 
 ### Model 1 with interaction
 
-Next, we fit a model similar to the first one, but with the difference
-that it includes the interaction between Test and Condition,
-investigating if the effect of one variable depends on the level of the
-other variable.
+Next, we fit a model similar to the first one, but with the difference that it includes the interaction between Test and Condition, investigating if the effect of one variable depends on the level of the other variable.
 
 ```{r}
 # For the model with interaction, we use glmer() as well, but with a change in the formula (connect the effects with * instead of +).
@@ -1071,46 +747,15 @@ options(digits=7)
 AIC(fit1.1)
 ```
 
-Now after calculating AICs for both versions of the model, we can see
-that the model *with* interaction showed lower AIC (with interaction:
-2427.102; without interaction: 2429.771), indicating higher quality of
-the model.
+Now after calculating AICs for both versions of the model, we can see that the model *with* interaction showed lower AIC (with interaction: 2427.102; without interaction: 2429.771), indicating higher quality of the model.
 
-The authors state that the results show a significant main effect of
-**Test Type** (Estimate = -0.976, SE = 0.105, z = -9.315, p \< .001). We
-want to find these results in the output of our code and see how they
-lead to this interpretation. If we look at the summary output of fit1.1
-under Fixed effects, the numbers can be found in the "Test2" row. They
-are all rounded up to three digits for better readability. The negative
-estimate tells us that accuracy in Test 2 is lower than in Test 1. The
-p-value can be extracted from the column marked Pr(\>\|z\|), where it is
-displayed in the form of \<2e-16, since it is such a small number. It
-tells us that the effect (of switching between test types) is
-significant. The z value tells us how many standard deviations away a
-value is from the mean.
+The authors state that the results show a significant main effect of **Test Type** (Estimate = -0.976, SE = 0.105, z = -9.315, p \< .001). We want to find these results in the output of our code and see how they lead to this interpretation. If we look at the summary output of fit1.1 under Fixed effects, the numbers can be found in the "Test2" row. They are all rounded up to three digits for better readability. The negative estimate tells us that accuracy in Test 2 is lower than in Test 1. The p-value can be extracted from the column marked Pr(\>\|z\|), where it is displayed in the form of \<2e-16, since it is such a small number. It tells us that the effect (of switching between test types) is significant. The z value tells us how many standard deviations away a value is from the mean.
 
-Moving on to **Learning Condition**, there was no main effect, as we can
-see under "Condition2" (Estimate = -0.038, SE = 0.103, z = -0.366, p =
-.714). In this case, the p-value is \> 0.05, meaning that the effect of
-learning condition is *not* significant. The main effect estimate of
-Condition2 is quite small (close to 0), telling us the predicted odds
-don't change much when moving from one learning condition to the other.
-The **interaction** of Test Type and Learning Condition (see row
-"Test2:Condition2") was also significant (Estimate = -0.446, SE = 0.206,
-z = -2.169, p = .030). The interaction term tells us how the effect of
-Test on accuracy changes depends on the Condition, or the other way
-around. The estimate tells us that, when both Test2 and Condition2 are
-present, the accuracy is even lower than when only one of them is. The
-p-value of .030 indicates that the interaction effect is unlikely due to
-chance.
+Moving on to **Learning Condition**, there was no main effect, as we can see under "Condition2" (Estimate = -0.038, SE = 0.103, z = -0.366, p = .714). In this case, the p-value is \> 0.05, meaning that the effect of learning condition is *not* significant. The main effect estimate of Condition2 is quite small (close to 0), telling us the predicted odds don't change much when moving from one learning condition to the other. The **interaction** of Test Type and Learning Condition (see row "Test2:Condition2") was also significant (Estimate = -0.446, SE = 0.206, z = -2.169, p = .030). The interaction term tells us how the effect of Test on accuracy changes depends on the Condition, or the other way around. The estimate tells us that, when both Test2 and Condition2 are present, the accuracy is even lower than when only one of them is. The p-value of .030 indicates that the interaction effect is unlikely due to chance.
 
 ### Model comparison
 
-We want to further analyze and compare the two models, using the command
-anova(), which is an analysis of variance (a statistical formula which
-compares variances across the means (or average) of different groups),
-and testInteractions(), which makes it possible to perform simple main
-effects analysis.
+We want to further analyze and compare the two models, using the command anova(), which is an analysis of variance (a statistical formula which compares variances across the means (or average) of different groups), and testInteractions(), which makes it possible to perform simple main effects analysis.
 
 ```{r}
 # In this chunk, we want to compare the model with and without interaction, using the anova() function:
@@ -1124,30 +769,11 @@ testInteractions(fit1.1, fixed="Test", across="Condition")
 testInteractions(fit1.1, fixed="Condition", across="Test")
 ```
 
-Since a significant effect of the interaction was found, we compared the
-two models with the anova() function to test if the interaction improves
-the model. It puts out a p-value of 0.03071. Being smaller than 0.05,
-the effect is statistically significant, which is also symbolized by the
-\* specified in the significance codes in the output. It tells us that
-fit1.1 (model with interaction) fits the data significantly better than
-fit1 (without interaction). With the testInteractions() function, it is
-possible to perform simple main effects analysis after finding a
-significant interaction. A significant interaction only tells you that
-the effect of one variable depends on the level of the other, not which
-levels are different. So with this function, we want to unpack the
-interaction further and find out how the effect of one variable (Test or
-Condition) differs across levels of the other. If we look at the output
-of the first function where **Test** is used as the fixed variable, the
-p-values (L1 Production: 0.188; L2 Production: 0.164) tell us that the
-effect of Test does *not* significantly differ between conditions. If we
-take **Condition** as the fixed variable, p-values are very small (L1L2:
-1.931e-07; L2L1: 1.608e-15), indicating that the effect of Condition
-*does* significantly differ between tests.
+Since a significant effect of the interaction was found, we compared the two models with the anova() function to test if the interaction improves the model. It puts out a p-value of 0.03071. Being smaller than 0.05, the effect is statistically significant, which is also symbolized by the \* specified in the significance codes in the output. It tells us that fit1.1 (model with interaction) fits the data significantly better than fit1 (without interaction). With the testInteractions() function, it is possible to perform simple main effects analysis after finding a significant interaction. A significant interaction only tells you that the effect of one variable depends on the level of the other, not which levels are different. So with this function, we want to unpack the interaction further and find out how the effect of one variable (Test or Condition) differs across levels of the other. If we look at the output of the first function where **Test** is used as the fixed variable, the p-values (L1 Production: 0.188; L2 Production: 0.164) tell us that the effect of Test does *not* significantly differ between conditions. If we take **Condition** as the fixed variable, p-values are very small (L1L2: 1.931e-07; L2L1: 1.608e-15), indicating that the effect of Condition *does* significantly differ between tests.
 
 ### Multiple comparisons
 
-After comparing the models and testing the interaction, we want to
-conduct pairwise comparisons on the effects of Condition and Test.
+After comparing the models and testing the interaction, we want to conduct pairwise comparisons on the effects of Condition and Test.
 
 ```{r}
 # Through computing estimated marginal means using the emmeans() function, we want to conduct pairwise comparisons of Condition levels within each level of Test, and assign it to a variable a.
@@ -1175,48 +801,13 @@ eff_size(b,sigma=sigma(fit1.1), edf= Inf)
 
 ```
 
-The analysis conducted in the code chunk above provides the most
-important information for the interpretation of this model done by the
-authors. We want to go through their statements and connect them with
-the code we reproduced. In the paper, the authors claim there was a
-statistically significant difference between the scores of the two
-tests, suggesting that L1 production test scores were higher than L2
-production test scores in both learning conditions (**L2 to L1
-learning:** p \< .001, d = 1.20, 95% CI \[0.91, 1.49\]; **L1 to L2
-learning:** p \< .001, d = 0.75, \[0.47, 1.04\]) (p. 1126). Now, we want
-to take a close look at these numbers and what they mean. In our code,
-we can find the numbers stated here in the output regarding the emmeans
-object b. The p-values show up when printing b, and lie \< .001 for both
-learning conditions. A small p-value tells us that an effect likely
-exists, but does not say much about how big or important it is. This is
-where effect size comes into play: The function eff_size() puts out the
-estimated effect sizes for both conditions, which are referred to as
-**d** in the paper. They both demonstrate a large (larger for L2 to L1)
-effect size, and indicate that the difference (different levels of Test
-within each Condition) is not just statistically significant, but
-meaningful in size. Lastly, the confint() function applied to b put out
-the 95% confidence intervals for both learning directions, which means
-we can be 95% confident that the true standardized effect size lies in
-this range (which is a meaningful effect size, in our case).
+The analysis conducted in the code chunk above provides the most important information for the interpretation of this model done by the authors. We want to go through their statements and connect them with the code we reproduced. In the paper, the authors claim there was a statistically significant difference between the scores of the two tests, suggesting that L1 production test scores were higher than L2 production test scores in both learning conditions (**L2 to L1 learning:** p \< .001, d = 1.20, 95% CI \[0.91, 1.49\]; **L1 to L2 learning:** p \< .001, d = 0.75, \[0.47, 1.04\]) (p. 1126). Now, we want to take a close look at these numbers and what they mean. In our code, we can find the numbers stated here in the output regarding the emmeans object b. The p-values show up when printing b, and lie \< .001 for both learning conditions. A small p-value tells us that an effect likely exists, but does not say much about how big or important it is. This is where effect size comes into play: The function eff_size() puts out the estimated effect sizes for both conditions, which are referred to as **d** in the paper. They both demonstrate a large (larger for L2 to L1) effect size, and indicate that the difference (different levels of Test within each Condition) is not just statistically significant, but meaningful in size. Lastly, the confint() function applied to b put out the 95% confidence intervals for both learning directions, which means we can be 95% confident that the true standardized effect size lies in this range (which is a meaningful effect size, in our case).
 
-It is further expressed that results showed no main effects of Learning
-Condition (L1 production test: p = .188, d = -0.19, 95% CI \[-0.46,
-0.09\]; L2 production test: p = .082, d = 0.26, \[-0.03, 0.55\]). This
-can be derived when we look at object a, which compares learning
-conditions separately for L1 Production and L2 Production. Printing a
-puts out p-values, which lie above 0.05 in both production tests and
-indicate no statistical significance of the differences between learning
-conditions. The effect sizes show a small negative effect for L1
-Production, and a small positive effect for L2 Production, and do not
-suggest a meaningful difference. The confidence intervals in both cases
-include 0 (since it lies between -0.03 and 0.55, for example), telling
-us that no effect (d = 0) is a possibility given the data. To sum up,
-all these values do *not* support a main effect of Learning Condition.
+It is further expressed that results showed no main effects of Learning Condition (L1 production test: p = .188, d = -0.19, 95% CI \[-0.46, 0.09\]; L2 production test: p = .082, d = 0.26, \[-0.03, 0.55\]). This can be derived when we look at object a, which compares learning conditions separately for L1 Production and L2 Production. Printing a puts out p-values, which lie above 0.05 in both production tests and indicate no statistical significance of the differences between learning conditions. The effect sizes show a small negative effect for L1 Production, and a small positive effect for L2 Production, and do not suggest a meaningful difference. The confidence intervals in both cases include 0 (since it lies between -0.03 and 0.55, for example), telling us that no effect (d = 0) is a possibility given the data. To sum up, all these values do *not* support a main effect of Learning Condition.
 
 ### Visualizing Model 1
 
-Finally, we want to present the results of this model in a plot that
-visualizes all important information regarding our research question.
+Finally, we want to present the results of this model in a plot that visualizes all important information regarding our research question.
 
 ```{r}
 # Visualizing the first model
@@ -1232,26 +823,11 @@ plot(allEffects(fit1.1),multiline=T,ci.style="bands", xlab="Test Type", ylab="Ac
        colors="black",asp=1)
 ```
 
-Lastly, the model is visualized. The plot shows the interaction between
-Test Type and Learning Condition on accuracy rates, based on the
-generalized linear mixed-effects model (fit1.1). It is an effect plot
-generated with the allEffects() function. The solid line represents the
-L1 to L2 learning condition; the dotted line represents the L2 to L1
-learning condition. The y-axis represents accuracy rates on both L1 and
-L2 production tests. The x-axis represents Test Type. We can see that
-the accuracy rates differ across Test Types and Learning Conditions,
-with a clear interaction between the two: The non-parallel lines
-indicate that the effect of one variable changes depending on the level
-of the other variable. The distance between the two lines is relatively
-small at each test type, which reflects the results that revealed no
-significant difference in learning effects between L2 to L1 learning and
-L1 to L2 learning.
+Lastly, the model is visualized. The plot shows the interaction between Test Type and Learning Condition on accuracy rates, based on the generalized linear mixed-effects model (fit1.1). It is an effect plot generated with the allEffects() function. The solid line represents the L1 to L2 learning condition; the dotted line represents the L2 to L1 learning condition. The y-axis represents accuracy rates on both L1 and L2 production tests. The x-axis represents Test Type. We can see that the accuracy rates differ across Test Types and Learning Conditions, with a clear interaction between the two: The non-parallel lines indicate that the effect of one variable changes depending on the level of the other variable. The distance between the two lines is relatively small at each test type, which reflects the results that revealed no significant difference in learning effects between L2 to L1 learning and L1 to L2 learning.
 
 ### Extension (Hannah)
 
-To extend the work on this model, I want to plot the results using the
-ggplot() function instead. I will explain later why this could be of
-advantage.
+To extend the work on this model, I want to plot the results using the ggplot() function instead. I will explain later why this could be of advantage.
 
 ```{r}
 #| warning: false
@@ -1291,53 +867,19 @@ ggplot(emm_df, aes(x = Test, y = prob, group = Condition, color = Condition, lin
 
 ```
 
-This plot is quite similar to the one presented in the author's code.
-The only addition in *what* is presented, is that it contains so-called
-error bars above and below each point, which reflect the confidence
-intervals. Most differences lie in *how* the data is presented, where I
-changed the appearance a bit. I added the Beyonce palette, to give the
-two lines (that represent Learning Condition) some color. I still kept
-them solid vs. dashed, so that they can be told apart easily. Also, the
-legend for "Condition" is next to the plot, not above it, which I find
-more well-arranged.
+This plot is quite similar to the one presented in the author's code. The only addition in *what* is presented, is that it contains so-called error bars above and below each point, which reflect the confidence intervals. Most differences lie in *how* the data is presented, where I changed the appearance a bit. I added the Beyonce palette, to give the two lines (that represent Learning Condition) some color. I still kept them solid vs. dashed, so that they can be told apart easily. Also, the legend for "Condition" is next to the plot, not above it, which I find more well-arranged.
 
-While this reproduces the plot that the authors already provided in
-their code, I want to explain why using ggplot2 for this might be of
-advantage. ggplot2 is built on the "grammar of graphics", which makes it
-easy to add layers and extend the plot. There are many options to alter
-the appearance of the plot, like colors, themes etc. Furthermore, in
-this code, we can explicitly see what is plotted and how specific
-elements are modified. This makes the plot more reproducible and easier
-to update or change later on.
+While this reproduces the plot that the authors already provided in their code, I want to explain why using ggplot2 for this might be of advantage. ggplot2 is built on the "grammar of graphics", which makes it easy to add layers and extend the plot. There are many options to alter the appearance of the plot, like colors, themes etc. Furthermore, in this code, we can explicitly see what is plotted and how specific elements are modified. This makes the plot more reproducible and easier to update or change later on.
 
 ## Effects of Learning Directions and L2 Proficiency (RQ2)
 
-Terai et al. ([@2021]) hypothesized that the effectiveness of learning
-direction or word pairs might be dependant on the learners' proficiency
-in English. Meaning, lower-proficiency learners might benefit more from
-practicing in the L2 -\> L1 direction, whilst higher-proficiency
-learners might benefit more from the L1 -\> L2 direction.
+Terai et al. [-@2021] hypothesized that the effectiveness of learning direction or word pairs might be dependant on the learners' proficiency in English. Meaning, lower-proficiency learners might benefit more from practicing in the L2 -\> L1 direction, whilst higher-proficiency learners might benefit more from the L1 -\> L2 direction.
 
-To answer and test this question, the authors once again use generalized
-linear mixed models (GLMMs) separately for the L1 and L2 production
-tests. Before we work through and understand the code step by step like
-the author's did, we need to know what we are working with here: We have
-a response variable which in our case is the accuracy on production
-tests and predictor variables which were learning direction (L1 -\> L2
-vs. L2 -\> L1) and vocabulary size (English proficiency). Our random
-effects were Participant ID and Item ID so that we can account for
-individual differences.
+To answer and test this question, the authors once again use generalized linear mixed models (GLMMs) separately for the L1 and L2 production tests. Before we work through and understand the code step by step like the author's did, we need to know what we are working with here: We have a response variable which in our case is the accuracy on production tests and predictor variables which were learning direction (L1 -\> L2 vs. L2 -\> L1) and vocabulary size (English proficiency). Our random effects were Participant ID and Item ID so that we can account for individual differences.
 
 ### L1 Production test
 
-We begin by focusing only on the L1 production data. This can be done by
-first loading our data with the command read.csv() and then the command
-filter() which only keeps the rows for the L1 Production test. We filter
-this data because while each participant took both L1 and L2 production
-tests, the authors of this study found different patterns for both test
-types which is why they chose to analyze them separately (Terai et al.
-[@2021]: 1126). This is the part where participants of the study had to
-produce the L1 (Japanese) word when shown the L2 (English) word.
+We begin by focusing only on the L1 production data. This can be done by first loading our data with the command read.csv() and then the command filter() which only keeps the rows for the L1 Production test. We filter this data because while each participant took both L1 and L2 production tests, the authors of this study found different patterns for both test types which is why they chose to analyze them separately (Terai et al. [-@2021]: 1126). This is the part where participants of the study had to produce the L1 (Japanese) word when shown the L2 (English) word.
 
 ```{r}
 dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
@@ -1346,18 +888,14 @@ dat1.L1<-filter(dat1, Test=="L1 Production")
 
 ```
 
-To check whether you understood the filter() function completely, use
-the 'nrow()' function to find out! How many rows were in the original
-dataset compared to the filtered dataset?
+To check whether you understood the filter() function completely, use the 'nrow()' function to find out! How many rows were in the original dataset compared to the filtered dataset?
 
 ```{r}
 nrow(dat1)
 nrow(dat1.L1)
 ```
 
-Next, we want to declare the learning direction (Condition) as a factor
-again. We convert the categories (L1 -\> L2 vs. L2 -\> L1) into factors,
-that way R will treat it as a categorical variable.
+Next, we want to declare the learning direction (Condition) as a factor again. We convert the categories (L1 -\> L2 vs. L2 -\> L1) into factors, that way R will treat it as a categorical variable.
 
 ```{r}
 #We set Condition (Learning direction) as a factor
@@ -1380,8 +918,7 @@ dat1.L1$s.vocab <- scale(dat1.L1$Vocab)
 
 ### Model without interaction
 
-This model without interaction assumes that learning direction and L2
-proficiency each have independent effects on test accuracy.
+This model without interaction assumes that learning direction and L2 proficiency each have independent effects on test accuracy.
 
 ```{r}
 #Answer~Condition+s.vocab: includes main effects of learning condition and proficiency plus their interaction
@@ -1402,21 +939,11 @@ options(digits=7)
 AIC(fit2) 
 ```
 
-The model predicts the probability of a correct response (Answer), using
-logistic regression. The random intercepts (1\|ID) and (1\|ItemID)
-account for individual differences between participants and between
-vocabulary items. The output of this model without interaction shows
-that 's.vocab' is not significant with p = .57, this means that
-proficiency by itself did not strongly predict L1 Production accuracy of
-the participants. For 'Condition' the model also showed that it was not
-significant p = .18, meaning that learning direction alone also did not
-explain differences. So if we look at each predictor separately, there
-seems to be no clear effect.
+The model predicts the probability of a correct response (Answer), using logistic regression. The random intercepts (1\|ID) and (1\|ItemID) account for individual differences between participants and between vocabulary items. The output of this model without interaction shows that 's.vocab' is not significant with p = .57, this means that proficiency by itself did not strongly predict L1 Production accuracy of the participants. For 'Condition' the model also showed that it was not significant p = .18, meaning that learning direction alone also did not explain differences. So if we look at each predictor separately, there seems to be no clear effect.
 
 ### Model with Interaction
 
-What if proficiency only matters depending on the learning direction? To
-figure this out, we add an interaction term: s.vocab \* Condition.
+What if proficiency only matters depending on the learning direction? To figure this out, we add an interaction term: s.vocab \* Condition.
 
 ```{r}
 fit2.1<-glmer(Answer ~ s.vocab * Condition + (1|ID) + (1|ItemID),
@@ -1430,35 +957,21 @@ options(digits=7)
 AIC(fit2.1)
 ```
 
-The main difference in this model is that 's.vocab \* Condition' here
-includes both main effects and their interaction. We tested whether the
-effect of vocabulary differs between the learning conditions. Just as we
-read in the paper, the interaction of Learning Condition and Vocabulary
-Size is significant with an estimate of about -0.37, SE = 0.141, z =
--2.596, p = .009, which means that the effect of vocabulary proficiency
-depends on the learning direction. There were no significant effects of
-Vocabulary Size or learning condition by themselves, so the interaction
-is what matters here.
+The main difference in this model is that 's.vocab \* Condition' here includes both main effects and their interaction. We tested whether the effect of vocabulary differs between the learning conditions. Just as we read in the paper, the interaction of Learning Condition and Vocabulary Size is significant with an estimate of about -0.37, SE = 0.141, z = -2.596, p = .009, which means that the effect of vocabulary proficiency depends on the learning direction. There were no significant effects of Vocabulary Size or learning condition by themselves, so the interaction is what matters here.
 
 ### Model comparison
 
-To formally check which model fits better we use the command anova()
-just as we did for RQ1.
+To formally check which model fits better we use the command anova() just as we did for RQ1.
 
 ```{r}
 anova(fit2,fit2.1)
 ```
 
-The AIC favors the interaction model (1311.6 vs. 1316.3), and the
-outcome is statistically significant with a p-value of .009, indicating
-and confirming that the model with Condition and Proficiency interaction
-fits best.
+The AIC favors the interaction model (1311.6 vs. 1316.3), and the outcome is statistically significant with a p-value of .009, indicating and confirming that the model with Condition and Proficiency interaction fits best.
 
 ### Visualization
 
-Next, we look at the results of vocabulary size and learning direction
-for our L1 production in a plot since a visualization of the outcomes of
-our calculations can be understood better.
+Next, we look at the results of vocabulary size and learning direction for our L1 production in a plot since a visualization of the outcomes of our calculations can be understood better.
 
 ```{r}
 plot(allEffects(fit2.1), multiline=T, ci.style="bands",
@@ -1467,44 +980,21 @@ plot(allEffects(fit2.1), multiline=T, ci.style="bands",
     rescale.axis=F, ylim = c(0,1), colors="black", asp=1)
 ```
 
-We see a solid line which represents the L1 -\> L2 learning condition
-and a dotted line which represents the L2 -\> L1 learning condition. The
-y-axis shows L1 production accuracy rates of the test, and the x-axis
-the scaled scores of the vocabulary size tests (Terai et al. @2021:
-1128). Looking at the plot you see a nearly flat line for L2 -\> L1 and
-a positive, steeper line for L1 -\> L2 which cross at intermediate
-proficiency (\~5.419 as reported in the paper, p. 1127). The crossover
-point at \~5.419 suggests that for learners in the L1 -\> L2 direction a
-score of over \~5.419 on the test for vocabulary size was more
-beneficial than for L2 -\> L1 learners. The fact that the line for L2
--\> L1 learning is nearly flat shows that proficiency in L2 did not have
-a big influence. Basically, the plot tells us that for lower proficiency
-learners, L2 -\> L1 is better, and for higher proficiency learners L1
--\> L2 is more beneficial (Terai et al. [@2021]).
+We see a solid line which represents the L1 -\> L2 learning condition and a dotted line which represents the L2 -\> L1 learning condition. The y-axis shows L1 production accuracy rates of the test, and the x-axis the scaled scores of the vocabulary size tests (Terai et al. [-@2021]: 1128). Looking at the plot you see a nearly flat line for L2 -\> L1 and a positive, steeper line for L1 -\> L2 which cross at intermediate proficiency (\~5.419 as reported in the paper, p. 1127). The crossover point at \~5.419 suggests that for learners in the L1 -\> L2 direction a score of over \~5.419 on the test for vocabulary size was more beneficial than for L2 -\> L1 learners. The fact that the line for L2 -\> L1 learning is nearly flat shows that proficiency in L2 did not have a big influence. Basically, the plot tells us that for lower proficiency learners, L2 -\> L1 is better, and for higher proficiency learners L1 -\> L2 is more beneficial (Terai et al. [-@2021]).
 
 ### Testing simple effects
 
-You can also test whether the slope of proficiency differs significantly
-between conditions as predicted by the authors.
+You can also test whether the slope of proficiency differs significantly between conditions as predicted by the authors.
 
 ```{r}
 testInteractions(fit2.1, fixed="s.vocab", across="Condition")
 ```
 
-Because a significant effect on the interaction of s.vocab and Condition
-was found, the authors examined the simple effects of s.vocab across the
-two learning conditions. The output of this test show a positive mean
-slope of proficiency of \~0.523. Although the chi-square test actually
-indicates that this effect is not statistically significant ((p = .19).
-This means that the relationship between vocabulary size and test
-performance does not differ in a meaningful way between the two
-variables.
+Because a significant effect on the interaction of s.vocab and Condition was found, the authors examined the simple effects of s.vocab across the two learning conditions. The output of this test show a positive mean slope of proficiency of \~0.523. Although the chi-square test actually indicates that this effect is not statistically significant ((p = .19). This means that the relationship between vocabulary size and test performance does not differ in a meaningful way between the two variables.
 
 ### L2 Production Test
 
-We now repeat all the same steps for the L2 production test, but now we
-predict accuracy for when the participants had to produce English words
-after learning Japanese-English pairs.
+We now repeat all the same steps for the L2 production test, but now we predict accuracy for when the participants had to produce English words after learning Japanese-English pairs.
 
 ```{r}
 #Load our data
@@ -1556,41 +1046,17 @@ options(digits=7)
 AIC(fit3.1)
 ```
 
-Similar to our first research question we have calculated AICs for both
-versions of the model, with and without interaction. We can see that the
-model **with** interaction showed a lower AIC (1145.32) than the one
-without interaction (1146.52), which as we remember means that the model
-with the interaction is a better fit. Now, taking a look at the output
-of our summary, we see that the Vocabulary Size estimate is -0.227 (SE =
-0.193, z = 1.179, p = .238). Our p-value is greater than 0.05 which
-means the effect is not statistically significant and proficiency on its
-can not predict accuracy on the L2 production test. We see something
-nearly identical for learning condition with an estimate of -0.262 (SE =
-0.154, z = -1.699, p = 0.089). This means that the perforance does not
-significantly differ between our two learning directions. In a final
-step, we considered the interaction term 's.vocab \* Condition' which
-was also not statistically significant (Estimate = -0.278, SE = 0.154, z
-= -1.810, p = .070).
+Similar to our first research question we have calculated AICs for both versions of the model, with and without interaction. We can see that the model **with** interaction showed a lower AIC (1145.32) than the one without interaction (1146.52), which as we remember means that the model with the interaction is a better fit. Now, taking a look at the output of our summary, we see that the Vocabulary Size estimate is -0.227 (SE = 0.193, z = 1.179, p = .238). Our p-value is greater than 0.05 which means the effect is not statistically significant and proficiency on its can not predict accuracy on the L2 production test. We see something nearly identical for learning condition with an estimate of -0.262 (SE = 0.154, z = -1.699, p = 0.089). This means that the perforance does not significantly differ between our two learning directions. In a final step, we considered the interaction term 's.vocab \* Condition' which was also not statistically significant (Estimate = -0.278, SE = 0.154, z = -1.810, p = .070).
 
 ### Model Comparison
 
-To formally check whether the model with the interaction is better than
-the simpler model without the interaction, we compare them with test:
+To formally check whether the model with the interaction is better than the simpler model without the interaction, we compare them with test:
 
 ```{r}
 anova(fit3,fit3.1)
 ```
 
-Here the authors once again use an anova test to decide if maybe the
-interaction term improves the model. The output reports a p-value of
-.0073 which means the model **with** interaction does not really
-outperform the simpler model. But we see that the value is close to
-0.05, this suggests a slight trend toward significance which matches
-what the authors reported in their paper. While they did not find a
-significant interaction, there was a similar trend as they found in the
-L1 production test where proficiency mattered a bit more for learning
-direction. This can be seen better in a plot which we will print in our
-next step.
+Here the authors once again use an anova test to decide if maybe the interaction term improves the model. The output reports a p-value of .0073 which means the model **with** interaction does not really outperform the simpler model. But we see that the value is close to 0.05, this suggests a slight trend toward significance which matches what the authors reported in their paper. While they did not find a significant interaction, there was a similar trend as they found in the L1 production test where proficiency mattered a bit more for learning direction. This can be seen better in a plot which we will print in our next step.
 
 ### Visualization
 
@@ -1599,44 +1065,19 @@ plot(allEffects(fit3.1),multiline=T,ci.style="bands", xlab="Vocabulary Size", yl
        main= "L2 Production", lty=c(1,2), rescale.axis=F, ylim = c(0,1),colors="black",asp=1)
 ```
 
-Just as the numbers of our tests above suggested we can see that while
-there was no significance of the results for learning direction or L2
-proficiency (Estimate -0.278, SE = 0.154, z = -1.810 p = .070), the
-trend seems similar to the results of our L1 production test (flatter L2
--\> L1 slope, steeper L1 -\> L2 slope). So, for lower-proficiency
-learners, L2 -\> L1 leads to higher performance than L1 -\> L2 learning.
-Furthermore, something that the authors explained (p. 1128) was that we
-can see clearly in our graphs by the nearly flat dashed line, that L2
--\> L1 learning is much less influenced by L2 proficiency
+Just as the numbers of our tests above suggested we can see that while there was no significance of the results for learning direction or L2 proficiency (Estimate -0.278, SE = 0.154, z = -1.810 p = .070), the trend seems similar to the results of our L1 production test (flatter L2 -\> L1 slope, steeper L1 -\> L2 slope). So, for lower-proficiency learners, L2 -\> L1 leads to higher performance than L1 -\> L2 learning. Furthermore, something that the authors explained (p. 1128) was that we can see clearly in our graphs by the nearly flat dashed line, that L2 -\> L1 learning is much less influenced by L2 proficiency
 
 ### Interpretation & Take-home message
 
-Generally, for the L1 production test, our results showed that
-lower-proficiency learners benefitted more from the L2 -\> L1 learning
-direction, while higher-proficiency learners benefitted more from the L1
--\> L2 learning direction. For the L2 production test, a similar trend
-was observed, but it was not statistically significant. Overall,
-vocabulary proficiency shapes how effectively retrieval works: the
-optimal learning direction is not a one-size-fits-all matter, but is
-rather depends on learner proficiency.
+Generally, for the L1 production test, our results showed that lower-proficiency learners benefitted more from the L2 -\> L1 learning direction, while higher-proficiency learners benefitted more from the L1 -\> L2 learning direction. For the L2 production test, a similar trend was observed, but it was not statistically significant. Overall, vocabulary proficiency shapes how effectively retrieval works: the optimal learning direction is not a one-size-fits-all matter, but is rather depends on learner proficiency.
 
 ## Model Diagnostics
 
-Now, we checked our GLMMs and have our results. But before interpreting
-these results too confidently, we should also check whether the
-predictors are highly correlated with one another which is a problem
-called multicollinearity. Multicollinearity might affect the results of
-our GLMMs.
+Now, we checked our GLMMs and have our results. But before interpreting these results too confidently, we should also check whether the predictors are highly correlated with one another which is a problem called multicollinearity. Multicollinearity might affect the results of our GLMMs.
 
-Why does this matter? If our predictors are strongly correlated, the
-model might have trouble to keep apart their unique contributions. It
-might then inflate standard errors and thus make estimates unreliable
-(Pennsylvania State University @2018).
+Why does this matter? If our predictors are strongly correlated, the model might have trouble to keep apart their unique contributions. It might then inflate standard errors and thus make estimates unreliable (Pennsylvania State University [-@2018]).
 
-A common diagnostic here is the Variance Inflation Factor (VIF). A VIF
-close to 1 means predictors are not collinear. Here are some rules: VIF
-= 1: perfect independence VIF \> 5: potential concern VIF \> 10: serious
-multicollinearity (Pennsylvania State University [@2018])
+A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 1 means predictors are not collinear. Here are some rules: VIF = 1: perfect independence VIF \> 5: potential concern VIF \> 10: serious multicollinearity (Pennsylvania State University [-@2018], year-only=true)
 
 ### Calculating VIFs for the Models
 
@@ -1652,69 +1093,17 @@ vif.mer(fit2.1)
 vif.mer(fit3.1)
 ```
 
-All our VIF values are obviously quite close to 1. This means that the
-predictors (s.vocab, Condition, and their interaction) are not
-correlated with each other in problematic ways. Therefore our models are
-statistically stable: the estimate of the interaction effects we
-observed in our GLMMS are not due to multicollinearity.
+All our VIF values are obviously quite close to 1. This means that the predictors (s.vocab, Condition, and their interaction) are not correlated with each other in problematic ways. Therefore our models are statistically stable: the estimate of the interaction effects we observed in our GLMMS are not due to multicollinearity.
 
-We can now confidently say that the interaction between learning
-direction and proficiency is a genuine effect, not an artifact of
-overlapping predictors. The models are behaving well in terms of
-collinearity.
+We can now confidently say that the interaction between learning direction and proficiency is a genuine effect, not an artifact of overlapping predictors. The models are behaving well in terms of collinearity.
 
 # Conclusion
 
-You are now familiar with handling generalized linear mixed models! You
-have learned how to fit them, interpret their main effects and
-interactions, as well as checking the multicollinearity with VIFs. GLMMs
-are powerful tools for analyzing binary outcomes such as accuracy, which
-allows us to account for repeated measures across participants and items
-such as we had in this study by Terai et al. ([@2021]). It is completely
-normal that at times GLMMs can feel intimidating: coding contrasts and
-interpreting the outcomes are not always straightforward. But, similar
-to plotting, there is always a solution. The insights we can gain from a
-nicely fitted model make all the effort worthwhile.
+You are now familiar with handling generalized linear mixed models! You have learned how to fit them, interpret their main effects and interactions, as well as checking the multicollinearity with VIFs. GLMMs are powerful tools for analyzing binary outcomes such as accuracy, which allows us to account for repeated measures across participants and items such as we had in this study by Terai et al. [-@2021]. It is completely normal that at times GLMMs can feel intimidating: coding contrasts and interpreting the outcomes are not always straightforward. But, similar to plotting, there is always a solution. The insights we can gain from a nicely fitted model make all the effort worthwhile.
 
-It seems that vocabulary learning is not something that can be
-generalized. While retrieval practice is quite effective, the direction
-of practice depends on who the learner is and how much this learner
-knows of that language. Due to the extensive research by Terai,
-Yamashita and Pasich ([@2021]) who published their data set and R code
-along with the paper, we were able to reproduce their findings and gain
-hands-on experience with modeling. This not only helps with our
-understanding of the research, but it also sharpens our skills as
-researchers of second-language data.
+It seems that vocabulary learning is not something that can be generalized. While retrieval practice is quite effective, the direction of practice depends on who the learner is and how much this learner knows of that language. Due to the extensive research by Terai, Yamashita and Pasich [-@2021] who published their data set and R code along with the paper, we were able to reproduce their findings and gain hands-on experience with modeling. This not only helps with our understanding of the research, but it also sharpens our skills as researchers of second-language data.
 
-## References
-
-[@2000] Amano, S., & Kondo, T. (2000). Nihongo-no-Goitokusei Hindo
-\[Lexical properties of Japanese: Frequency\]. Sanseido.
-
-[@2022] Barlaz, M. (2022). *Contrast coding in R.*
-<https://marissabarlaz.github.io/portfolio/contrastcoding/#contrast-coding>
-
-[@2015] Bolker, Benjamin M. 2015. '13 Linear and generalized linear
-mixed models', in Gordon A. Fox, Simoneta Negrete-Yankelevich, and
-Vinicio J. Sosa (eds), *Ecological Statistics: Contemporary theory and
-application.* Oxford Academic.
-<https://doi.org/10.1093/acprof:oso/9780199672547.003.0014>
-
-[@1992] Chambers, John M., & Hastie, Trevor J. (1992). *Statistical
-models in S*. New York, Routledge.
-
-[@2023] Parajuli, Subash. (2023). Chapter 7 Skewness and Kurtosis.
-*Quantitative Methods Using R.*
-<https://bookdown.org/subashparajuli/quant-r/skewness-and-kurtosis.html>
-
-[@2018] Pennsylvania State University. 2018. *10.7 - Detecting
-Multicollinearity Using Variance Inflation Factors* \| STAT 462.
-<https://online.stat.psu.edu/stat462/node/180/>
-
-[@2021] Terai, Masato, Junko Yamashita, and Kelly E. Pasich. 2021.
-*EFFECTS OF LEARNING DIRECTION IN RETRIEVAL PRACTICE ON EFL VOCABULARY
-LEARNING. Studies in Second Language Acquisition 43*(5): 1116–1137.
-<https://doi.org/10.1017/S0272263121000346>.
+# References {#refs}
 
 ## Packages used in this chapter
 
@@ -1727,88 +1116,46 @@ print(sessionInfo())
 
 ## Package references
 
-D. Bates, M. Mächler, B. Bolker, S. Walker (2015). *Fitting Linear
-Mixed-Effects Models Using lme4.* Journal of Statistical Software,
-67(1), 1–48. doi:10.18637/jss.v067.i01. R package version 1.1-37.
-<https://github.com/lme4/lme4/>.
+D. Bates, M. Mächler, B. Bolker, S. Walker (2015). *Fitting Linear Mixed-Effects Models Using lme4.* Journal of Statistical Software, 67(1), 1–48. doi:10.18637/jss.v067.i01. R package version 1.1-37. <https://github.com/lme4/lme4/>.
 
-D. Bates, M. Maechler, M. Jagan, T. A. Davis (2025). *Sparse and Dense
-Matrix Classes and Methods.* R package version 1.7-3.
-<https://matrix.r-forge.r-project.org/>.
+D. Bates, M. Maechler, M. Jagan, T. A. Davis (2025). *Sparse and Dense Matrix Classes and Methods.* R package version 1.7-3. <https://matrix.r-forge.r-project.org/>.
 
-H. De Rosario-Martinez, J. Fox, R Core Team, P. Chalmers (2025).
-*Post-Hoc Interaction Analysis.* R package version 0.3-2.
-<https://github.com/heliosdrm/phia?tab=readme-ov-file>.
+H. De Rosario-Martinez, J. Fox, R Core Team, P. Chalmers (2025). *Post-Hoc Interaction Analysis.* R package version 0.3-2. <https://github.com/heliosdrm/phia?tab=readme-ov-file>.
 
-J. Fox and S. Weisberg (2019). *An R Companion to Applied Regression*,
-Third Edition, Sage. R package version car 3.1-3, carData 3.0-5, effects
-4.2-4. <https://r-forge.r-project.org/projects/car/>.
+J. Fox and S. Weisberg (2019). *An R Companion to Applied Regression*, Third Edition, Sage. R package version car 3.1-3, carData 3.0-5, effects 4.2-4. <https://r-forge.r-project.org/projects/car/>.
 
-G. Grolemund, H. Wickham (2011). *Dates and Times Made Easy with
-lubridate.* Journal of Statistical Software, 40(3), 1-25. R package
-version 1.9.4. <https://www.jstatsoft.org/v40/i03/>.
+G. Grolemund, H. Wickham (2011). *Dates and Times Made Easy with lubridate.* Journal of Statistical Software, 40(3), 1-25. R package version 1.9.4. <https://www.jstatsoft.org/v40/i03/>.
 
-E. Hvitfeldt (2021). *paletteer: Comprehensive Collection of Color
-Palettes.* R package version 1.6.0.
-<https://github.com/EmilHvitfeldt/paletteer>.
+E. Hvitfeldt (2021). *paletteer: Comprehensive Collection of Color Palettes.* R package version 1.6.0. <https://github.com/EmilHvitfeldt/paletteer>.
 
-R. Lenth (2025). *emmeans: Estimated Marginal Means, aka Least-Squares
-Means.* R package version 1.11.2-80001,
-<https://rvlenth.github.io/emmeans/>.
+R. Lenth (2025). *emmeans: Estimated Marginal Means, aka Least-Squares Means.* R package version 1.11.2-80001, <https://rvlenth.github.io/emmeans/>.
 
-K. Müller (2025). *here: A Simpler Way to Find Your Files.* R package
-version 1.0.1, <https://here.r-lib.org/>.
+K. Müller (2025). *here: A Simpler Way to Find Your Files.* R package version 1.0.1, <https://here.r-lib.org/>.
 
-K. Müller, H. Wickham (2023). *tibble: Simple Data Frames.* R package
-version 3.2.1, <https://tibble.tidyverse.org/>.
+K. Müller, H. Wickham (2023). *tibble: Simple Data Frames.* R package version 3.2.1, <https://tibble.tidyverse.org/>.
 
-R Core Team (2025). *R: A Language and Environment for Statistical
-Computing.* R Foundation for Statistical Computing. Vienna, Austria.
-<https://www.R-project.org/>.
+R Core Team (2025). *R: A Language and Environment for Statistical Computing.* R Foundation for Statistical Computing. Vienna, Austria. <https://www.R-project.org/>.
 
-W. Revelle (2025). *psych: Procedures for Psychological, Psychometric,
-and Personality Research.* Northwestern University, Evanston, Illinois.
-R package version 2.5.6, <https://CRAN.R-project.org/package=psych>.
+W. Revelle (2025). *psych: Procedures for Psychological, Psychometric, and Personality Research.* Northwestern University, Evanston, Illinois. R package version 2.5.6, <https://CRAN.R-project.org/package=psych>.
 
-H. Wickham, M. Averick, J. Bryan, W. Chang, L. D. McGowan, R. François,
-G. Grolemund, A. Hayes, L. Henry, J. Hester, M. Kuhn, T. L. Pedersen, E.
-Miller, S. M. Bache, K. Müller, J. Ooms, D. Robinson, D. P. Seidel, V.
-Spinu, K. Takahashi, D. Vaughan, C. Wilke, K. Woo, H. Yutani (2019).
-*Welcome to the tidyverse.* Journal of Open Source Software, 4(43),
-1686. doi:10.21105/joss.01686. <https://tidyverse.tidyverse.org/>.
+H. Wickham, M. Averick, J. Bryan, W. Chang, L. D. McGowan, R. François, G. Grolemund, A. Hayes, L. Henry, J. Hester, M. Kuhn, T. L. Pedersen, E. Miller, S. M. Bache, K. Müller, J. Ooms, D. Robinson, D. P. Seidel, V. Spinu, K. Takahashi, D. Vaughan, C. Wilke, K. Woo, H. Yutani (2019). *Welcome to the tidyverse.* Journal of Open Source Software, 4(43), 1686. doi:10.21105/joss.01686. <https://tidyverse.tidyverse.org/>.
 
-H. Wickham, R. François, L. Henry, K. Müller, D. Vaughan (2025). *dplyr:
-A Grammar of Data Manipulation.* R package version 1.1.4,
-<https://dplyr.tidyverse.org>.
+H. Wickham, R. François, L. Henry, K. Müller, D. Vaughan (2025). *dplyr: A Grammar of Data Manipulation.* R package version 1.1.4, <https://dplyr.tidyverse.org>.
 
-H. Wickham, L. Henry (2025). *purrr: Functional Programming Tools.* R
-package version 1.0.4, <https://purrr.tidyverse.org/>.
+H. Wickham, L. Henry (2025). *purrr: Functional Programming Tools.* R package version 1.0.4, <https://purrr.tidyverse.org/>.
 
-H. Wickham, J. Hester, J. Bryan (2024). *readr: Read Rectangular Text
-Data.* R package version 2.1.5,
-<https://github.com/tidyverse/readr>,<https://readr.tidyverse.org>.
+H. Wickham, J. Hester, J. Bryan (2024). *readr: Read Rectangular Text Data.* R package version 2.1.5, <https://github.com/tidyverse/readr>,<https://readr.tidyverse.org>.
 
-H. Wickham (2023). *forcats: Tools for Working with Categorical
-Variables (Factors).* R package version 1.0.0,
-<https://github.com/tidyverse/forcats>,<https://forcats.tidyverse.org/>.
+H. Wickham (2023). *forcats: Tools for Working with Categorical Variables (Factors).* R package version 1.0.0, <https://github.com/tidyverse/forcats>,<https://forcats.tidyverse.org/>.
 
-H. Wickham (2016). *ggplot2: Elegant Graphics for Data Analysis.*
-Springer-Verlag New York. <https://forcats.tidyverse.org/>.
+H. Wickham (2016). *ggplot2: Elegant Graphics for Data Analysis.* Springer-Verlag New York. <https://forcats.tidyverse.org/>.
 
-H. Wickham (2023). *stringr: Simple, Consistent Wrappers for Common
-String Operations.* R package version 1.5.1,
-<https://github.com/tidyverse/stringr>, <https://stringr.tidyverse.org>.
+H. Wickham (2023). *stringr: Simple, Consistent Wrappers for Common String Operations.* R package version 1.5.1, <https://github.com/tidyverse/stringr>, <https://stringr.tidyverse.org>.
 
-H. Wickham, D. Vaughan, M. Girlich (2025). *tidyr: Tidy Messy Data.* R
-package version 1.3.1, <https://tidyr.tidyverse.org>.
+H. Wickham, D. Vaughan, M. Girlich (2025). *tidyr: Tidy Messy Data.* R package version 1.3.1, <https://tidyr.tidyverse.org>.
 
-L. Wilkinson (1999). *Dot plots. The American Statistician.
-53(3):276-281.* R package version 0.4.0.
-<https://github.com/aroneklund/beeswarm>.
+L. Wilkinson (1999). *Dot plots. The American Statistician. 53(3):276-281.* R package version 0.4.0. <https://github.com/aroneklund/beeswarm>.
 
-Y. Xie (2024). *knitr: A General-Purpose Package for Dynamic Report
-Generation in R.* R package version 1.50. <https://yihui.org/knitr/>.
+Y. Xie (2024). *knitr: A General-Purpose Package for Dynamic Report Generation in R.* R package version 1.50. <https://yihui.org/knitr/>.
 
-H. Zhu (2023). *kableExtra: Construct Complex Table with 'kable' and
-Pipe Syntax.* R package version 1.4.0,
-<https://github.com/haozhu233/kableextra>.
+H. Zhu (2023). *kableExtra: Construct Complex Table with 'kable' and Pipe Syntax.* R package version 1.4.0, <https://github.com/haozhu233/kableextra>.
