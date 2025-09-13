@@ -1,1 +1,0 @@
-# Effects-on-learning-direction

@@ -110,7 +110,7 @@ direction L2 -\> L1 or L1 -\> L2), and so on. But more on that later.
 
 Before importing the data set and starting on our project, we need to
 load all the packages that we will need. Some of these packages may have
-to be installed first (using the install.packages("") command in your
+to be installed first using the install.packages("") command in your
 console.
 
 ```{r}
@@ -933,7 +933,7 @@ from alpha function) finds CIs using the Feldt procedure, which is based
 on the mean covariance, while Duhachek procedure considers the variance
 of the covariances. In the help file it is stated that in March, 2022,
 alpha.ci was finally fixed to follow the Feldt procedure. Since the
-paper was published in [-@2021], this might explain the deviating CIs
+paper was published in 2021, this might explain the deviating CIs
 here. If one would like to look at Duhachek's CI instead, it can either
 be seen in the output of alpha(), or one might install an earlier
 version of the package. Since we want to use the current psych package
@@ -1672,23 +1672,14 @@ are powerful tools for analyzing binary outcomes such as accuracy, which
 allows us to account for repeated measures across participants and items
 such as we had in this study by Terai et al. [-@2021]. It is completely
 normal that at times GLMMs can feel intimidating: coding contrasts and
-interpreting the outcomes are not always straightforward. But, similar
-to plotting, there is always a solution. The insights we can gain from a
-nicely fitted model make all the effort worthwhile.
+interpreting the outcomes are not always straightforward. But usually there is always a solution. The insights we can gain from a
+nicely fitted model make all this effort worthwhile.
 
-It seems that vocabulary learning is not something that can be
-generalized. While retrieval practice is quite effective, the direction
-of practice depends on who the learner is and how much this learner
-knows of that language. Due to the extensive research by Terai,
-Yamashita and Pasich [-@2021] who published their data set and R code
-along with the paper, we were able to reproduce their findings and gain
-hands-on experience with modeling. This not only helps with our
+Due to the extensive research by Terai, Yamashita and Pasich [-@2021] who published their data set and R code along with the paper, we were able to reproduce their findings and gain hands-on experience with modeling. This not only helps with our
 understanding of the research, but it also sharpens our skills as
 researchers of second-language data.
 
-# References {#refs}
-
-## Packages used in this chapter
+## Packages used in this chapter {.unnumbered}
 
 ```{r}
 #| echo: false
@@ -1697,7 +1688,7 @@ print(sessionInfo())
 
 ```
 
-## Package references
+## Package references {.unnumbered}
 
 D. Bates, M. Mächler, B. Bolker, S. Walker (2015). *Fitting Linear
 Mixed-Effects Models Using lme4.* Journal of Statistical Software,
