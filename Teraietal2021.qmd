@@ -406,11 +406,11 @@ read and interpret, it also looks ready to be published.
 
 ```{r}
 kable(tab_L2, caption = "Table 3a. Descriptive statistics for L2 (English) item properties.",
-      align = "llllll" ) |>
+      align = "lrrrrrrr" ) |>
   kable_classic(full_width = FALSE)
 
 kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item properties.",
-      align = "lrrrrr") |>
+      align = "lrrrrrrr") |>
   kable_classic(full_width = FALSE)
 ```
 
@@ -550,7 +550,7 @@ ggplot(items, aes(x = L1Frequency)) +
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma) +
   labs(title = "Distribution of L1 frequencies",
-       x = "L1 frequency (Amano & Kondo 1999)",
+       x = "L1 frequency",
        y = "Probability",
        caption = "Solid line = mean; dashed line = median") +
 theme_minimal()
