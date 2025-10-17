@@ -181,20 +181,20 @@ All these steps set up the dataset for modeling. Converting variables to factors
 
 # Descriptive statistics
 
-Before we dive into the descriptive statistics conducted in this study,
+Before we dive into the descriptive statistics conducted in @2021,
 we need to explain that one part of it will not be reproduced. While
 descriptive statistics about the participants (age, years of learning,
-etc.) are mentioned in the paper by Terai et al. [-@2021], the data to
-reproduce these findings cannot be found. It is neither part of the
+etc.) are mentioned in the paper by Terai et al. [-@2021], we were not able to find the data to
+reproduce these findings. It is neither part of the
 dataset accessible on IRIS, nor does it come up anywhere in the authors'
-R code. Therefore, we will only focus on the descriptive statistics of
+R code. Therefore, we will only focus on reproducing the descriptive statistics of
 the target items (40 English words used in the study), test types and
 reliability testing. We'll start with the target items, which are found
-in Table 3 in Terai et al. [-@2021]: 1123.
+in Table 3 in the paper [@2021: 1123].
 
-Most of the statistics that we will be looking at are things we are
+Most of the statistics reproduced here are things we are
 already familiar with: the mean, median, maximum and minimum, as well as
-the standard deviation (SD). In addition, the authors also reported
+the standard deviation (SD). In addition, @2021 reported
 skewness and kurtosis.
 
 **Skewness** and **kurtosis** are both measures of shapes and
@@ -220,13 +220,13 @@ a description of how the peaks compare to a normal distribution
 
 In this section, our aim is to reproduce Table 3 from Terai et al.
 [-@2021], which displays the descriptive statistics of the target items
-of the study. Unfortunately, the code for all the tables was not
-included in the R code published by the authors. But since we have the
+of the study. Unfortunately, the code for all the tables shown in @2021 was not
+included in the published R code. But since we have the
 data in the form of a `.csv` file, this is not a problem! We have the
 organized data ready for us to analyze. Thus, we will learn how to
 reproduce the data of Table 3 step-by-step.
 
-We have already loaded the data that we will need for our table, but
+We have already loaded the data that we will need for this table, but
 just to be sure, we will do it again and also load all the necessary
 libraries for the two tables, so we have some kind of "toolbox" that
 contains every function we might need:
