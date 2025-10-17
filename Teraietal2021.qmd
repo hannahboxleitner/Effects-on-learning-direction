@@ -12,6 +12,9 @@ format:
 editor: 
   markdown: 
     wrap: 72
+execute: 
+  freeze: true
+  cache: true
 bibliography: references.bib
 csl: https://www.zotero.org/styles/apa-with-abstract
 ---
