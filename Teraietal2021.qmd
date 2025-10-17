@@ -614,7 +614,7 @@ alpha(VocabularyB_L2production[,-1], warnings=FALSE)
 
 ```
 
-These reliability analyses put out Cronbach’s α, a measure of internal
+These reliability analyses compute Cronbach’s α, a measure of internal
 consistency of tests. It indicates whether responses are consistent
 between items. Before interpreting these results, we will get to the
 descriptive statistics of the two types of post-tests, which the
@@ -988,7 +988,7 @@ included, and production test answers were used as the response variable
 ```{r}
 #| warning: false
 
-# Before starting on the model, we install and load the packages we need. These seem to be from an older Rstudio version, but they still work just fine!
+# Before starting on the model, we install and load the packages we need.
 
 library(lme4) # package for mixed models
 library(effects) # package for plotting model effects
