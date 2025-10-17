@@ -70,19 +70,18 @@ questions:
 1.  Which learning direction is more effective for vocabulary
     acquisition, L1 to L2 learning or L2 to L1 learning?
 2.  How does L2 proficiency influence the effects of L2 to L1 and L1 to
-    L2 earning?
+    L2 learning?
 
 To answer these questions, @2021 designed an experiment in which
 Japanese EFL learners studied word pairs and then completed retrieval
 practice tasks in different conditions. After learning, students were
 tested on their ability to produce the target vocabulary items in both
-Japanese (their L1) and English (their L2). Terai et al. \[-\@2021:
-1121-1122\] formulated two hypotheses:
+Japanese (their L1) and English (their L2). @2021 formulated two hypotheses:
 
 1.  There is no significant difference between the two learning
-    directions
+    directions.
 2.  The effect of the learning direction depends on the learner’s L2
-    proficiency (Terai et al.
+    proficiency [@2021: 1121-1122].
 
 # Retrieving the original data
 
@@ -131,15 +130,15 @@ library(tidyverse)
 
 ```
 
-Next, we can import the data. In contrast to the authors' approach in
-their code, we used the {here} package for importing the data. This
+Next, we can import the data. In contrast to the code from @2021, we used the {here} package for importing the data. This
 package creates paths relative to the top-level directory and therefore
 makes it easier to reference files regardless of how they are organized
-inside a project. We also want to declare the test type (`Test`) and the
-learning direction (`Condition`) as a factor variables as these
+inside a project.
+Following the code in @2021, the test type (`Test`) and the
+learning direction (`Condition`) are declared as factor variables as these
 variables represent categories rather than numerical values. Converting
-our variables into factors now will also be useful for the statistical
-analysis such as an ANOVA which we will be conducting in future steps.
+the variables into factors now will also be useful for the statistical
+analysis such as an ANOVA (Analysis of Variance), which will be conducted later.
 
 ```{r}
 VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
@@ -147,38 +146,38 @@ VocabularyA_L2production <- read.csv(file = here("data", "vocaA_L2pro_20210313.c
 VocabularyB_L1production <- read.csv(file = here("data", "vocaB_L1pro_20210313.csv"))
 VocabularyB_L2production <- read.csv(file = here("data", "vocaB_L2pro_20210313.csv"))
 
-#First, we will load the dataset
-dat<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
+# Loading the dataset
+dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
-#Then, we need to convert the categorical variables we have to factors using the function as.factor()
-dat$Test<-as.factor(dat$Test)
-dat$Condition<-as.factor(dat$Condition)
+# Converting the categorical variables to factors using the function as.factor()
+dat$Test <- as.factor(dat$Test)
+dat$Condition <- as.factor(dat$Condition)
 
 ```
 
-We also apply **contrast coding**, also called **treatment coding**
+Before fitting the models, @2021 also apply **contrast coding**, also called **treatment coding**
 (Chambers & Hastie [-@1992]). While it may look confusing and maybe
-intimidating, it is actually quite an important step. Basically, we want
-to compare our two groups (L1 -\> L2 vs. L2 -\> L1). We use **simple
-coding** where our first Condition (L1 -\> L2) gets coded as -0.5 and
-our second Condition (L2 -\> L1) as +0.5. This makes interpretations
-easier when we have interactions since the intercept represents the
+intimidating, it is actually quite an important step. Basically, the study aims to compare two groups (L1 -\> L2 vs. L2 -\> L1). @2021 use **simple
+coding**, where the first Condition (L1 -\> L2) gets coded as -0.5 and
+the second Condition (L2 -\> L1) as +0.5. This makes interpretations
+easier when there are interactions since the intercept represents the
 overall mean across conditions (Barlaz [-@2022]).
 
 ```{r}
-c<-contr.treatment(2)
-my.coding<-matrix(rep(1/2,2,ncol=1))
-my.simple<-c-my.coding
+c <- contr.treatment(2)
+my.coding <- matrix(rep(1/2,2,ncol=1))
+my.simple <- c-my.coding
 print(my.simple)
 
-contrasts(dat$Test)<-my.simple
-contrasts(dat$Condition)<-my.simple
+contrasts(dat$Test) <- my.simple
+contrasts(dat$Condition) <- my.simple
 
-#Next, we standardize vocabulary scores (centered and scaled)
-dat$s.vocab<-scale(dat$Vocab)
+# Standardizing vocabulary scores (centered and scaled)
+dat$s.vocab <- scale(dat$Vocab)
 
-# All these steps set up the dataset for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression. Scaling the vocabulary scores helps with interaction terms.
 ```
+
+All these steps set up the dataset for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression. Scaling the vocabulary scores helps with interaction terms.
 
 # Descriptive statistics
 
