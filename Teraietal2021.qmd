@@ -576,44 +576,42 @@ Cronbach's α to estimate their reliability.
 
 ### Reliability analysis
 
+To conduct reliability analysis, the {psych} package needs to be installed and loaded.
+
+```{r}
+#| warning: false
+
+library(psych)
+```
+
+To calculate Cronbach's alpha, @2021 used the `alpha()` function und vocabulary scores, of both L1 and L2 production sets. Here, we will only show the code and output reliability analysis for Vocabulary A scores of the L1 production dataset, as an example.
+
 ```{r}
 #| warning: false
 
 # Vocabulary A (L1 production)
-
-# In this chunk, we conduct a reliability analysis for Vocabulary A scores of the L1 production dataset. For this to work, we need the psych package:
-
-library(psych) # -> reliability analysis
-
-# We apply the alpha() function for reliability testing.
 
 alpha(VocabularyA_L1production[,-1], warnings=FALSE)
 
 ```
 
 ```{r}
-# Vocabulary A (L2 production)
+#| code-fold: true
+#| code-summary: "Show code for reliability analysis for the rest of the dataset"
+#| results: false
+#| warning: false
 
-# The same function is used to conduct a reliability analysis for Vocabulary A of the L2 participants.
+# Vocabulary A (L2 production)
 
 alpha(VocabularyA_L2production[,-1], warnings=FALSE)
 
-```
-
-```{r}
 # Vocabulary B (L1 production)
-
-# With Vocabulary B, we follow the same procedure.
 
 alpha(VocabularyB_L1production[,-1], warnings=FALSE)
 
-```
-
-```{r}
 # Vocabulary B (L2 production)
 
 alpha(VocabularyB_L2production[,-1], warnings=FALSE)
-
 ```
 
 These reliability analyses compute Cronbach’s α, a measure of internal
