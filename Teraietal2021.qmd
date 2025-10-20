@@ -994,7 +994,7 @@ Accuracy (Answer) from Test, Condition, and their interaction with the
 `glmer()` function. We want to go through the process step by step, and
 connect the code with the interpretation of data in the paper.
 
-The following code chunk shows how Terai et al. fit the model without interaction. Subsequently, the authors calculated AIC (Akike Information Criterion) for their model. We will explain more about this criterion later.
+The following code chunk shows how Terai et al. fit the model without interaction `fit1`. Subsequently, the authors calculated AIC (Akike Information Criterion) for their model. We will explain more about this criterion later.
 
 ```{r}
 # Model without interaction
@@ -1036,64 +1036,66 @@ values. This section shows summary statistics of the model's residuals
 after scaling: Minimum, first quartile (25^th^ percentile), median
 (50^th^ percentile), third quartile (75^th^ percentile), and maximum.
 These values give an impression of how well the model fits the data. The
-*Random effects* section puts out the estimated variability in the
+*Random effects* section computes the estimated variability in the
 intercept across subjects (ID) and items (ItemID), accounting for
 differences in overall accuracy between participants and between items.
 
 ### Model 1 with interaction
 
-Next, we fit a model similar to the first one, but with the difference
+Next, the authors fit a model similar to the first one, but with the difference
 that it includes the interaction between Test and Condition,
 investigating if the effect of one variable depends on the level of the
 other variable.
 
-```{r}
-# For the model with interaction, we use glmer() as well, but with a change in the formula (connect the effects with * instead of +).
+For this model `fit1.1`, the `glmer()` function was used as well, but with a change in the formula (connect the effects with * instead of +). Aditionally to the model and the AIC, @2021 also calculated confidence intervals for the model using the function `confint()`.
 
+```{r}
 # Model with interaction
-fit1.1<-glmer(Answer~Test*Condition+(1|ID)+(1|ItemID),family=binomial, data=dat, glmerControl(optimizer="bobyqa"))
+
+fit1.1 <- glmer(Answer ~ Test * Condition + (1|ID) + (1|ItemID), family = binomial, data = dat, glmerControl(optimizer = "bobyqa"))
 summary(fit1.1)
 
 # Computing confidence intervals
 
 confint(fit1.1)
 
-# Setting number of significant digits and calculating AIC
+# Setting number of digits and calculating AIC
 
-options(digits=7)
+options(digits = 7)
 AIC(fit1.1)
 ```
 
-Now after calculating AICs for both versions of the model, we can see
+Now after calculating AICs for both versions of the model, it becomes apparent
 that the model *with* interaction has a lower AIC (with interaction:
 2427.102; without interaction: 2429.771), indicating higher quality of
 the model.
 
 The authors state that the results show a significant main effect of
-**Test Type** (Estimate = -0.976, SE = 0.105, z = -9.315, p \< .001). We
+**Test Type** (Estimate = -0.976, SE = 0.105, z = -9.315, p \< .001) [@2021: 1126]. We
 want to find these results in the output of our code. When we look at
-the summary output of fit1.1, under Fixed effects, the numbers can be
+the summary output of `fit1.1` under Fixed effects, the numbers can be
 found in the "Test2" row. They are all rounded up to three digits for
 better readability. The negative estimate tells us that accuracy in Test
-2 is predicted to be lower than in Test 1. The p-value can be extracted
+2 is predicted to be lower than in Test 1. The **p**-value can be extracted
 from the column marked Pr(\>\|z\|), where it is displayed in the form of
 \<2e-16, since it is such a small number. It tells us that the effect
-(of switching between test types) is significant. The z value tells us
+(of switching between test types) is significant. The **z** value tells us
 how many standard deviations away a value is from the mean.
 
-Moving on to **Learning Condition**, we can see that it is not
+Moving on to **Learning Condition**, the authors found no
 statistically significant main effect: Condition2: Estimate = -0.038, SE
-= 0.103, z = -0.366, p = .714). In this case, the p-value is \> 0.05,
+= 0.103, z = -0.366, p = .714) [@2021: 1126]. In this case, the **p**-value is \> 0.05,
 meaning that the effect of learning condition is *not* significantly
 different from no effect. The main effect estimate of Condition2 is
 quite small (close to 0), telling us the predicted odds don't change
-much when moving from one learning condition to the other. However, the
+much when moving from one learning condition to the other. 
+However, the
 **interaction** of Test Type and Learning Condition (see row
-"Test2:Condition2") is significant (Estimate = -0.446, SE = 0.206, z =
--2.169, p = .030). The interaction term tells us how the effect of Test
+"Test2:Condition2") was shown to be significant (Estimate = -0.446, SE = 0.206, z =
+-2.169, p = .030) [@2021: 1126]. The interaction term demonstrates how the effect of Test
 on accuracy depends on the Condition, or the other way around. The
 estimate tells us that, when both Test2 and Condition2 are present, the
-accuracy is even lower than when only one of them is. The p-value of
+accuracy is even lower than when only one of them is. The **p**-value of
 .030 indicates that the interaction effect is unlikely due to chance.
 
 ### Model comparison
@@ -1118,7 +1120,7 @@ testInteractions(fit1.1, fixed="Condition", across="Test")
 
 Since a significant effect of the interaction was found, we compared the
 two models with the anova() function to test if the interaction improves
-the model. It puts out a p-value of 0.03071. Being smaller than 0.05,
+the model. It puts out a **p**-value of 0.03071. Being smaller than 0.05,
 the effect is statistically significant, which is also symbolized by the
 \* specified in the significance codes in the output. It tells us that
 fit1.1 (model with interaction) fits the data significantly better than
@@ -1131,7 +1133,7 @@ depends on the level of the other, not which levels are different. So
 with this function, we want to unpack the interaction further and find
 out how the effect of one variable (Test or Condition) differs across
 levels of the other. If we look at the output of the first function
-where **Test** is used as the fixed variable, the p-values (L1
+where **Test** is used as the fixed variable, the **p**-values (L1
 Production: 0.188; L2 Production: 0.164) tell us that the effect of Test
 does *not* significantly differ between conditions. If we take
 **Condition** as the fixed variable, p-values are very small (L1L2:
