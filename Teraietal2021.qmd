@@ -165,7 +165,7 @@ overall mean across conditions (Barlaz [-@2022]).
 
 ```{r}
 c <- contr.treatment(2)
-my.coding <- matrix(rep(1/2,2,ncol=1))
+my.coding <- matrix(rep(1/2, 2, ncol = 1))
 my.simple <- c-my.coding
 print(my.simple)
 
@@ -486,7 +486,7 @@ if needed, but to you it is optional.
 ```{r}
 # Tidyverse library needs to be loaded if you have not done it before.
 
-dat<-read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
+dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 dat$ItemID <- trimws(dat$ItemID)
 
 items <- dat |>
@@ -603,15 +603,15 @@ alpha(VocabularyA_L1production[,-1], warnings=FALSE)
 
 # Vocabulary A (L2 production)
 
-alpha(VocabularyA_L2production[,-1], warnings=FALSE)
+alpha(VocabularyA_L2production[,-1], warnings = FALSE)
 
 # Vocabulary B (L1 production)
 
-alpha(VocabularyB_L1production[,-1], warnings=FALSE)
+alpha(VocabularyB_L1production[,-1], warnings = FALSE)
 
 # Vocabulary B (L2 production)
 
-alpha(VocabularyB_L2production[,-1], warnings=FALSE)
+alpha(VocabularyB_L2production[,-1], warnings = FALSE)
 ```
 
 These reliability analyses compute Cronbach’s α, a measure of internal
@@ -824,39 +824,37 @@ generally higher and more consistent across learning directions.
 
 After conducting reliability testing and descriptive statistics for the
 tests, we want to display the results in tables resembling Table 4 and 5
-in Terai et al. ([-@2021]: 1126). As with the target items, there was no
+in [@2021: 1126]. As with the target items, there was no
 code accessible for creating the tables. But with the available data, we
 can find a way to reproduce them anyway!
+
+First, we want to create a table that summarizes results of descriptive statistics of tests, similar to Table 4 [@2021: 1126]. {knitr} and {kableExtra} packages have to be loaded to proceed. As a first step, we assign a variable that contains the scores for both datasets (L1 and L2 production) and use the `describe()` function to get all the important measures.
 
 ```{r}
 #| warning: false
 
-# Summarized results: Descriptive statistics of the tests
-
-# In this chunk, we want to create a table that summarizes results of descriptive statistics of tests, similar to Table 4 in the paper.
-
-# knitr and kableExtra packages have to be loaded.
-
-# We assign a variable that contains the scores for both datasets (L1 and L2 production) and use the describe() function to get all the important measures.
-
 descriptive_stats_tests <- data.frame(L1pro, L2pro) |> 
   describe()
+```
 
-# In keeping with the table in the paper, the first two columns (number of observations n = 28, and vars) are removed. Also, the rows are renamed in a more readable way.
+In keeping with the table in the paper, the first two columns (number of observations n = 28, and vars) are removed. Also, the rows are renamed in a more readable way.
 
+```{r}
 descriptive_stats_tests_trimmed <- descriptive_stats_tests |> 
   select(-n, -vars, -trimmed, -mad, -range, -se)
 
 rownames(descriptive_stats_tests_trimmed) <- c("L2 → L1 (L1pro)", "L1 → L2 (L1pro)", "L2 → L1 (L2pro)", "L1 → L2 (L2pro)")
 
-# Now we want to display the results in a clean, formatted table using the kable() function.
+```
 
+Now we want to display the results in a clean, formatted table using the `kable()` function.
+
+```{r}
 kable(descriptive_stats_tests_trimmed, 
       caption = "Descriptive Statistics for Test Scores",
       digits = 2) |> 
   pack_rows(index = c("L1 production test" = 2, "L2 production test" = 2)) |> 
   kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
-
 ```
 
 We have created a table that summarizes the descriptive statistics of
@@ -864,21 +862,22 @@ the two types of post-tests, where the measures of scores in the two
 production tests can be easily compared. In the L1 production test,
 scores were shown to be generally higher than in L2 production test.
 
-Now we want to do the same with the results reliability testing, namely
-the alpha coefficients.
+Now we want to do the same with the results of reliability testing, namely
+the alpha coefficients. To display these results, we want to create a table similar to Table 5 in the paper [@2021: 1126]. 
+To accomplish this, we first need to apply the `alpha()` function to calculate Cronbach’s alpha and 95% confidence intervals for two vocabulary tests (A and B) at two proficiency levels (L1 and L2).
 
 ```{r}
-# Summarized results: Alpha coefficients for L1 and L2 production tests
+#| warning: false
 
-# In this chunk, we want to summarize results of the reliability testing and reproduce a table similar to Table 5 in the paper (p. 1126).
+alpha_A_L1 <- alpha(VocabularyA_L1production[,-1], warnings = FALSE)
+alpha_A_L2 <- alpha(VocabularyA_L2production[,-1], warnings = FALSE)
+alpha_B_L1 <- alpha(VocabularyB_L1production[,-1], warnings = FALSE)
+alpha_B_L2 <- alpha(VocabularyB_L2production[,-1], warnings = FALSE)
+```
 
-alpha_A_L1 <- alpha(VocabularyA_L1production[,-1], warnings=FALSE)
-alpha_A_L2 <- alpha(VocabularyA_L2production[,-1], warnings=FALSE)
-alpha_B_L1 <- alpha(VocabularyB_L1production[,-1], warnings=FALSE)
-alpha_B_L2 <- alpha(VocabularyB_L2production[,-1], warnings=FALSE)
+Then we use sprintf() to create a summary table showing the reliability estimates and CIs for each test and level, and format strings for the table.
 
-
-
+```{r}
 alpha_table <- data.frame(
   Vocabulary = c("Vocabulary A", "Vocabulary B"),
   
@@ -902,35 +901,38 @@ alpha_table <- data.frame(
   
   stringsAsFactors = FALSE
 )
+```
 
+To rename the column headers, we use the `colnames()` function.
+
+```{r}
 # Rename column headers (use empty string for "Vocabulary")
 
 colnames(alpha_table) <- c("", "Alpha", "95% CI", "Alpha", "95% CI")
+```
 
-# Now we want to display the results in a clean, formatted table.
+Lastly, we want to display the results in a clean, formatted table, for which we use the `kable()` function.
 
+```{r}
 alpha_table %>%
   kable(align = "lcccc", caption = "Alpha coefficients for L1 and L2 production test") %>%
   add_header_above(c(" " = 1, "L1 production" = 2, "L2 production" = 2))
-
-# In this chunk, we calculated Cronbach’s alpha and 95% confidence intervals for two vocabulary tests (A and B) at two proficiency levels (L1 and L2), and created a summary table showing the reliability estimates and CIs for each test and level. Aside from the alpha() function, we used sprintf() to create and format strings for the table, which was then generated using the kable() function. 
-
 ```
 
 If we compare this table about alpha coefficients with the one in the
-paper (Terai et al. [-@2021]: 1126), we notice a difference in
+paper [@2021: 1126], we notice a difference in
 confidence intervals, specifically in the hundredths place. If we look
-at the output of alpha(), we see that it puts out two kinds of
+at the output of `alpha()`, we see that it puts out two kinds of
 confidence intervals: Feldt and Duhachek. Reading up in the help file of
-the alpha() function, it becomes clear that alpha.ci (used to access CIs
+the `alpha()` function, it becomes clear that `alpha.ci` (used to access CIs
 from alpha function) finds CIs using the Feldt procedure, which is based
 on the mean covariance, while Duhachek procedure considers the variance
 of the covariances. In the help file it is stated that in March, 2022,
-alpha.ci was finally fixed to follow the Feldt procedure. Since the
+`alpha.ci` was finally fixed to follow the Feldt procedure. Since the
 paper was published in 2021, this might explain the deviating CIs here.
 If one would like to look at Duhachek's CI instead, it can either be
-seen in the output of alpha(), or one might install an earlier version
-of the package. Since we want to use the current psych package for our
+seen in the output of `alpha()`, or one might install an earlier version
+of the package. Since we want to use the current {psych} package for our
 project and the differences don't change our outcome, we decided to
 stick with Feldt's CI and simply wanted to note why this difference
 occurs here.
@@ -943,13 +945,12 @@ adequate reliability for all the tests.
 
 # Generalized linear mixed-effects models
 
-Terai et al. [-@2021] used generalized linear mixed-effect models (GLMM)
+@2021 used generalized linear mixed-effect models (GLMMs)
 to analyze and examine three variables: Learning Condition (L2 to L1 and
 L1 to L2), Test Type (L1 production and L2 production), and Vocabulary
-Size (L2 Proficiency), as well as interaction between two variables
-(p.1125).Three models were chosen for this analysis, the first one to
+Size (L2 Proficiency), as well as interaction between two variables. Three models were chosen for this analysis, the first one to
 analyze the relationship between learning conditions and production
-tests (RQ1) (Terai et al. [-@2021]: 1125). The second and third model
+tests (RQ1) [@2021: 1125]. The second and third model
 analyzed the effects of the two learning directions (L2 to L1 and L1 to
 L2) based on the results of the production tests (RQ2). They are pretty
 similar, except that the third and last model also used L2 production
@@ -965,15 +966,14 @@ longitudinal data that is not continuous (Bolker [-@2015]).
 
 ## Effects of Learning Condition (Research Question 1)
 
-As we recall from the introduction, the first research question of Terai
-et al.'s [-@2021] study was: Which learning direction is more effective
+As we recall from the introduction, the first research question of @2021's study was: Which learning direction is more effective
 for vocabulary acquisition, L1 to L2 learning or L2 to L1 learning?
 Therefore, the first model was built to analyze the relationship between
 the production tests and learning conditions. It contained Learning
 Condition and Test Type as explanatory variables, as well as the
 interaction of the two variables. Random effects (Subject and Item) were
 included, and production test answers were used as the response variable
-(p. 1125).
+[@2021: 1125].
 
 ```{r}
 #| warning: false
