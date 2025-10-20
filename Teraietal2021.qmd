@@ -970,15 +970,15 @@ As we recall from the introduction, the first research question of @2021's study
 for vocabulary acquisition, L1 to L2 learning or L2 to L1 learning?
 Therefore, the first model was built to analyze the relationship between
 the production tests and learning conditions. It contained Learning
-Condition and Test Type as explanatory variables, as well as the
+Condition and Test Type as predictor variables, as well as the
 interaction of the two variables. Random effects (Subject and Item) were
-included, and production test answers were used as the response variable
+included, and production test answers were used as the outcome variable
 [@2021: 1125].
+
+Before getting started on the model, several packages have to be installed and loaded:
 
 ```{r}
 #| warning: false
-
-# Before starting on the model, we install and load the packages we need.
 
 library(lme4) # package for mixed models
 library(effects) # package for plotting model effects
@@ -989,48 +989,48 @@ library(phia) # similar to emmeans
 
 ### Model 1 without interaction
 
-Now, we fit a logistic mixed-effects regression model predicting
+@2021 fit a logistic mixed-effects regression model predicting
 Accuracy (Answer) from Test, Condition, and their interaction with the
-glmer() function. We want to go through the process step by step, and
+`glmer()` function. We want to go through the process step by step, and
 connect the code with the interpretation of data in the paper.
 
-```{r}
-# First, we fit the model without interaction, using the glmer() function.
+The following code chunk shows how Terai et al. fit the model without interaction. Subsequently, the authors calculated AIC (Akike Information Criterion) for their model. We will explain more about this criterion later.
 
+```{r}
 # Model without interaction
-fit1<-glmer(Answer~Test+Condition+(1|ID)+(1|ItemID),family=binomial, data=dat, glmerControl(optimizer="bobyqa"))
+
+fit1 <- glmer(Answer ~ Test + Condition + (1|ID) + (1|ItemID), family = binomial, data = dat, glmerControl(optimizer = "bobyqa"))
 
 # Produce result summary
+
 summary(fit1)
 
-# Setting number of significant digits and calculating AIC
-options(digits=7)
+# Setting number of digits and calculating AIC
+
+options(digits = 7)
 AIC(fit1)
 ```
 
 Since it is so important for our study, we want to take a closer look at
-this step. With the glmer() function, we fit a GLLM. In its model
-formula, both fixed effects (Test answers and Condition) and random
+this step. @2021 fit a GLLM using the `glmer()` function. In its model
+formula, both fixed effects (Test answers and learning condition) and random
 effects (ID and ItemID) are specified. (1 \| ID) allows for a random
 intercept for each level of the variable ID (participants), (1 \|
 ItemID) does the same for each level of the variable ItemID (test
 items). This accounts for repeated measures and inter-individual and
-inter-item variability. By specifying family=binomial, we tell the
-glmer() function that our response variable is binary (correct answer =
+inter-item variability. By specifying `family = binomial`, we can tell the
+`glmer()` function that the outcome variable is binary (correct answer =
 1, incorrect answer = 0). The last argument specifies an optimizing
-algorithm, which helps the model to converge. We use the summary()
-function to look at the output of this model. Additionally, we calculate
-the AIC (Akike Information Criterion), which is a measure used to
-compare different models, and which will therefore be of interest later.
+algorithm, which helps the model to converge. Terai et al. used the `summary()`
+function to look at the output of this model.
 
 Without interaction, the model would assume that the effects of Test and
-Condition are additive and do not depend on each other. The AIC was
-calculated for both variants of the model. It is used to estimate the
+Condition are additive and do not depend on each other. The AIC is a measure used to estimate the
 quality of a model in comparison to another one, with a lower AIC
 indicating higher quality. Therefore, we will get back to this after
-fitting the model with interaction, and compare the two.
+fitting the model with interaction to compare the two.
 
-If we look at the output of the model summary(), it includes *scaled
+If we look at the output of the model `summary()`, it includes *scaled
 residuals*. Residuals are the differences between observed and predicted
 values. This section shows summary statistics of the model's residuals
 after scaling: Minimum, first quartile (25^th^ percentile), median
