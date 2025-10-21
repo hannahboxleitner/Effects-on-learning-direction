@@ -140,6 +140,8 @@ variables represent categories rather than numerical values. Converting
 the variables into factors now will also be useful for the statistical
 analysis such as an ANOVA (Analysis of Variance), which will be conducted later.
 
+In a later step the command trimws() will be used and removes space from the beginning and end of the text which helps to prevent issues like "berth " vs. "berth" being treated as different
+
 ```{r}
 VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
 VocabularyA_L2production <- read.csv(file = here("data", "vocaA_L2pro_20210313.csv"))
@@ -244,7 +246,6 @@ library(kableExtra) #for nicer tables
 # Load data again which was provided in the IRIS repository
 dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 
-# trimws() removes space from the beginning and end of the text which helps to prevent issues like "berth " vs. "berth" being treated as different
 dat$ItemID <- trimws(dat$ItemID)
 ```
 
@@ -459,8 +460,7 @@ round(c(excess = excess_kurt, pearson = pearson_kurt), 3)
 
 There are several possibilities why this is the case. There might be an
 outlier that may have been removed, or maybe the authors used another
-method. Strangely, it is unclear why the authors calculate skewness and
-kurtosis at all, as they do not mention it apart from in the tables. The
+method. The
 issue with the differences in our numbers and the ones by Terai et al.
 [-@2021] is that the differences are so big the graphs are going to look
 quite different, especially for the Fami (A) variable. In the paper the
@@ -959,8 +959,7 @@ test scores. The first model (RQ 1) will be elaborated in more detail.
 Generalized linear mixed-models are an extension of linear mixed models.
 They are tools that help us to analyze not normally distributed data,
 such as binary and count data, when observations are clustered in some
-way. GLMMs are mostly used to include some models that are commonly
-used, such as logistic regression or linear regression. What is great
+way. What is great
 about these models, is that they allow for analysis of clustered or
 longitudinal data that is not continuous (Bolker [-@2015]).
 
