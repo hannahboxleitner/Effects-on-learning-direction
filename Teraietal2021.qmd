@@ -1168,7 +1168,7 @@ confint(a, parm, level = 0.95)
 eff_size(a, sigma = sigma(fit1.1), edf = Inf)
 ```
 
-The same procedure is now applied in the other direction: While with variable `a`, `emmeans()` was told to do pairwise comparisons of Condition levels within each level of Test, @2021 also computed all comparisons of Test levels within each level of Condition, and saved this object as the variable `b`.
+The same procedure was applied in the other direction: While with variable `a`, `emmeans()` was told to do pairwise comparisons of Condition levels within each level of Test, @2021 also computed all comparisons of Test levels within each level of Condition, and saved this object as the variable `b`.
 
 ```{r}
 # Computing EMMs
@@ -1196,8 +1196,7 @@ learning:** p \< .001, d = 0.75, \[0.47, 1.04\]) [@2021: 1126]. Now, we want
 to take a close look at these numbers and what they mean. We can find
 the numbers stated here in the object `b` output by the `emmeans()`
 function. The **p**-values show up when printing `b`, and lie \< .001 for both
-learning conditions. A small **p**-value tells us that an effect likely
-exists, but does not say much about how big or important it is. This is
+learning conditions. A small **p**-value tells us that an effect is unlikely due to chance, but does not say much about how big or important it is. This is
 where effect size comes into play: The function `eff_size()` computes the
 estimated effect sizes for both conditions, which are referred to as
 **d** in the paper. They both demonstrate a large (larger for L2 to L1)
@@ -1261,7 +1260,7 @@ L1 to L2 learning.
 ### Extension (Hannah)
 
 To extend the work on this model, I want to plot the results using the
-ggplot() function instead. I will explain later why this could be of
+`ggplot()` function instead. I will explain later why this could be of
 advantage.
 
 ```{r}
