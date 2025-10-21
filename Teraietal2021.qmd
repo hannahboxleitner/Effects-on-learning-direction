@@ -140,7 +140,7 @@ variables represent categories rather than numerical values. Converting
 the variables into factors now will also be useful for the statistical
 analysis such as an ANOVA (Analysis of Variance), which will be conducted later.
 
-In a later step the command trimws() will be used and removes space from the beginning and end of the text which helps to prevent issues like "berth " vs. "berth" being treated as different
+In a later step the command `trimws()` will be used and removes space from the beginning and end of the text which helps to prevent issues like "berth " vs. "berth" being treated as different
 
 ```{r}
 VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
@@ -283,15 +283,15 @@ has their own row per word. For example, the word "weasel" appears many
 times, once for each participant. But for descriptive statistics of the
 items, we only want one row per word.
 
-To solve this issue we use the commands group_by() and summarise() to
+To solve this issue we use the `commands group_by()` and `summarise()` to
 turn all those rows into just a single one per word. The command
-'group_by(ItemID)' we use in the code groups all rows together that
-contain the same word. The function summarise() then creates our new
+`group_by(ItemID)` we use in the code groups all rows together that
+contain the same word. The function `summarise()` then creates our new
 dataset by calculating the information everything we need and want to
 look at, so L2Frequency, Syllables, Alphabet, etc. The function
-'first()' is fairly simple, since the frequencies, syllables etc. of the
+`first()` is fairly simple, since the frequencies, syllables etc. of the
 words do not change, we just take the first occurence without any
-repetition. Only for the familiarity ratings we calculated the mean()
+repetition. Only for the familiarity ratings we calculated the `mean()`
 across all participants for each word.
 
 ```{r}
@@ -320,16 +320,16 @@ nrow(items)
 In order to avoid repeating code (and because we are lazy), we create
 our own function that computes all the statistics (mean, SD, median,
 min, max, skew, kurtosis) we need for each variable. We build our own
-small machine that we will name desc(), it will do the calculations for
-us. 'desc \<- funcion(x) creates this function with the input 'x' which
+small machine that we will name `quick_stats()`, it will do the calculations for
+us. `quick_stats \<- funcion(x)` creates this function with the input 'x' which
 represents whichever variable we want to analyze. Inside of our
-function, we use 'data.frame()' for organization of our statistics
+function, we use `data.frame()` for organization of our statistics
 before we begin the calculations. Each calculation takes our input
-variable 'x' and computes the statistics. The functions skewness() and
-kurtosis() come from the 'moments' package we loaded earlier.
+variable 'x' and computes the statistics. The functions `skewness()` and
+`kurtosis()` come from the {moments} package we loaded earlier. 
 
 ```{r}
-desc <- function(x) {
+quick_stats <- function(x) {
   data.frame(
     Mean = mean(x, na.rm = TRUE),
     SD = sd(x, na.rm = TRUE),
@@ -345,17 +345,17 @@ desc <- function(x) {
 Now that we have most of what we need for the tables, we can start to
 build them up! There are two subtables we need.
 
-The code below does this with two important functions: rbind() which
+The code below does this with two important functions: `rbind()` which
 stacks the rows we want to create on top of each other to build the
-final table which we will print in the next step. And cbind() which
+final table which we will print in the next step. And `cbind()` which
 creates columns that stick together side by side. For example
-'cbind(Variable = "Frequency", desc(items\$L2Frequency)' creates a
+`cbind(Variable = "Frequency", desc(items\$L2Frequency)` creates a
 column with the name "Variable" with the value "Frequency" next to the
-summary of the output of 'desc()'. With our helper function 'desc()' we
+summary of the output of `quick_stats()`. With our helper function `desc()` we
 then insert the the statistics from our data, in this case it is the
-'L2Frequency'. Basically, we are creating here three rows stacked on top
+"L2Frequency". Basically, we are creating here three rows stacked on top
 of each other for tab_L2, and four rows for tab_L1. As you see we only
-have to run our helper function 'desc()' seven times!
+have to run our helper function `quick_stats()` seven times!
 
 ```{r}
 tab_L2 <- rbind(
@@ -374,8 +374,7 @@ tab_L1 <- rbind(
 ```
 
 Great! You are almost done building the table for the descriptive
-statistics. In the next step, we will round the numbers to two decimals
-to make the table actually readable.
+statistics. In the next step, we will round the numbers to two decimals to make the table actually readable.
 
 ```{r}
 tab_L2$Mean     <- round(tab_L2$Mean, 2)
@@ -396,18 +395,17 @@ tab_L1$Kurtosis <- round(tab_L1$Kurtosis, 2)
 ```
 
 Perfect, the next and easiest part of building up our two subtables is
-captioning them and then finally printing them. Here we need the kable()
-and the kable_classic() function. We use these functions to make the
-tables look easy to read. The kable() function is quite nice because it
-helps to make the `R` code output look a little more professional. The
-function comes from the knitr package. kable(tab_L2, ...) takes our
+captioning them and then finally printing them. Here we need the `kable()`
+and the `kable_classic()` function. We use these functions to make the
+tables look easy to read. The `kable()` function is quite nice because it
+helps to make the R code output look a little more professional. The
+function comes from the {knitr} package. `kable(tab_L2, ...)` takes our
 tab_2 data frame and converts it into a formatted table which we then
-caption with the command 'caption = "...". With the command 'align =
-"lrrrrrr" we control the way the text is aligned in each column. the 'l'
-means left-aligned, while every added 'r' means the remaining columns
-should be right-aligned. The kable_classics function comes from the
-kableExtra package we loaded earlier. It is also another function to
-tidy up our table style. The command 'full_width = FALSE' makes sure
+caption with the command `caption = "..."`. With the command `align = "lrrrrrr"` we control the way the text is aligned in each column. the 'l'
+means left-aligned, while every added "r" means the remaining columns
+should be right-aligned. The `kable_classics()` function comes from the
+{kableExtra} package we loaded earlier. It is also another function to
+tidy up our table style. The command `full_width = FALSE` makes sure
 that the table does not stretch too wide. When you run this code, you
 will see a nice table with clear structure and formatting which will
 make it easier to read and interpret, it also looks ready to be
@@ -484,7 +482,7 @@ repetitive, but it simply ensures that this section can work on its own
 if needed, but to you it is optional.
 
 ```{r}
-# Tidyverse library needs to be loaded if you have not done it before.
+# {tidyverse} library needs to be loaded if you have not done it before.
 
 dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 dat$ItemID <- trimws(dat$ItemID)
@@ -502,17 +500,17 @@ items <- dat |>
     .groups = "drop"
   )
 
-##if you want you can quickly check the item number with 'nrow(items)' it should be 40!
+##if you want you can quickly check the item number with 'nrow(items)' it should be 40 for our 40 target items!
 ```
 
 We will start with a graph of L2 Frequencies. To do this we use the
-ggplot() command. Our first line of code here 'ggplot(data = items,
-aes(x = L2Frequency))' tells ggplot to basically use the 'items' dataset
+`ggplot()` command. Our first line of code here `ggplot(data = items,
+aes(x = L2Frequency))` tells ggplot to basically use the "items" dataset
 and put the L2 frequencies of each word onto the x-axis.
-'geom_density(...) creates the actual density plot. To fully understand
+`geom_density(...)` creates the actual density plot. To fully understand
 where our numbers in the table come from, we add reference lines:
-'geom_vline(xintercept = mean(...))' for the mean value, and
-'geom_vline(xintercept = median(...), linetype = "dashed"...)' for a
+`geom_vline(xintercept = mean(...))` for the mean value, and
+`geom_vline(xintercept = median(...), linetype = "dashed"...)` for a
 dashed line at the median.
 
 Do not be too confused by the numbers on the y-axis. Since our focus
@@ -982,7 +980,7 @@ Before getting started on the model, several packages have to be installed and l
 library(lme4) # package for mixed models
 library(effects) # package for plotting model effects
 library(emmeans) # package for post-hoc comparisons
-library(phia) # similar to emmeans
+library(phia) # similar to {emmeans}
 
 ```
 
@@ -1149,7 +1147,7 @@ After comparing the models and testing the interaction, @2021 conducted pairwise
 For this, the authors used the `emmeans()` function, which computes estimated marginal means. First, they conducted pairwise comparisons of Condition levels within each level of Test, and assigned it to a variable `a`. This object is then printed.
 
 ```{r}
-# Computing estimated marginal means using the emmeans() function
+# Computing estimated marginal means using the `emmeans()` function
 
 a <- emmeans(fit1.1, pairwise ~ Condition|Test, adjust = "tukey")
   a
@@ -1264,9 +1262,9 @@ advantage.
 ```{r}
 #| warning: false
 
-# Visualizing with ggplot2
+# Visualizing with {ggplot2}
 
-# First, we need to load gglpot2 and paletteer libraries. The lme4 package, which has been loaded before, and is necessary here as well.
+# First, we need to load {gglpot2} and {paletteer} libraries. The {lme4} package, which has been loaded before, and is necessary here as well.
 
 library(ggplot2)
 library(paletteer)
@@ -1339,8 +1337,8 @@ Item ID so that the model can account for individual differences.
 ### L1 Production test
 
 We begin by focusing only on the L1 production data. This can be done by
-first loading our data with the command read.csv() and then the command
-filter() which only keeps the rows for the L1 Production test. We filter
+first loading our data with the command `read.csv()` and then the command
+`filter()` which only keeps the rows for the L1 Production test. We filter
 this data because while each participant took both L1 and L2 production
 tests, the authors of this study found different patterns for both test
 types which is why they chose to analyze them separately (Terai et al.
@@ -1354,8 +1352,8 @@ dat1.L1<-filter(dat1, Test=="L1 Production")
 
 ```
 
-To check whether you understood the filter() function completely, use
-the 'nrow()' function to find out! How many rows were in the original
+To check whether you understood the `filter()` function completely, use
+the `nrow()` function to find out! How many rows were in the original
 dataset compared to the filtered dataset?
 
 ```{r}
@@ -1414,12 +1412,12 @@ The model predicts the probability of a correct response (Answer). The
 random intercepts (1\|ID) and (1\|ItemID) account for individual
 differences between participants and for the unique difficulty of
 individual vocabulary items. The summary output of this model without
-interaction shows that 's.vocab' is not significant with p = .57, this
+interaction shows that "s.vocab" is not significant with *p* = .57, this
 suggests that English proficiency by itself does not make a
 statistically significant contribution to the prediction of
 participants' L1 Production accuracy. The model also suggests that the
-test 'Condition' does not make a statistically significant contribution
-to the model (p = .18), meaning that learning direction alone also does
+test "Condition" does not make a statistically significant contribution
+to the model (*p* = .18), meaning that learning direction alone also does
 not explain differences. So if we look at each predictor separately,
 there seems to be no clear effect.
 
@@ -1441,19 +1439,19 @@ options(digits=7)
 AIC(fit2.1)
 ```
 
-The main difference in this model is that 's.vocab \* Condition' here
+The main difference in this model is that "s.vocab \* Condition" here
 includes both main effects and their interaction. We tested whether the
 effect of vocabulary differs between the learning conditions. Just as we
 read in the paper, the interaction of Learning Condition and Vocabulary
 Size is significant with an estimate of about -0.37, SE = 0.141, z =
--2.596, p = .009, which means that the effect of vocabulary proficiency
+-2.596, *p* = .009, which means that the effect of vocabulary proficiency
 depends on the learning direction. There were no significant effects of
 Vocabulary Size or learning condition by themselves, so the interaction
 is what matters here.
 
 ### Model comparison
 
-To formally check which model fits better we use the command anova()
+To formally check which model fits better we use the command `anova()`
 just as we did for RQ1.
 
 ```{r}
@@ -1461,7 +1459,7 @@ anova(fit2,fit2.1)
 ```
 
 The AIC favors the interaction model (1311.6 vs. 1316.3), and the
-outcome is statistically significant with a p-value of .009, indicating
+outcome is statistically significant with a *p-value* of .009, indicating
 that the model with Condition and Proficiency interaction fits best.
 
 ### Visualization
@@ -1500,11 +1498,11 @@ between conditions as predicted by the authors.
 testInteractions(fit2.1, fixed="s.vocab", across="Condition")
 ```
 
-Because the interaction of s.vocab and Condition was found to be
-significant, the authors examined the simple effects of s.vocab across
+Because the interaction of "s.vocab" and "Condition" was found to be
+significant, the authors examined the simple effects of "s.vocab" across
 the two learning conditions. The output of this test show a positive
 mean slope of proficiency of \~0.523. Although the chi-square test
-actually indicates that this effect is not statistically significant ((p
+actually indicates that this effect is not statistically significant ((*p*
 = .19). This means that the relationship between vocabulary size and
 test performance does not differ in a meaningful way between the two
 variables.
@@ -1571,15 +1569,15 @@ model **with** interaction showed a lower AIC (1145.32) than the one
 without interaction (1146.52), which as we remember, means that the
 model with the interaction is a better fit. Now, taking a look at the
 output of our summary, we see that the Vocabulary Size estimate is
--0.227 (SE = 0.193, z = 1.179, p = .238). Our p-value is greater than
+-0.227 (SE = 0.193, z = 1.179, p = .238). Our *p-value* is greater than
 0.05 which means the effect is not statistically significant and
 proficiency on its can not predict accuracy on the L2 production test.
 We see something nearly identical for learning condition with an
-estimate of -0.262 (SE = 0.154, z = -1.699, p = 0.089). This means that
+estimate of -0.262 (SE = 0.154, z = -1.699, *p* = 0.089). This means that
 the performance is not predicted to significantly differ between the two
 learning directions. In a final step, we considered the interaction term
-'s.vocab \* Condition' which was also not statistically significant
-(Estimate = -0.278, SE = 0.154, z = -1.810, p = .070).
+"s.vocab \* Condition" which was also not statistically significant
+(Estimate = -0.278, SE = 0.154, z = -1.810, *p* = .070).
 
 ### Model Comparison
 
@@ -1592,7 +1590,7 @@ anova(fit3,fit3.1)
 ```
 
 Here the authors once again use an anova test to decide if maybe the
-interaction term improves the model. The output reports a p-value of
+interaction term improves the model. The output reports a *p-value* of
 .0073 which means the model **with** interaction does not really
 outperform the simpler model. But we see that the value is close to
 0.05, this suggests a slight trend toward significance which matches
@@ -1611,7 +1609,7 @@ plot(allEffects(fit3.1),multiline=T,ci.style="bands", xlab="Vocabulary Size", yl
 
 Just as the numbers of our tests above suggested we can see that while
 there was no significance of the results for learning direction or L2
-proficiency (Estimate -0.278, SE = 0.154, z = -1.810 p = .070), the
+proficiency (Estimate -0.278, SE = 0.154, z = -1.810, *p* = .070), the
 trend seems similar to the results of our L1 production test (flatter L2
 -\> L1 slope, steeper L1 -\> L2 slope). So, for lower-proficiency
 learners, L2 -\> L1 leads to higher performance than L1 -\> L2 learning.
@@ -1651,7 +1649,7 @@ year-only=true)
 
 ### Calculating VIFs for the Models
 
-We use a helper function vif.mer() to calculate VIFs for mixed models.
+We use a helper function `vif.mer()` to calculate VIFs for mixed models.
 
 ```{r}
 source("https://raw.githubusercontent.com/aufrank/R-hacks/master/mer-utils.R")
