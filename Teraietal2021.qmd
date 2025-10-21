@@ -1214,8 +1214,7 @@ conditions separately for L1 Production and L2 Production. Printing `a`
 shows **p**-values, which lie above 0.05 in both production tests and
 indicate no statistical significance of the differences between learning
 conditions. The effect sizes show a small negative effect for L1
-Production, and a small positive effect for L2 Production, and do not
-suggest a meaningful difference. The confidence intervals in both cases
+Production, and a small positive effect for L2 Production. The confidence intervals in both cases
 include 0 (since it lies between -0.03 and 0.55, for example), telling
 us that no effect (**d** = 0) is a possibility given the data. To sum up,
 all these values do *not* support a main effect of Learning Condition.
@@ -1669,11 +1668,6 @@ predictors (s.vocab, Condition, and their interaction) are not
 correlated with each other in problematic ways. Therefore our models are
 statistically stable: the estimate of the interaction effects we
 observed in our GLMMS are not due to multicollinearity.
-
-We can now confidently say that the interaction between learning
-direction and proficiency is a genuine effect, not an artefact of
-overlapping predictors. The models are behaving well in terms of
-collinearity.
 
 # Conclusion
 
