@@ -1591,29 +1591,28 @@ learning directions. In a final step, the interaction term
 ### Model Comparison
 
 To formally check whether the model with the interaction is a better fit
-than the simpler model without the interaction, we compare them with
-test:
+than the simpler model without the interaction, @2021 compared them using the `anova()` function:
 
 ```{r}
-anova(fit3,fit3.1)
+anova(fit3, fit3.1)
 ```
 
-Here the authors once again use an anova test to decide if maybe the
-interaction term improves the model. The output reports a *p-value* of
-.0073 which means the model **with** interaction does not really
+This function was again used to decide if maybe the
+interaction term improves the model. The output reports a **p**-value of
+.0073 which means the model *with* interaction does not really
 outperform the simpler model. But we see that the value is close to
-0.05, this suggests a slight trend toward significance which matches
+0.05. This suggests a slight trend toward significance which matches
 what the authors reported in their paper. While they did not find a
 significant interaction, there was a similar trend as they found in the
 L1 production test where proficiency mattered a bit more for learning
-direction. This can be seen better in a plot which we will print in our
+direction. This can be seen better in a plot which will be printed in the
 next step.
 
 ### Visualization
 
 ```{r}
-plot(allEffects(fit3.1),multiline=T,ci.style="bands", xlab="Vocabulary Size", ylab="Accuracy Rate",
-       main= "L2 Production", lty=c(1,2), rescale.axis=F, ylim = c(0,1),colors="black",asp=1)
+plot(allEffects(fit3.1),multiline = T,ci.style = "bands", xlab = "Vocabulary Size", ylab = "Accuracy Rate",
+       main = "L2 Production", lty = c(1, 2), rescale.axis = F, ylim = c(0, 1),colors = "black",asp = 1)
 ```
 
 Just as the numbers of our tests above suggested we can see that while
