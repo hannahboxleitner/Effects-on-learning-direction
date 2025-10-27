@@ -1615,26 +1615,26 @@ plot(allEffects(fit3.1),multiline = T,ci.style = "bands", xlab = "Vocabulary Siz
        main = "L2 Production", lty = c(1, 2), rescale.axis = F, ylim = c(0, 1),colors = "black",asp = 1)
 ```
 
-Just as the numbers of our tests above suggested we can see that while
+Just as the numbers of the tests above suggested, this plot shows that while
 there was no significance of the results for learning direction or L2
-proficiency (Estimate -0.278, SE = 0.154, z = -1.810, *p* = .070), the
+proficiency (Estimate -0.278, SE = 0.154, z = -1.810, **p** = .070), the
 trend seems similar to the results of our L1 production test (flatter L2
 -\> L1 slope, steeper L1 -\> L2 slope). So, for lower-proficiency
 learners, L2 -\> L1 leads to higher performance than L1 -\> L2 learning.
-Furthermore, something that the authors explained (p. 1128) was that we
-can see clearly in our graphs by the nearly flat dashed line, that L2
--\> L1 learning is much less influenced by L2 proficiency.
+Furthermore, the authors explained that L2
+-\> L1 learning is much less influenced by L2 proficiency [@2021: 1128], which we
+can see clearly in the graphs by the nearly flat dashed line.
 
 ### Interpretation & Take-home message
 
-Generally, for the L1 production test, our results showed that
+Generally, for the L1 production test, @2021's results showed that
 lower-proficiency learners benefited more from the L2 -\> L1 learning
 direction, while higher-proficiency learners benefited more from the L1
 -\> L2 learning direction. For the L2 production test, a similar trend
 was observed, but it was not statistically significant. Overall,
 vocabulary proficiency shapes how effectively retrieval works: the
 optimal learning direction is not a one-size-fits-all matter, but is
-rather depends on learner proficiency.
+rather dependent on learner proficiency.
 
 ## Model Diagnostics
 
