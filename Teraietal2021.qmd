@@ -504,11 +504,11 @@ items <- dat |>
 ```
 
 We will start with a graph of L2 Frequencies. To do this we use the
-`ggplot()` command. Our first line of code here `ggplot(data = items,
+`ggplot()` command. The first line of code here `ggplot(data = items,
 aes(x = L2Frequency))` tells ggplot to basically use the "items" dataset
 and put the L2 frequencies of each word onto the x-axis.
 `geom_density(...)` creates the actual density plot. To fully understand
-where our numbers in the table come from, we add reference lines:
+where the numbers in the table come from, we add reference lines:
 `geom_vline(xintercept = mean(...))` for the mean value, and
 `geom_vline(xintercept = median(...), linetype = "dashed"...)` for a
 dashed line at the median.
@@ -1273,7 +1273,7 @@ library(paletteer)
 
 str(b$emmeans)
 
-# To create a ggplot, we need to transform the EMMs back to the original scale of the response variable with specifiying the type, and then convert our emmeans object into a data frame:
+# To create a ggplot, we need to transform the EMMs back to the original scale of the outcome variable with specifiying the type, and then convert our emmeans object into a data frame:
 
 b <- emmeans(fit1.1, pairwise ~ Test | Condition, adjust = "tukey", type = "response")
 
