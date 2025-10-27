@@ -1468,20 +1468,20 @@ that the model with Condition and Proficiency interaction fits best.
 ### Visualization
 
 Visualizing model predictions is a very useful way to better understand
-complex models like this one.
+complex models like this one. @2021 visualized the model `fit2.1` using a base `R` plot.
 
 ```{r}
-plot(allEffects(fit2.1), multiline=T, ci.style="bands",
-    xlab="Vocabulary Size", ylab="Accuracy Rate",
-    main="L1 Production", lty=c(1,2),
-    rescale.axis=F, ylim = c(0,1), colors="black", asp=1)
+plot(allEffects(fit2.1), multiline = T, ci.style = "bands",
+    xlab = "Vocabulary Size", ylab = "Accuracy Rate",
+    main = "L1 Production", lty = c(1, 2),
+    rescale.axis = F, ylim = c(0, 1), colors = "black", asp = 1)
 ```
 
-We see a solid line which represents the L1 -\> L2 learning condition
-and a dotted line which represents the L2 -\> L1 learning condition. The
+The plot shows a solid line representing the L1 -\> L2 learning condition,
+and a dotted line representing the L2 -\> L1 learning condition. The
 y-axis shows L1 production accuracy rates of the test, and the x-axis
-the scaled scores of the vocabulary size tests (Terai et al. [-@2021]:
-1128). Looking at the plot you see a nearly flat line for L2 -\> L1 and
+the scaled scores of the vocabulary size tests [@2021:
+1128]. Looking at the plot you can see a nearly flat line for L2 -\> L1 and
 a positive, steeper line for L1 -\> L2 which cross at intermediate
 proficiency (\~5.419 as reported in the paper, p. 1127). The crossover
 point at \~5.419 suggests that for learners in the L1 -\> L2 direction a
@@ -1490,97 +1490,103 @@ beneficial than for L2 -\> L1 learners. The fact that the line for L2
 -\> L1 learning is nearly flat shows that proficiency in L2 did not have
 a big influence. Basically, the plot tells us that for lower proficiency
 learners, L2 -\> L1 is better, and for higher proficiency learners L1
--\> L2 is more beneficial (Terai et al. [-@2021]).
+-\> L2 is more beneficial @2021.
 
 ### Testing simple effects
 
-You can also test whether the slope of proficiency differs significantly
-between conditions as predicted by the authors.
+@2021 used the `testInteractions()` function to test whether the slope of proficiency differs significantly
+between conditions as predicted. 
 
 ```{r}
-testInteractions(fit2.1, fixed="s.vocab", across="Condition")
+testInteractions(fit2.1, fixed = "s.vocab", across = "Condition")
 ```
 
 Because the interaction of "s.vocab" and "Condition" was found to be
-significant, the authors examined the simple effects of "s.vocab" across
+significant, Terai et al. examined the simple effects of "s.vocab" across
 the two learning conditions. The output of this test show a positive
 mean slope of proficiency of \~0.523. Although the chi-square test
-actually indicates that this effect is not statistically significant ((*p*
+actually indicates that this effect is not statistically significant ((**p**
 = .19). This means that the relationship between vocabulary size and
 test performance does not differ in a meaningful way between the two
 variables.
 
 ### L2 Production Test
 
-We now repeat all the same steps for the L2 production test, but now we
-predict accuracy for when the participants had to produce English words
+@2021 repeated all the same steps for the L2 production test, now
+predicting accuracy for when the participants had to produce English words
 after learning Japanese-English pairs.
 
 ```{r}
-#Load our data
+#Loading our data
+
 dat2 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"))
 
-#Filter the data we need
+# Filtering the data we need
+
 dat2.L2 <- filter(dat2, Test == "L2 Production")
 
-#Setting Condition as factors
+# Setting Condition as factors
+
 dat2.L2$Condition <- as.factor(dat2.L2$Condition)
 
-c<-contr.treatment(2)
-my.coding<-matrix(rep(1/2,2,ncol=1))
-my.simple<-c-my.coding
+c <- contr.treatment(2)
+my.coding <- matrix(rep(1/2, 2, ncol = 1))
+my.simple <- c-my.coding
 print(my.simple)
 ```
 
 ```{r}
-#Here we contrast our data once again
+# Contrasting our data once again
+
 contrasts(dat2.L2$Condition) <- my.simple 
 
-#Then we scale our Vocab scores
+# Scaling Vocab scores
 dat2.L2$s.vocab <- scale(dat2.L2$Vocab)
 
-#without interaction
+# Model without interaction
 fit3 <- glmer(Answer ~ s.vocab+Condition + (1|ID) + (1|ItemID),
-              family=binomial, 
-              data=dat2.L2, 
-              glmerControl(optimizer="bobyqa"))
+              family = binomial, 
+              data = dat2.L2, 
+              glmerControl(optimizer = "bobyqa"))
 summary(fit3)
 ```
 
 ```{r}
-options(digits=7)
+options(digits = 7)
+
 AIC(fit3)
 ```
 
 ```{r}
-#with interaction
-fit3.1 <- glmer(Answer ~ s.vocab*Condition + (1|ID) + (1|ItemID),
-                family=binomial,
-                data=dat2.L2, 
-                glmerControl(optimizer="bobyqa"))
+# Model with interaction
+
+fit3.1 <- glmer(Answer ~ s.vocab * Condition + (1|ID) + (1|ItemID),
+                family = binomial,
+                data = dat2.L2, 
+                glmerControl(optimizer = "bobyqa"))
 summary(fit3.1)
 
 confint(fit3.1)
 
-options(digits=7)
+options(digits = 7)
 AIC(fit3.1)
 ```
 
-Similar to our first research question we have calculated AICs for both
+Similar to @2021's first research question, they calculated AICs for both
 versions of the model, with and without interaction. We can see that the
-model **with** interaction showed a lower AIC (1145.32) than the one
-without interaction (1146.52), which as we remember, means that the
+model *with* interaction showed a lower AIC (1145.32) than the one
+without interaction (1146.52), which - as we remember - means that the
 model with the interaction is a better fit. Now, taking a look at the
-output of our summary, we see that the Vocabulary Size estimate is
--0.227 (SE = 0.193, z = 1.179, p = .238). Our *p-value* is greater than
-0.05 which means the effect is not statistically significant and
-proficiency on its can not predict accuracy on the L2 production test.
-We see something nearly identical for learning condition with an
-estimate of -0.262 (SE = 0.154, z = -1.699, *p* = 0.089). This means that
+output of the `summary()` function, we see that the Vocabulary Size estimate is
+-0.227 (SE = 0.193, z = 1.179, p = .238). Our **p**-value is greater than
+0.05, which means the effect is not statistically significant and
+proficiency alone can not predict accuracy on the L2 production test.
+We see something nearly identical for Learning condition with an
+estimate of -0.262 (SE = 0.154, z = -1.699, **p** = 0.089). This means that
 the performance is not predicted to significantly differ between the two
-learning directions. In a final step, we considered the interaction term
-"s.vocab \* Condition" which was also not statistically significant
-(Estimate = -0.278, SE = 0.154, z = -1.810, *p* = .070).
+learning directions. In a final step, the interaction term
+"s.vocab \* Condition" was considered, which was also not statistically significant
+(Estimate = -0.278, SE = 0.154, z = -1.810, **p** = .070).
 
 ### Model Comparison
 
