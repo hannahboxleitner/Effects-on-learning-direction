@@ -1638,26 +1638,25 @@ rather dependent on learner proficiency.
 
 ## Model Diagnostics
 
-Now, we checked our GLMMs and have our results. But before interpreting
-these results too confidently, we should also check whether the
+Now, before interpreting
+these results too confidently, one should also check whether the
 predictors are highly correlated with one another, which would be a
 problem called multicollinearity that might affect the results of our
 GLMMs.
 
-Why does this matter? If our predictors are very strongly correlated,
+Why does this matter? If the predictors are very strongly correlated,
 the model might have trouble to keep apart their unique contributions.
 It might then inflate standard errors and thus make estimates unreliable
 (Pennsylvania State University [-@2018]).
 
 A common diagnostic here is the Variance Inflation Factor (VIF). A VIF
 close to 1 means predictors are not collinear. Here are some rules: VIF
-= 1: perfect independence VIF \> 5: potential concern VIF \> 10: serious
-multicollinearity (Pennsylvania State University [-@2018],
-year-only=true)
+= 1: perfect independence, VIF \> 5: potential concern, VIF \> 10: serious
+multicollinearity (Pennsylvania State University [-@2018].
 
 ### Calculating VIFs for the Models
 
-We use a helper function `vif.mer()` to calculate VIFs for mixed models.
+@2021 used a helper function `vif.mer()` to calculate VIFs for mixed models.
 
 ```{r}
 source("https://raw.githubusercontent.com/aufrank/R-hacks/master/mer-utils.R")
@@ -1669,11 +1668,11 @@ vif.mer(fit2.1)
 vif.mer(fit3.1)
 ```
 
-All our VIF values are obviously quite close to 1. This means that the
+All the VIF values are obviously quite close to 1. This means that the
 predictors (s.vocab, Condition, and their interaction) are not
 correlated with each other in problematic ways. Therefore our models are
-statistically stable: the estimate of the interaction effects we
-observed in our GLMMS are not due to multicollinearity.
+statistically stable: the estimate of the interaction effects that were
+observed in the GLMMS are not due to multicollinearity.
 
 # Conclusion
 
