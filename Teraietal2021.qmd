@@ -1318,8 +1318,8 @@ to update or change later on.
 
 ## Effects of Learning Directions and L2 Proficiency (RQ2)
 
-Terai et al. [-@2021] hypothesized that the effectiveness of learning
-direction or word pairs might be dependant on the learners' proficiency
+@2021 hypothesized that the effectiveness of learning
+direction or word pairs might be dependent on the learners' proficiency
 in English. Meaning, lower-proficiency learners might benefit more from
 practicing in the L2 -\> L1 direction, whilst higher-proficiency
 learners might benefit more from the L1 -\> L2 direction.
@@ -1327,11 +1327,11 @@ learners might benefit more from the L1 -\> L2 direction.
 To answer and test this question, the authors once again fit two
 separate generalized linear mixed models (GLMMs) for the L1 and L2
 production tests. Before we work through the authors' code step by step,
-we need to know what we are working with here: We have a response
-variable which, in our case, is the accuracy on production tests and
+we need to know what we are working with here: There is an outcome
+variable which, in case of @2021's study, is the accuracy on production tests and
 predictor variables which are the learning direction (L1 -\> L2 vs. L2
 -\> L1) and vocabulary size (which is used as a proxy for English
-proficiency in this study). Our random effects are Participant ID and
+proficiency in this study). The random effects are Participant ID and
 Item ID so that the model can account for individual differences.
 
 ### L1 Production test
