@@ -1336,13 +1336,11 @@ Item ID so that the model can account for individual differences.
 
 ### L1 Production test
 
-We begin by focusing only on the L1 production data. This can be done by
-first loading our data with the command `read.csv()` and then the command
-`filter()` which only keeps the rows for the L1 Production test. We filter
-this data because while each participant took both L1 and L2 production
+We begin by focusing only on the L1 production data. @2021 loaded the data again for this part and saved it under another variable. As we already mentioned before, this is not good practice, so we will continue to use `dat` instead to reproduce the code. @2021 used the command
+`filter()`, which only keeps the rows for the L1 Production test. This data is filtered because, while each participant took both L1 and L2 production
 tests, the authors of this study found different patterns for both test
-types which is why they chose to analyze them separately (Terai et al.
-[-@2021]: 1126). This is the part where participants of the study had to
+types, which is why they chose to analyze them separately
+[@2021: 1126]. This is the part where participants of the study had to
 produce the L1 (Japanese) word when shown the L2 (English) word.
 
 ```{r}
@@ -1361,12 +1359,13 @@ nrow(dat1)
 nrow(dat1.L1)
 ```
 
-Next, we want to convert the learning direction (Condition) to a factor
-again. We convert the categories (L1 -\> L2 vs. L2 -\> L1) into two
-factor levels so that R treats it as a categorical binary variable.
+Next, the learning direction (Condition) were converted to a factor
+again. @2021 converted the categories (L1 -\> L2 vs. L2 -\> L1) into two
+factor levels so that `R` treats it as a categorical binary variable.
 
 ```{r}
-#We set Condition (Learning direction) as a factor
+# Setting Condition (Learning direction) as a factor
+
 dat1.L1$Condition <- as.factor(dat1.L1$Condition)
 ```
 
