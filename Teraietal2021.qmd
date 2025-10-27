@@ -1681,15 +1681,14 @@ have learned how to fit them, interpret their main effects and
 interactions, as well as checking for multicollinearity using the VIF
 measure. GLMMs are powerful tools for analyzing binary outcomes such as
 accuracy, which allows us to account for repeated measures across
-participants and items such as we had in this study by Terai et al.
-[-@2021]. It is completely normal that at times GLMMs can feel
+participants and items such as we had in this study by @2021. It is completely normal that at times GLMMs can feel
 intimidating: coding contrasts and interpreting the outcomes are not
 always straightforward. But usually there is always a solution. The
 insights we can gain from a nicely fitted model make all this effort
 worthwhile.
 
-Due to the extensive research by Terai, Yamashita and Pasich [-@2021]
-who published their dataset and R code along with the paper, we were
+Due to the extensive research by @2021,
+who published their dataset and `R` code along with the paper, we were
 able to reproduce their findings and gain hands-on experience with
 modeling. This not only helps with our understanding of the research,
 but it also sharpens our skills as future SLA researchers.
