@@ -240,7 +240,7 @@ contains every function we might need:
 library(readr) #read csv
 library(dplyr) #data wrangling
 library(moments) #for skewness and kurtosis
-library(knitr) #for the command kable()
+
 library(kableExtra) #for nicer tables
 
 # Load data again which was provided in the IRIS repository
@@ -359,16 +359,16 @@ have to run our helper function `quick_stats()` seven times!
 
 ```{r}
 tab_L2 <- rbind(
-  cbind(Variable = "Frequency", desc(items$L2Frequency)),
-  cbind(Variable = "Syllables", desc(items$Syllables)),
-  cbind(Variable = "Letters", desc(items$Alphabet))
+  cbind(Variable = "Frequency", quick_stats(items$L2Frequency)),
+  cbind(Variable = "Syllables", quick_stats(items$Syllables)),
+  cbind(Variable = "Letters", quick_stats(items$Alphabet))
 )
 
 tab_L1 <- rbind(
-  cbind(Variable = "Frequency", desc(items$L1Frequency)),
-  cbind(Variable = "Letters", desc(items$WordLength)),
-  cbind(Variable = "Mora (syllables)", desc(items$mora)),
-  cbind(Variable = "Fami (A)", desc(items$familiarity))
+  cbind(Variable = "Frequency", quick_stats(items$L1Frequency)),
+  cbind(Variable = "Letters", quick_stats(items$WordLength)),
+  cbind(Variable = "Mora (syllables)", quick_stats(items$mora)),
+  cbind(Variable = "Fami (A)", quick_stats(items$familiarity))
 )
 
 ```
