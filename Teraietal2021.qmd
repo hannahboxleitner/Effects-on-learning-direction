@@ -189,7 +189,7 @@ descriptive statistics about the participants (age, years of learning,
 etc.) are mentioned in the paper by Terai et al. [-@2021], we were not able to find the data to
 reproduce these findings. It is neither part of the
 dataset accessible on IRIS, nor does it come up anywhere in the authors'
-R code. Therefore, we will only focus on reproducing the descriptive statistics of
+R code. Although, it is common that participant data is not available to protect their identities. Therefore, we will only focus on reproducing the descriptive statistics of
 the target items (40 English words used in the study), test types and
 reliability testing. We'll start with the target items, which are found
 in Table 3 in the paper [@2021: 1123].
