@@ -1344,10 +1344,7 @@ types, which is why they chose to analyze them separately
 produce the L1 (Japanese) word when shown the L2 (English) word.
 
 ```{r}
-dat1 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
-
-dat1.L1 <- filter(dat1, Test == "L1 Production")
-
+dat.L1 <- filter(dat, Test == "L1 Production")
 ```
 
 To check whether you understood the `filter()` function completely, use
@@ -1355,8 +1352,8 @@ the `nrow()` function to find out! How many rows were in the original
 dataset compared to the filtered dataset?
 
 ```{r}
-nrow(dat1)
-nrow(dat1.L1)
+nrow(dat)
+nrow(dat.L1)
 ```
 
 Next, the learning directions (Condition) were converted to a factor
@@ -1366,7 +1363,7 @@ factor levels so that `R` treats it as a categorical binary variable.
 ```{r}
 # Setting Condition (Learning direction) as a factor
 
-dat1.L1$Condition <- as.factor(dat1.L1$Condition)
+dat.L1$Condition <- as.factor(dat.L1$Condition)
 ```
 
 Here, the authors make use of contrast coding once more:
@@ -1377,11 +1374,11 @@ my.coding <- matrix(rep(1/2, 2, ncol = 1))
 my.simple <- c-my.coding
 print(my.simple)
 
-contrasts(dat1.L1$Condition) <- my.simple
+contrasts(dat.L1$Condition) <- my.simple
 
 # Standardizing vocabulary scores
 
-dat1.L1$s.vocab <- scale(dat1.L1$Vocab)
+dat.L1$s.vocab <- scale(dat.L1$Vocab)
 ```
 
 ### Model without interaction
@@ -1517,17 +1514,13 @@ predicting accuracy for when the participants had to produce English words
 after learning Japanese-English pairs.
 
 ```{r}
-#Loading our data
-
-dat2 <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"))
-
 # Filtering the data we need
 
-dat2.L2 <- filter(dat2, Test == "L2 Production")
+dat.L2 <- filter(dat, Test == "L2 Production")
 
 # Setting Condition as factors
 
-dat2.L2$Condition <- as.factor(dat2.L2$Condition)
+dat.L2$Condition <- as.factor(dat.L2$Condition)
 
 c <- contr.treatment(2)
 my.coding <- matrix(rep(1/2, 2, ncol = 1))
@@ -1538,10 +1531,10 @@ print(my.simple)
 ```{r}
 # Contrasting our data once again
 
-contrasts(dat2.L2$Condition) <- my.simple 
+contrasts(dat.L2$Condition) <- my.simple 
 
 # Scaling Vocab scores
-dat2.L2$s.vocab <- scale(dat2.L2$Vocab)
+dat.L2$s.vocab <- scale(dat.L2$Vocab)
 
 # Model without interaction
 fit3 <- glmer(Answer ~ s.vocab+Condition + (1|ID) + (1|ItemID),
