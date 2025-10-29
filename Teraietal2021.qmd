@@ -237,8 +237,6 @@ contains every function we might need:
 #| warning: false
 # Load libraries (packages need to be installed if they aren't already)
 
-library(readr) #read csv
-library(dplyr) #data wrangling
 library(moments) #for skewness and kurtosis
 
 library(kableExtra) #for nicer tables
