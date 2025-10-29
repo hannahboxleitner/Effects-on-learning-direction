@@ -1626,6 +1626,7 @@ was observed, but it was not statistically significant. Overall,
 vocabulary proficiency shapes how effectively retrieval works: the
 optimal learning direction is not a one-size-fits-all matter, but is
 rather dependent on learner proficiency.
+However, it might be worth highlighting that only a single language pair was tested in this study. Assuming that the above-mentioned results are generalisable L1-L2 effects may be a bit far-fetched.
 
 ## Model Diagnostics
 
@@ -1681,7 +1682,7 @@ worthwhile.
 Due to the extensive research by @2021,
 who published their dataset and `R` code along with the paper, we were
 able to reproduce their findings and gain hands-on experience with
-modeling. This not only helps with our understanding of the research,
+modeling. This chapter does not include the reproduction and explanation of every part of code the authors published, since we focused on what was also discussed in the paper by @2021. In the reproduced code, we only changed minor things, like not reloading the same dataset several times under a different name. This sort of project not only helps with our understanding of the research,
 but it also sharpens our skills as future SLA researchers.
 
 ## Packages used in this chapter {.unnumbered}
