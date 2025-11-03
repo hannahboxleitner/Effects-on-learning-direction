@@ -1641,7 +1641,7 @@ dat.L2$s.vocab <- scale(dat.L2$Vocab)
 
 fit3 <- glmer(Answer ~ s.vocab+Condition + (1|ID) + (1|ItemID),
               family = binomial, 
-              data = dat2.L2, 
+              data = dat.L2, 
               glmerControl(optimizer = "bobyqa"))
 summary(fit3)
 ```
@@ -1657,7 +1657,7 @@ AIC(fit3)
 
 fit3.1 <- glmer(Answer ~ s.vocab * Condition + (1|ID) + (1|ItemID),
                 family = binomial,
-                data = dat2.L2, 
+                data = dat.L2, 
                 glmerControl(optimizer = "bobyqa"))
 summary(fit3.1)
 
