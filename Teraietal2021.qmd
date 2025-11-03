@@ -73,7 +73,7 @@ questions:
     L2 learning?
 
 To answer these questions, @2021 designed an experiment in which
-Japanese EFL learners studied word pairs and then completed retrieval
+Japanese EFL (English as a Foreign Language) learners studied word pairs and then completed retrieval
 practice tasks in different conditions. After learning, students were
 tested on their ability to produce the target vocabulary items in both
 Japanese (their L1) and English (their L2). @2021 formulated two
@@ -1295,9 +1295,7 @@ large (larger for L2 to L1) effect size, and indicate that the
 difference (different levels of Test within each Condition) is not just
 statistically significant, but meaningful in size. Lastly, the
 `confint()` function applied to `b` computes the 95% confidence
-intervals for both learning directions, which means we can be 95%
-confident that the true standardized effect size lies in this range
-(which is a meaningful effect size, in our case).
+intervals for both learning directions, which means that, if the study were to be repeated many times, in 95% of the time, the 95% confidence interval would contain the true standardized effect size.
 
 The authors also mention that results showed no main effects of
 **Learning Condition** (L1 production test: p = .188, d = -0.19, 95% CI
