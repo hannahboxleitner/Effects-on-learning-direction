@@ -1158,7 +1158,7 @@ accuracy in Test 2 is predicted to be lower than in Test 1. The
 *p*-value can be extracted from the column marked Pr(\>\|z\|), where it
 is displayed in the form of \<2e-16, since it is such a small number. It
 tells us that the effect (of switching between test types) is
-significant. The **z** value tells us how many standard deviations away
+significant. The z value tells us how many standard deviations away
 a value is from the mean.
 
 Moving on to **Learning Condition**, the authors found no statistically
@@ -1290,7 +1290,7 @@ for both learning conditions. A small *p*-value tells us that an
 effect is unlikely due to chance, but does not say much about how big or
 important it is. This is where effect size comes into play: The function
 `eff_size()` computes the estimated effect sizes for both conditions,
-which are referred to as **d** in the paper. They both demonstrate a
+which are referred to as *d* in the paper. They both demonstrate a
 large (larger for L2 to L1) effect size, and indicate that the
 difference (different levels of Test within each Condition) is not just
 statistically significant, but meaningful in size. Lastly, the
@@ -1310,7 +1310,7 @@ differences between learning conditions. The effect sizes show a small
 negative effect for L1 Production, and a small positive effect for L2
 Production. The confidence intervals in both cases include 0 (since it
 lies between -0.03 and 0.55, for example), telling us that no effect
-(**d** = 0) is a possibility given the data. To sum up, all these values
+(*d* = 0) is a possibility given the data. To sum up, all these values
 do *not* support a main effect of Learning Condition.
 
 ### Visualizing Model 1
