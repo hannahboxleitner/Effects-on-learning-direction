@@ -1202,29 +1202,6 @@ symbolized by the \* specified in the significance codes in the output.
 It tells us that `fit1.1` (model with interaction) fits the data
 significantly better than `fit1` (without interaction).
 
-Next, @2021 checked simple main effects using the `testInteractions()`
-function in both directions.
-
-```{r}
-testInteractions(fit1.1, fixed = "Test", across = "Condition")
-
-testInteractions(fit1.1, fixed = "Condition", across = "Test")
-```
-
-With the `testInteractions()` function, it is possible to perform simple
-main effects analysis after finding a significant interaction. A
-significant interaction only tells you that the effect of one variable
-depends on the level of the other, not which levels are different. So
-with this function, the interaction can be further unpacked, to find out
-how the effect of one variable (Test or Condition) differs across levels
-of the other. If we look at the output of the first function where
-**Test** is used as the fixed variable, the *p*-values (L1 Production:
-0.188; L2 Production: 0.164) tell us that the effect of Test does *not*
-significantly differ between conditions. If we take **Condition** as the
-fixed variable, *p*-values are very small (L1L2: 1.931e-07; L2L1:
-1.608e-15), indicating that the effect of Condition *does* significantly
-differ between tests.
-
 ### Pairwise comparisons on the effects of Condition and Test
 
 After comparing the models and testing the interaction, @2021 conducted
@@ -1591,23 +1568,6 @@ a big influence. Basically, the plot tells us that for lower proficiency
 learners, L2 -\> L1 is better, and for higher proficiency learners L1
 -\> L2 is more beneficial @2021.
 
-### Testing simple effects
-
-@2021 used the `testInteractions()` function to test whether the slope
-of proficiency differs significantly between conditions as predicted.
-
-```{r}
-testInteractions(fit2.1, fixed = "s.vocab", across = "Condition")
-```
-
-Because the interaction of "s.vocab" and "Condition" was found to be
-significant, Terai et al. examined the simple effects of "s.vocab"
-across the two learning conditions. The output of this test show a
-positive mean slope of proficiency of \~0.523. Although the chi-square
-test actually indicates that this effect is not statistically
-significant ((*p* = .19). This means that the relationship between
-vocabulary size and test performance does not differ in a meaningful way
-between the two variables.
 
 ### L2 Production Test
 
