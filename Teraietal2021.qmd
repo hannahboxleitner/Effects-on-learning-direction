@@ -190,6 +190,8 @@ factors and coding them with contrast ensures that they are interpreted
 correctly in the regression. Scaling the vocabulary scores helps with
 interaction terms.
 
+Standardizing our variables is an important step for as since it is very useful when variables are measured on different scales or when you want to compare them in a fair way. Also, there are some statistical mdels that work better when predictors are standardized. 
+
 # Descriptive statistics
 
 Before we dive into the descriptive statistics conducted in @2021, we
