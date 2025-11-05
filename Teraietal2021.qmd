@@ -1409,77 +1409,11 @@ this code, we can explicitly see what is plotted and how specific
 elements are modified. This makes the plot more reproducible and easier
 to update or change later on.
 
-```{r}
-# Extract data from model frame
-model_data <- model.frame(fit1.1)
-
-# Build a dataframe with residuals and fitted values on response scale
-resid_df <- data.frame(
-  Test = model_data$Test,
-  Condition = model_data$Condition,
-  Fitted = fitted(fit1.1, type = "response"),
-  Residual = residuals(fit1.1, type = "response")
-)
-
-# Compute observed values
-resid_df$Observed <- resid_df$Fitted + resid_df$Residual
-```
+###Extension try 2 (delete all after done)
+#### Model residuals are calculated by subtracting a model’s prediction from the real, observed value of the outcome variable for any specific data point (Chapter 13.4).
 
 ```{r}
-
-ggplot(emm_df, aes(x = Test, y = prob, group = Condition, color = Condition, linetype = Condition)) +
-  # EMM lines and CIs
-  geom_line(size = 1) +
-  geom_point(size = 3) +
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.1) +
-  
-  # Residuals (raw data points)
-  geom_jitter(data = resid_df, aes(x = Test, y = Observed, color = Condition),
-              width = 0.1, alpha = 0.4, size = 2, inherit.aes = FALSE) +
-  
-  # Style
-  scale_color_paletteer_d("beyonce::X11") +
-  scale_linetype_manual(values = c("solid", "dashed")) +
-  scale_y_continuous(name = "Accuracy Rate", limits = c(0.0, 0.75)) +
-  xlab("Test Type") +
-  ggtitle("Test & Learning Direction (with residuals)") +
-  theme_minimal() +
-  theme(
-    text = element_text(size = 14),
-    plot.title = element_text(hjust = 0.5)
-  )
-
-```
-
-```{r}
-# Restart graphics device
-dev.off()
-
-# Re-run your plotting code
-library(ggplot2)
-library(paletteer)
-
-ggplot(emm_df, aes(x = Test, y = prob, group = Condition, color = Condition, linetype = Condition)) +
-  geom_line(size = 1) +
-  geom_point(size = 3) +
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.1) +
-  geom_jitter(data = resid_df, aes(x = Test, y = Observed, color = Condition),
-              width = 0.1, alpha = 0.4, size = 1, inherit.aes = FALSE) +
-  scale_color_paletteer_d("beyonce::X11") +
-  scale_linetype_manual(values = c("solid", "dashed")) +
-  scale_y_continuous(name = "Accuracy Rate", limits = c(0.0, 0.75)) +
-  xlab("Test Type") +
-  ggtitle("Test & Learning Direction (with residuals)") +
-  theme_minimal() +
-  theme(
-    text = element_text(size = 14),
-    plot.title = element_text(hjust = 0.5)
-  )
-
-```
-
-**Erklärung etc. fehlt**
-```{r}
+#textbook: visreg for residuals
 #install.packages("remotes")
 library(remotes)
 
@@ -1487,12 +1421,62 @@ library(remotes)
 library(visreg)
 ```
 
+
 ```{r}
-# Visualize effect of Test, conditioned on Condition
-visreg(fit1.1, "Test", by = "Condition", scale = "response", 
-       overlay = TRUE, points.par = list(col = "grey70", pch = 19))
+
+visreg(fit1.1,
+       xvar = "Test", 
+       by = "Condition",
+       #overlay = TRUE,
+       scale = "response",
+       partial = TRUE,
+       gg = TRUE) + 
+  labs(x = "Test Type",
+       y = "Accuracy Rate") +
+  theme_bw()
+```
+
+
+```{r}
+# other thing: do the same with visreg() function
+
+# preparing residuals from model fit1.1
+
+resid_df <- data.frame(
+  Test = dat$Test,
+  Condition = dat$Condition,
+  prob = fitted(fit1.1, type = "response"),      # predicted probabilities
+  ResidualY = residuals(fit1.1, type = "response") # observed - predicted
+)
+ # Plot EMMs and residuals
+
+ggplot(emm_df, aes(x = Test, y = prob, group = Condition, color = Condition, linetype = Condition)) +
+  
+  # EMM predicted lines and points
+  geom_line(size = 1) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.1) +
+  
+  # Residuals as jittered points around predicted lines
+  geom_jitter(data = resid_df,
+            aes(x = Test, y = prob),
+            width = 0.1, height = 0.05,   # small vertical jitter
+            color = "blue", alpha = 0.2, size = 0.5) +
+
+  # Styling
+  scale_color_paletteer_d("beyonce::X11") +
+  scale_linetype_manual(values = c("solid", "dashed")) +
+  scale_y_continuous(name = "Accuracy Rate", limits = c(0, 1)) +
+  xlab("Test Type") +
+  ggtitle("Test & Learning Direction with Residuals") +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 14),
+    plot.title = element_text(hjust = 0.5)
+  )
 
 ```
+
 
 ## Effects of Learning Directions and L2 Proficiency (RQ2)
 
