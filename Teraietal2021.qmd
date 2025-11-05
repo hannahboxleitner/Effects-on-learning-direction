@@ -271,19 +271,25 @@ familiarity were retrieved from Amano and Kondo [-@2000]" (Terai et al.
 First, we need to take a look at the data that the authors have made
 available. The column names may differ from what we want to see in the
 table later on, which is why we briefly want to check them by having
-them printed:
+them printed in a nice table with descriptions of their meanings:
 
 ```{r}
-names(dat)
-##This is what the columns in our dataset mean:
-#ItemID: the English target word (40 items)
-#L2Frequency is simply the frequency of the word in English (COCA: Corpus of Contemporary American English)
-#Syllables: number of syllables in the English word
-#Alphabet: number of letters in the English word (this is "Letters" in the L2 table)
-#L1Frequency: frequency of the word in Japanese (Amano & Kondo 1999)
-#WordLength: number of letters in the Japanese orthographic form
-#mora: number of mora (Japanese syllable-like units)
-#Familiarity: familiarity ratings from the current study (Fami (B))
+var_info <- data.frame(
+  Column = c("ItemID", "L2Frequency", "Syllables", "Alphabet", "L1Frequency", "WordLength", "mora", "Familiarity"),
+  Description = c(
+    "English target word (40 items)",
+    "Frequency of the word in English (COCA: Corpus of Contemporary American English)",
+    "Number of syllables in the English word",
+    "Number of letters in the English word ('Letters' in the L2 table)",
+    "Frequency of the word in Japanese (Amano & Kondo, 1999)",
+    "Number of letters in the Japanese orthographic form",
+    "Number of mora (Japanese syllable-like units)",
+    "Familiarity ratings from current study (Fami (B))"
+  )
+)
+
+kable(var_info, caption = "Description of Dataset Variables") %>%
+  kable_styling(full_width = FALSE, position = "center")
 
 ```
 
