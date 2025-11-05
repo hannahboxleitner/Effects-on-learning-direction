@@ -1526,19 +1526,6 @@ vocabulary proficiency depends on the learning direction. There were no
 significant effects of Vocabulary Size or Learning Condition by
 themselves, so the interaction is what matters here.
 
-### Model comparison
-
-To formally check which model fits better, @2021 used the command
-`anova()` just as they did for RQ1.
-
-```{r}
-anova(fit2, fit2.1)
-```
-
-The AIC favors the interaction model (1311.6 vs. 1316.3), and the
-outcome is statistically significant with a *p*-value of .009,
-indicating that the model with Condition and Proficiency interaction
-fits best.
 
 ### Visualization
 
@@ -1646,26 +1633,6 @@ step, the interaction term "s.vocab \* Condition" was considered, which
 was also not statistically significant (Estimate = -0.278, SE = 0.154, z
 = -1.810, *p* = .070).
 
-### Model Comparison
-
-To formally check whether the model with the interaction is a better fit
-than the simpler model without the interaction, @2021 compared them
-using the `anova()` function:
-
-```{r}
-anova(fit3, fit3.1)
-```
-
-This function was again used to decide if maybe the interaction term
-improves the model. The output reports a *p*-value of .0073 which
-means the model *with* interaction does not really outperform the
-simpler model. But we see that the value is close to 0.05. This suggests
-a slight trend toward significance which matches what the authors
-reported in their paper. While they did not find a significant
-interaction, there was a similar trend as they found in the L1
-production test where proficiency mattered a bit more for learning
-direction. This can be seen better in a plot which will be printed in
-the next step.
 
 ### Visualization
 
