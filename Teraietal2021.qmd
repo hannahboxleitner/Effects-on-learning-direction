@@ -1429,15 +1429,6 @@ produce the L1 (Japanese) word when shown the L2 (English) word.
 dat.L1 <- filter(dat, Test == "L1 Production")
 ```
 
-To check whether you understood the `filter()` function completely, use
-the `nrow()` function to find out! How many rows were in the original
-dataset compared to the filtered dataset?
-
-```{r}
-nrow(dat)
-nrow(dat.L1)
-```
-
 Next, the learning directions (Condition) were converted to a factor
 again. @2021 converted the categories (L1 -\> L2 vs. L2 -\> L1) into two
 factor levels so that `R` treats it as a categorical binary variable.
