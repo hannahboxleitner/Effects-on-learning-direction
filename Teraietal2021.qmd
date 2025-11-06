@@ -1181,7 +1181,7 @@ row "Test2:Condition2") was shown to be significant (Estimate = -0.446,
 SE = 0.206, z = -2.169, p = .030) [@2021: 1126]. The interaction term
 demonstrates how the effect of Test on accuracy depends on the
 Condition, or the other way around. The estimate tells us that, when
-both Test2 and Condition2 are present, the accuracy is even lower than
+both Test2 and Condition2 are present, which is, when participants take the L2 production test after learning in the L2 -> L1 direction, the accuracy is even lower than
 when only one of them is. The *p*-value of .030 indicates that the
 interaction effect is unlikely due to chance.
 
