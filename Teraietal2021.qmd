@@ -1412,15 +1412,19 @@ to update or change later on.
 ###Extension try 2 (delete all after done)
 #### Model residuals are calculated by subtracting a model’s prediction from the real, observed value of the outcome variable for any specific data point (Chapter 13.4).
 
+To extend the work on this model, I want to plot the results in a way that visualizes the model's residuals. For this task, I want to use the `{visreg}` library, which serves the purpose of visualizing regression functions. As is explained in more detail in **(Chapter 13)**, we need to use an older version of this package, for which we need to load the `{remote}` library as well:
+
 ```{r}
-#textbook: visreg for residuals
 #install.packages("remotes")
+
 library(remotes)
 
 #install_version("visreg", "2.7.0")
+
 library(visreg)
 ```
 
+Now, I want to apply the `visreg()`function to the model `fit1.1`.
 
 ```{r}
 
@@ -1436,6 +1440,8 @@ visreg(fit1.1,
   theme_bw()
 ```
 
+Making use of the `partial = TRUE` argument, this plot displays partial residuals of the model `fit1.1`. Partial residuals are the left-over variance relative to the examined predictor after having subtracted off the contribution of all the other predictors in the model **Chapter 13.4.1**.
+**Depending on what you find to be more well-arranged for interpretation, you can activate the `overlay = TRUE` argument or not. In any case,**, the solid lines represent the regression lines of the model, for both learning directions and each of the tests. The jittered dots represent the partial residuals, and show where the model under- or overestimated accuracy.
 
 ```{r}
 # other thing: do the same with visreg() function
