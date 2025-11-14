@@ -1368,13 +1368,13 @@ between the two lines is relatively small at each test type, which
 reflects the results that revealed no significant difference in learning
 effects between L2 to L1 learning and L1 to L2 learning.
 
-Generally, @2021 used base `R` plots in their original code. While there is nothing wrong with that, one could also use {ggplot2}, which provides many options to extend the plot and alter its appearance. Also, it makes it easy to see what is plotted and how specific elements are modified, which contributes to the reproducibility of the code.
+Generally, @2021 used base `R` plots in their original code. While there is nothing wrong with that, one could also use {ggplot2}, which provides many options to extend the plot and alter its appearance. Also, it makes it easy to see what is plotted and how specific elements are modified, which contributes to the reproducibility of the code. If you want to learn more about using {ggplot2}, check out [Chapter 10](https://elenlefoll.github.io/RstatsTextbook/10_Dataviz.html).
 
 ### Extension (Hannah)
 
-To extend the work on this model, I want to plot the results in a way that also shows the model's residuals. As you can read in Chapter 13.4 of this textbook, model residuals are calculated by subtracting a model’s prediction from the real, observed value of the outcome variable for any specific data point [@lefoll2024].
+To extend the work on this model, I want to plot the results in a way that also shows the model's residuals. They are the difference between the model’s predicted value and the real, observed value of the outcome variable. 
 
-To extend the work on this model, I want to plot the results in a way that visualizes the model's residuals. For this task, I want to use the `{visreg}` library, which serves the purpose of visualizing regression functions. As is explained in more detail in Chapter 13 [@lefoll2024], we need to use an older version of this package, for which we need to load the `{remote}` library as well:
+To extend the work on this model, I want to plot the results in a way that visualizes the model's residuals. For this task, I want to use the `{visreg}` library, which serves the purpose of visualizing regression functions. As is explained in more detail in [Chapter 13.6](https://elenlefoll.github.io/RstatsTextbook/13_MultipleLinearRegression.html#modelling-interactions-between-predictors), we need to use an older version of this package, for which we need to load the `{remote}` library as well:
 
 ```{r}
 #install.packages("remotes")
@@ -1402,7 +1402,7 @@ visreg(fit1.1,
   theme_bw()
 ```
 
-Making use of the `partial = TRUE` argument, this plot displays partial residuals of the model `fit1.1`. Partial residuals are the left-over variance relative to the examined predictor after having subtracted off the contribution of all the other predictors in the model **Chapter 13.4.1**.
+Making use of the `partial = TRUE` argument, this plot displays partial residuals of the model `fit1.1`. Partial residuals are the left-over variance relative to the examined predictor after having subtracted off the contribution of all the other predictors in the model ([see Chapter 13.4](https://elenlefoll.github.io/RstatsTextbook/13_MultipleLinearRegression.html#interpreting-a-model-summary)).
 Depending on what you find to be more well-arranged for interpretation, you can activate the `overlay = TRUE` argument in the code chunk. In any case, the solid lines represent the regression lines of the model, for both learning directions and each of the tests. The jittered dots represent the partial residuals, and show where the model under- or overestimated accuracy.
 
 
