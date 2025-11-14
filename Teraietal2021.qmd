@@ -1372,9 +1372,9 @@ Generally, @2021 used base `R` plots in their original code. While there is noth
 
 ### Extension (Hannah)
 
-To extend the work on this model, I want to plot the results in a way that also shows the model's residuals. As you can read in **Chapter 13.4** of this book, model residuals are calculated by subtracting a model’s prediction from the real, observed value of the outcome variable for any specific data point.
+To extend the work on this model, I want to plot the results in a way that also shows the model's residuals. As you can read in Chapter 13.4 of this textbook, model residuals are calculated by subtracting a model’s prediction from the real, observed value of the outcome variable for any specific data point [@lefoll2024].
 
-To extend the work on this model, I want to plot the results in a way that visualizes the model's residuals. For this task, I want to use the `{visreg}` library, which serves the purpose of visualizing regression functions. As is explained in more detail in **(Chapter 13)**, we need to use an older version of this package, for which we need to load the `{remote}` library as well:
+To extend the work on this model, I want to plot the results in a way that visualizes the model's residuals. For this task, I want to use the `{visreg}` library, which serves the purpose of visualizing regression functions. As is explained in more detail in Chapter 13 [@lefoll2024], we need to use an older version of this package, for which we need to load the `{remote}` library as well:
 
 ```{r}
 #install.packages("remotes")
