@@ -73,11 +73,11 @@ questions:
     L2 learning?
 
 To answer these questions, @2021 designed an experiment in which
-Japanese EFL (English as a Foreign Language) learners studied word pairs and then completed retrieval
-practice tasks in different conditions. After learning, students were
-tested on their ability to produce the target vocabulary items in both
-Japanese (their L1) and English (their L2). @2021 formulated two
-hypotheses:
+Japanese EFL (English as a Foreign Language) learners studied word pairs
+and then completed retrieval practice tasks in different conditions.
+After learning, students were tested on their ability to produce the
+target vocabulary items in both Japanese (their L1) and English (their
+L2). @2021 formulated two hypotheses:
 
 1.  There is no significant difference between the two learning
     directions.
@@ -129,6 +129,7 @@ console.
 library(here) 
 library(tidyverse)
 
+
 ```
 
 Next, we can import the data. In contrast to the code from @2021, we
@@ -162,14 +163,13 @@ dat$Condition <- as.factor(dat$Condition)
 ```
 
 Before fitting the models, @2021 also apply **contrast coding**, also
-called **treatment coding** (Chambers & Hastie [-@1992]). While it may
+called **treatment coding** [@1992]. While it may
 look confusing and maybe intimidating, it is actually quite an important
 step. Basically, the study aims to compare two groups (L1 -\> L2 vs. L2
 -\> L1). @2021 use **simple coding**, where the first Condition (L1 -\>
 L2) gets coded as -0.5 and the second Condition (L2 -\> L1) as +0.5.
 This makes interpretations easier when there are interactions since the
-intercept represents the overall mean across conditions (Barlaz
-[-@2022]).
+intercept represents the overall mean across conditions [@2022].
 
 ```{r}
 c <- contr.treatment(2)
@@ -190,7 +190,10 @@ factors and coding them with contrast ensures that they are interpreted
 correctly in the regression. Scaling the vocabulary scores helps with
 interaction terms.
 
-Standardizing our variables is an important step for as since it is very useful when variables are measured on different scales or when you want to compare them in a fair way. Also, there are some statistical mdels that work better when predictors are standardized. 
+Standardizing our variables is an important step for as since it is very
+useful when variables are measured on different scales or when you want
+to compare them in a fair way. Also, there are some statistical mdels
+that work better when predictors are standardized.
 
 # Descriptive statistics
 
@@ -215,8 +218,7 @@ kurtosis.
 **Skewness** and **kurtosis** are both measures of shapes and
 distribution of a dataset in qualitative methods. Skewness measures the
 asymmetry of distribution. Simply put, it describes the amount of which
-the distribution differs from a completely symmetric shape (Parajuli
-[-@2023]):
+the distribution differs from a completely symmetric shape [@2023]:
 
 -   Skew = 0 -\> perfectly symmetrical.
 -   Negative Skew -\> longer "tail" on the left.
@@ -224,17 +226,16 @@ the distribution differs from a completely symmetric shape (Parajuli
 
 Kurtosis then is a measure of peaks of a distribution. Basically, it is
 a description of how the peaks compare to a normal distribution
-(Parajuli [-@2023]):
+[@2023]:
 
 -   Kurtosis = 0 -\> similar to a normal distribution.
 -   Positive kurtosis -\> sharper peak (more concentrated in the
     center).
--   Negative kurtosis -\> flatter peak. (Parajuli [-@2023])
+-   Negative kurtosis -\> flatter peak. [@2023]
 
 ## Reproduction of Table 3
 
-In this section, our aim is to reproduce Table 3 from Terai et al.
-[-@2021], which displays the descriptive statistics of the target items
+In this section, our aim is to reproduce Table 3 from @2021, which displays the descriptive statistics of the target items
 of the study. Unfortunately, the code for all the tables shown in @2021
 was not included in the published R code. But since we have the data in
 the form of a `.csv` file, this is not a problem! We have the organized
@@ -265,8 +266,7 @@ are, for L2-related variables: Frequency, Syllables, and Letters. For
 L1-related variables: Frequency, Letters, and Mora (syllables) as well
 as Familiarity (Fami A). We were not able to reproduce Fami (B) as the
 data was not made public. Also, important to note: "L1 frequency and L1
-familiarity were retrieved from Amano and Kondo [-@2000]" (Terai et al.
-[-@2021]: 1123).
+familiarity were retrieved from Amano and Kondo [-@2000]" [@2021: 1123].
 
 First, we need to take a look at the data that the authors have made
 available. The column names may differ from what we want to see in the
@@ -274,6 +274,9 @@ table later on, which is why we briefly want to check them by having
 them printed in a nice table with descriptions of their meanings:
 
 ```{r}
+#| label: tbl-descriptives
+#| tbl-cap: "Description of the Dataset Variables"
+
 var_info <- data.frame(
   Column = c("ItemID", "L2Frequency", "Syllables", "Alphabet", "L1Frequency", "WordLength", "mora", "Familiarity"),
   Description = c(
@@ -288,10 +291,13 @@ var_info <- data.frame(
   )
 )
 
-kable(var_info, caption = "Description of Dataset Variables") %>%
+kable(var_info) %>%
   kable_styling(full_width = FALSE, position = "center")
 
 ```
+
+In @tbl-descriptives we can see that there are eight variables included
+in the dataset which are all crucial for the study by @2021.
 
 Basically, what we are doing next is shaping our data from
 participant-focused to item-focused. The raw dataset has multiple rows
@@ -433,31 +439,40 @@ will see a nice table with clear structure and formatting which will
 make it easier to read and interpret, it also looks ready to be
 published.
 
+
 ```{r}
-kable(tab_L2, caption = "Table 3a. Descriptive statistics for L2 (English) item properties.",
+#| label: tbl-desc-stats1
+#| tbl-cap: "Table 3a. Descriptive statistics for L2 (English) item properties."
+kable(tab_L2,
       align = "lrrrrrrr" ) |>
   kable_classic(full_width = FALSE)
+```
 
-kable(tab_L1, caption = "Table 3b. Descriptive statistics for L1 (Japanese) item properties.",
+```{r}
+#| label: tbl-desc-stats2
+#| tbl-cap: "Table 3b. Descriptive statistics for L1 (Japanese) item properties."
+
+kable(tab_L1,
       align = "lrrrrrrr") |>
   kable_classic(full_width = FALSE)
 ```
 
-Our reproduced tables now closely match Table 3 in Terai et al.
-[-@2021]! The L2 frequency has a mean of about 1025 with a quite large
-SD (\~852), which shows us that some English words were quite frequent
-while others were much rarer. The skewness here is positive (\~1.51),
-although slightly different than the one reported in the paper (\~1.57).
-The difference is only small and still shows that the distribution has a
-"long tail" of very high-frequency words. Syllables in English have an
-average mean of 2, and range from 1 to 5 with only a slight positive
-skewness which means that most words are short and only a few are
-longer, again there is a small difference in skewness. Letters average
-around 6.2 again with a positive skewness. For the L1 variables, the
-frequency distribution also shows a strong positive skew, which means
-that few Japanese translations are very common, but many are quite rare.
-Fami (A)) averages about 5.2 on a 7-point scale, with a pretty low SD,
-suggesting that the words were mostly familiar.
+Our reproduced tables @tbl-desc-stats1 and @tbl-desc-stats2 now closely
+match Table 3 in Terai et al. [-@2021]! The L2 frequency has a mean of
+about 1025 with a quite large SD (\~852), which shows us that some
+English words were quite frequent while others were much rarer. The
+skewness here is positive (\~1.51), although slightly different than the
+one reported in the paper (\~1.57). The difference is only small and
+still shows that the distribution has a "long tail" of very
+high-frequency words. Syllables in English have an average mean of 2,
+and range from 1 to 5 with only a slight positive skewness which means
+that most words are short and only a few are longer, again there is a
+small difference in skewness. Letters average around 6.2 again with a
+positive skewness. For the L1 variables, the frequency distribution also
+shows a strong positive skew, which means that few Japanese translations
+are very common, but many are quite rare. Fami (A)) averages about 5.2
+on a 7-point scale, with a pretty low SD, suggesting that the words were
+mostly familiar.
 
 Our skewness values match the original paper closely, with only small
 differences. However, our kurtosis values differ quite a lot from the
@@ -541,21 +556,23 @@ as a kind of probability, a higher peak means more words are around that
 frequency, while a lower peak means fewer words around that frequency.
 
 ```{r}
+#| label: fig-plot1
+#| fig-cap: "Distribution of L2 frequencies"
+#| fig-cap-location: bottom
+
 ggplot(items, aes(x = L2Frequency)) +
   geom_density(fill = "lightblue") +
   geom_vline(xintercept = mean(items$L2Frequency), linewidth = 0.7) +
   geom_vline(xintercept = median(items$L2Frequency), linetype = "dashed", linewidth = 0.7) +
   scale_y_continuous(labels = scales::comma) +
   scale_x_continuous(labels = scales::comma) +
-  labs(title = "Distribution of L2 frequencies",
-       x = "L2 frequency (COCA)",
-       y = "Probability",
-       caption = "Solid line = mean; dashed line = median") +
+  labs(x = "L2 frequency (COCA)",
+       y = "Probability") +
 theme_minimal()
 ```
 
-In this graph can clearly see a right-skewed distribution which we saw
-in the table with the positive skewness values (\~1.51). As you can
+In @fig-plot1 we can clearly see a right-skewed distribution which we
+saw in the table with the positive skewness values (\~1.51). As you can
 probably recall, a normally distributed graph would be a symmetric
 curve, nothing asymmetric, which is exactly what we see with skewness.
 This means most words are lower or medium frequency with only a few
@@ -568,24 +585,27 @@ the graph for L2 frequency to the one for L1 frequency.
 For that, we have to do the exact same for the L1 frequencies.
 
 ```{r}
+#| label: fig-plot2
+#| fig-cap: "Distribution of L1 frequencies"
+#| fig-cap-location: bottom
+
 ggplot(items, aes(x = L1Frequency)) +
   geom_density(fill = "lightblue") +
   geom_vline(xintercept = mean(items$L1Frequency), linewidth = 0.7) +
   geom_vline(xintercept = median(items$L1Frequency), linetype = "dashed", linewidth = 0.7) +
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma) +
-  labs(title = "Distribution of L1 frequencies",
-       x = "L1 frequency",
+  labs(x = "L1 frequency",
        y = "Probability",
        caption = "Solid line = mean; dashed line = median") +
 theme_minimal()
 ```
 
-Again, we see a right-skew even stronger than for L2 (skew \~3.59). This
-shows once again that most words are lower-frequency, there are only
-very few high-frequency words. Here, with a kurtosis number of \~18.10
-we can see that with higher positive numbers the peak becomes sharper
-and sharper.
+Again, we see in @fig-plot2 that the right-skew is even stronger than
+for L2 (skew \~3.59). This shows once again that most words are
+lower-frequency, there are only very few high-frequency words. Here,
+with a kurtosis number of \~18.10 we can see that with higher positive
+numbers the peak becomes sharper and sharper.
 
 ## Descriptive statistics of the tests and reliability testing
 
@@ -771,6 +791,10 @@ the `beeswarm()` function specifying `add = T`, which lets individual
 scores appear as jittered dots that don't overlap.
 
 ```{r}
+#| label: fig-L1-prod
+#| fig-cap: "L1 Production Test"
+#| fig-cap-location: bottom
+ 
 # Plot (L1 production)
 
 library(beeswarm)
@@ -862,10 +886,14 @@ describe(accu_L2L1_L2Pro$Score)
 describe(accu_L1L2_L2Pro$Score)
 ```
 
-As with L1, Terai et al. created a similar boxplot comparing the two
+As with L1, Terai et al. [-@2021] created a similar boxplot comparing the two
 learning directions in L2 production using the beeswarm package.
 
 ```{r}
+#| label: fig-L2-prod
+#| fig-cap: "L2 Production Test"
+#| fig-cap-location: bottom
+
 # Plot (L2 production)
 
 L2pro <- data.frame(accu_L2L1_L2Pro$Score, accu_L1L2_L2Pro$Score)
@@ -921,14 +949,17 @@ Now we want to display the results in a clean, formatted table using the
 `kable()` function.
 
 ```{r}
+#| label: tbl-desc-stats-scores
+#| tbl-cap: "Descriptive Statistics for Test Scores"
+#| tbl-cap-location: top
+#| 
 kable(descriptive_stats_tests_trimmed, 
-      caption = "Descriptive Statistics for Test Scores",
       digits = 2) |> 
   pack_rows(index = c("L1 production test" = 2, "L2 production test" = 2)) |> 
   kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 ```
 
-We have created a table that summarizes the descriptive statistics of
+We have created @tbl-desc-stats-scores, a table that summarizes the descriptive statistics of
 the two types of post-tests, where the measures of scores in the two
 production tests can be easily compared. In the L1 production test,
 scores were shown to be generally higher than in L2 production test.
@@ -987,16 +1018,20 @@ To rename the column headers, we use the `colnames()` function.
 colnames(alpha_table) <- c("", "Alpha", "95% CI", "Alpha", "95% CI")
 ```
 
-Lastly, we want to display the results in a clean, formatted table similarly to the authors, for
-which we use the `kable()` function.
+Lastly, we want to display the results in a clean, formatted table
+similarly to the authors, for which we use the `kable()` function.
 
 ```{r}
+#| label: tbl-alph-co-L1L2
+#| tbl-cap: "Alpha coefficients for L1 and L2 production test"
+#| tbl-cap-location: top
+
 alpha_table %>%
-  kable(align = "lcccc", caption = "Alpha coefficients for L1 and L2 production test") %>%
+  kable(align = "lcccc") %>%
   add_header_above(c(" " = 1, "L1 production" = 2, "L2 production" = 2))
 ```
 
-If we compare this table about alpha coefficients with the one in the
+If we compare @tbl-alph-co-L1L2 about alpha coefficients with the one in the
 paper [@2021: 1126], we notice a difference in confidence intervals,
 specifically in the hundredths place. If we look at the output of
 `alpha()`, we see that it puts out two kinds of confidence intervals:
@@ -1034,17 +1069,13 @@ production tests (RQ2). They are pretty similar, except that the third
 and last model also used L2 production test scores. The first model
 (RQ 1) will be elaborated in more detail.
 
-Generalized linear mixed-models are an extension of linear mixed models.
-They are tools that help us to analyze not normally distributed data,
-such as binary and count data, when observations are clustered in some
-way. What is great about these models, is that they allow for analysis
-of clustered or longitudinal data that is not continuous (Bolker
-[-@2015]).
+Generalized linear mixed-models are an extension of linear mixed models. Linear regression models form a kind of basis for more advanced modeling approaches, exactly ones such as generalized linear mixed-effects models, which are able to handle clustered or even non-continous data [see Chapter 13 in @lefoll2024]
+
 
 ## Effects of Learning Condition (Research Question 1)
 
-As we recall from the introduction, the first research question of
-@2021's study was: Which learning direction is more effective for
+As we recall from the introduction, the first research question of the study by
+@2021 was: Which learning direction is more effective for
 vocabulary acquisition, L1 to L2 learning or L2 to L1 learning?
 Therefore, the first model was built to analyze the relationship between
 the production tests and learning conditions. It contained Learning
@@ -1166,24 +1197,25 @@ accuracy in Test 2 is predicted to be lower than in Test 1. The
 *p*-value can be extracted from the column marked Pr(\>\|z\|), where it
 is displayed in the form of \<2e-16, since it is such a small number. It
 tells us that the effect (of switching between test types) is
-significant. The z value tells us how many standard deviations away
-a value is from the mean.
+significant. The z value tells us how many standard deviations away a
+value is from the mean.
 
 Moving on to **Learning Condition**, the authors found no statistically
 significant main effect: Condition2: Estimate = -0.038, SE = 0.103, z =
--0.366, p = .714) [@2021: 1126]. In this case, the *p*-value is \>
-0.05, meaning that the effect of learning condition is *not*
-significantly different from no effect. The main effect estimate of
-Condition2 is quite small (close to 0), telling us the predicted odds
-don't change much when moving from one learning condition to the other.
-However, the **interaction** of Test Type and Learning Condition (see
-row "Test2:Condition2") was shown to be significant (Estimate = -0.446,
-SE = 0.206, z = -2.169, p = .030) [@2021: 1126]. The interaction term
+-0.366, p = .714) [@2021: 1126]. In this case, the *p*-value is \> 0.05,
+meaning that the effect of learning condition is *not* significantly
+different from no effect. The main effect estimate of Condition2 is
+quite small (close to 0), telling us the predicted odds don't change
+much when moving from one learning condition to the other. However, the
+**interaction** of Test Type and Learning Condition (see row
+"Test2:Condition2") was shown to be significant (Estimate = -0.446, SE =
+0.206, z = -2.169, p = .030) [@2021: 1126]. The interaction term
 demonstrates how the effect of Test on accuracy depends on the
 Condition, or the other way around. The estimate tells us that, when
-both Test2 and Condition2 are present, which is, when participants take the L2 production test after learning in the L2 -> L1 direction, the accuracy is even lower than
-when only one of them is. The *p*-value of .030 indicates that the
-interaction effect is unlikely due to chance.
+both Test2 and Condition2 are present, which is, when participants take
+the L2 production test after learning in the L2 -\> L1 direction, the
+accuracy is even lower than when only one of them is. The *p*-value of
+.030 indicates that the interaction effect is unlikely due to chance.
 
 ### Model comparison
 
@@ -1270,25 +1302,27 @@ learning:** p \< .001, d = 1.20, 95% CI \[0.91, 1.49\]; **L1 to L2
 learning:** p \< .001, d = 0.75, \[0.47, 1.04\]) [@2021: 1126]. Now, we
 want to take a close look at these numbers and what they mean. We can
 find the numbers stated here in the object `b` output by the `emmeans()`
-function. The *p*-values show up when printing `b`, and lie \< .001
-for both learning conditions. A small *p*-value tells us that an
-effect is unlikely due to chance, but does not say much about how big or
-important it is. This is where effect size comes into play: The function
+function. The *p*-values show up when printing `b`, and lie \< .001 for
+both learning conditions. A small *p*-value tells us that an effect is
+unlikely due to chance, but does not say much about how big or important
+it is. This is where effect size comes into play: The function
 `eff_size()` computes the estimated effect sizes for both conditions,
-which are referred to as *d* in the paper. They both demonstrate a
-large (larger for L2 to L1) effect size, and indicate that the
-difference (different levels of Test within each Condition) is not just
+which are referred to as *d* in the paper. They both demonstrate a large
+(larger for L2 to L1) effect size, and indicate that the difference
+(different levels of Test within each Condition) is not just
 statistically significant, but meaningful in size. Lastly, the
 `confint()` function applied to `b` computes the 95% confidence
-intervals for both learning directions, which means that, if the study were to be repeated many times, in 95% of the time, the 95% confidence interval would contain the true standardized effect size.
+intervals for both learning directions, which means that, if the study
+were to be repeated many times, in 95% of the time, the 95% confidence
+interval would contain the true standardized effect size.
 
 The authors also mention that results showed no main effects of
 **Learning Condition** (L1 production test: p = .188, d = -0.19, 95% CI
 \[-0.46, 0.09\]; L2 production test: p = .082, d = 0.26, \[-0.03,
 0.55\]) [@2021: 1126]. This can be derived when we look at object `a`,
 which compares learning conditions separately for L1 Production and L2
-Production. Printing `a` shows *p*-values, which lie above 0.05 in
-both production tests and indicate no statistical significance of the
+Production. Printing `a` shows *p*-values, which lie above 0.05 in both
+production tests and indicate no statistical significance of the
 differences between learning conditions. The effect sizes show a small
 negative effect for L1 Production, and a small positive effect for L2
 Production. The confidence intervals in both cases include 0 (since it
@@ -1304,6 +1338,9 @@ visualizes all important information regarding research question 1
 graphical parameters and then created a base `R` plot.
 
 ```{r}
+#| label: fig-testlearn-direc
+#| fig-cap: "Test & Learning Direction"
+#| fig-cap-location: bottom
 # Setting graphical parameters for the plot
 
 par(pty = "s") # sets the shape: square
@@ -1313,11 +1350,11 @@ par("ps") # font size
 # Plot
 
 plot(allEffects(fit1.1), multiline = T, ci.style = "bands", xlab = "Test Type", ylab = "Accuracy Rate",
-       main = "Test & Learning Direction", lty = c(1,2), rescale.axis = F, ylim = c(0, 1),
+       main = "", lty = c(1,2), rescale.axis = F, ylim = c(0, 1),
        colors = "black", asp = 1)
 ```
 
-This plot shows the interaction between Test Type and Learning Condition
+@fig-testlearn-direc shows the interaction between Test Type and Learning Condition
 on accuracy rates, based on the generalized linear mixed-effects model
 (`fit1.1`). It is an effect plot generated with the `allEffects()`
 function. The solid line represents the L1 to L2 learning condition; the
@@ -1339,6 +1376,9 @@ advantage.
 
 ```{r}
 #| warning: false
+#| label: fig-han-ext
+#| fig-cap: "Test & Learning Direction"
+#| fig-cap-location: bottom
 
 # Visualizing with {ggplot2}
 
@@ -1366,7 +1406,6 @@ ggplot(emm_df, aes(x = Test, y = prob, group = Condition, color = Condition, lin
   scale_linetype_manual(values = c("solid", "dashed")) +
   scale_y_continuous(name = "Accuracy Rate", limits = c(0.0, 0.75)) +
   xlab("Test Type") +
-  ggtitle("Test & Learning Direction") +
   theme_minimal() +
   theme(
     text = element_text(size = 14),
@@ -1375,8 +1414,8 @@ ggplot(emm_df, aes(x = Test, y = prob, group = Condition, color = Condition, lin
 
 ```
 
-This plot is quite similar to the one presented in the author's code.
-The only addition in *what* is presented, is that it contains so-called
+@fig-han-ext is quite similar to the one presented in the author's code.
+The only addition in *what* is presented, is that @fig-han-ext contains so-called
 error bars above and below each point, which reflect the confidence
 intervals. Most differences lie in *how* the data is presented, where I
 changed the appearance a bit. I added the Beyonce palette, to give the
@@ -1406,7 +1445,7 @@ To answer and test this question, the authors once again fit two
 separate generalized linear mixed models (GLMMs) for the L1 and L2
 production tests. Before we work through the authors' code step by step,
 we need to know what we are working with here: There is an outcome
-variable which, in case of @2021's study, is the accuracy on production
+variable which, in case of the study by @2021, is the accuracy on production
 tests and predictor variables which are the learning direction (L1 -\>
 L2 vs. L2 -\> L1) and vocabulary size (which is used as a proxy for
 English proficiency in this study). The random effects are Participant
@@ -1486,8 +1525,8 @@ The model predicts the probability of a correct response (Answer). The
 random intercepts (1\|ID) and (1\|ItemID) account for individual
 differences between participants and for the unique difficulty of
 individual vocabulary items. The summary output of this model without
-interaction shows that "s.vocab" is not significant with *p* = .57,
-this suggests that English proficiency by itself does not make a
+interaction shows that "s.vocab" is not significant with *p* = .57, this
+suggests that English proficiency by itself does not make a
 statistically significant contribution to the prediction of
 participants' L1 Production accuracy. The model also suggests that the
 test "Condition" does not make a statistically significant contribution
@@ -1518,11 +1557,10 @@ includes both main effects and their interaction. It was tested whether
 the effect of vocabulary differs between the learning conditions. As
 @2021 stated in their paper, the interaction of Learning Condition and
 Vocabulary Size is significant with an estimate of about -0.37, SE =
-0.141, z = -2.596, *p* = .009, which means that the effect of
-vocabulary proficiency depends on the learning direction. There were no
-significant effects of Vocabulary Size or Learning Condition by
-themselves, so the interaction is what matters here.
-
+0.141, z = -2.596, *p* = .009, which means that the effect of vocabulary
+proficiency depends on the learning direction. There were no significant
+effects of Vocabulary Size or Learning Condition by themselves, so the
+interaction is what matters here.
 
 ### Visualization
 
@@ -1531,17 +1569,21 @@ complex models like this one. @2021 visualized the model `fit2.1` using
 a base `R` plot.
 
 ```{r}
+#| label: fig-l1
+#| fig-cap: "L1 Production"
+#| fig-cap-location: bottom
+
 plot(allEffects(fit2.1), multiline = T, ci.style = "bands",
     xlab = "Vocabulary Size", ylab = "Accuracy Rate",
-    main = "L1 Production", lty = c(1, 2),
+    main = "", lty = c(1, 2),
     rescale.axis = F, ylim = c(0, 1), colors = "black", asp = 1)
 ```
 
-The plot shows a solid line representing the L1 -\> L2 learning
+@fig-l1 shows a solid line representing the L1 -\> L2 learning
 condition, and a dotted line representing the L2 -\> L1 learning
 condition. The y-axis shows L1 production accuracy rates of the test,
 and the x-axis the scaled scores of the vocabulary size tests [@2021:
-1128]. Looking at the plot you can see a nearly flat line for L2 -\> L1
+1128]. Looking at @fig-l1 you can see a nearly flat line for L2 -\> L1
 and a positive, steeper line for L1 -\> L2 which cross at intermediate
 proficiency (\~5.419 as reported in the paper, p. 1127). The crossover
 point at \~5.419 suggests that for learners in the L1 -\> L2 direction a
@@ -1551,7 +1593,6 @@ beneficial than for L2 -\> L1 learners. The fact that the line for L2
 a big influence. Basically, the plot tells us that for lower proficiency
 learners, L2 -\> L1 is better, and for higher proficiency learners L1
 -\> L2 is more beneficial @2021.
-
 
 ### L2 Production Test
 
@@ -1630,15 +1671,18 @@ step, the interaction term "s.vocab \* Condition" was considered, which
 was also not statistically significant (Estimate = -0.278, SE = 0.154, z
 = -1.810, *p* = .070).
 
-
 ### Visualization
 
 ```{r}
+#| label: fig-l2
+#| fig-cap: "L2 Production"
+#| fig-cap-location: bottom
+
 plot(allEffects(fit3.1), multiline = T, ci.style = "bands", xlab = "Vocabulary Size", ylab = "Accuracy Rate",
-       main = "L2 Production", lty = c(1, 2), rescale.axis = F, ylim = c(0, 1), colors = "black", asp = 1)
+       main = "", lty = c(1, 2), rescale.axis = F, ylim = c(0, 1), colors = "black", asp = 1)
 ```
 
-Just as the numbers of the tests above suggested, this plot shows that
+Just as the numbers of the tests above suggested, @fig-l2 shows that
 while there was no significance of the results for learning direction or
 L2 proficiency (Estimate -0.278, SE = 0.154, z = -1.810, *p* = .070),
 the trend seems similar to the results of our L1 production test
@@ -1672,12 +1716,12 @@ results of our GLMMs.
 Why does this matter? If the predictors are very strongly correlated,
 the model might have trouble to keep apart their unique contributions.
 It might then inflate standard errors and thus make estimates unreliable
-(Pennsylvania State University [-@2018]).
+[@2018].
 
 A common diagnostic here is the Variance Inflation Factor (VIF). A VIF
 close to 1 means predictors are not collinear. Here are some rules: VIF
 = 1: perfect independence, VIF \> 5: potential concern, VIF \> 10:
-serious multicollinearity (Pennsylvania State University [-@2018].
+serious multicollinearity [@2018].
 
 ### Calculating VIFs for the Models
 
