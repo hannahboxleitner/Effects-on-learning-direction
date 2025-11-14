@@ -143,9 +143,9 @@ Converting the variables into factors now will also be useful for the
 statistical analysis such as an ANOVA (Analysis of Variance), which will
 be conducted later.
 
-In a later step the command `trimws()` will be used and removes space
-from the beginning and end of the text which helps to prevent issues
-like "berth " vs. "berth" being treated as different
+In a later step the command `trimws()` will be used, which removes space
+from the beginning and end of the text. This helps to prevent issues
+like "berth " vs. "berth" being treated as different.
 
 ```{r}
 VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
@@ -1370,68 +1370,39 @@ effects between L2 to L1 learning and L1 to L2 learning.
 
 ### Extension (Hannah)
 
-To extend the work on this model, I want to plot the results using the
-`ggplot()` function instead. I will explain later why this could be of
-advantage.
+To extend the work on this model, I want to plot the results in a way that also shows the model's residuals. As you can read in **Chapter 13.4** of this book, model residuals are calculated by subtracting a model’s prediction from the real, observed value of the outcome variable for any specific data point.
+
+To extend the work on this model, I want to plot the results in a way that visualizes the model's residuals. For this task, I want to use the `{visreg}` library, which serves the purpose of visualizing regression functions. As is explained in more detail in **(Chapter 13)**, we need to use an older version of this package, for which we need to load the `{remote}` library as well:
 
 ```{r}
-#| warning: false
-#| label: fig-han-ext
-#| fig-cap: "Test & Learning Direction"
-#| fig-cap-location: bottom
+#install.packages("remotes")
 
-# Visualizing with {ggplot2}
+library(remotes)
 
-# First, we need to load {gglpot2} and {paletteer} libraries. The {lme4} package, which has been loaded before, and is necessary here as well.
+#install_version("visreg", "2.7.0")
 
-library(ggplot2)
-library(paletteer)
-
-# I want to present the values of b$emmeans, which contains estimated marginal means. ggplot works with data frames, not with glm objects. If we check the structure of our object, it returns an emmGrid object:
-
-str(b$emmeans)
-
-# To create a ggplot, we need to transform the EMMs back to the original scale of the outcome variable with specifiying the type, and then convert our emmeans object into a data frame:
-
-b <- emmeans(fit1.1, pairwise ~ Test | Condition, adjust = "tukey", type = "response")
-
-emm_df <- as.data.frame(b$emmeans)
-
-# Plot using ggplot2
-ggplot(emm_df, aes(x = Test, y = prob, group = Condition, color = Condition, linetype = Condition)) +
-  geom_line(size = 1) +
-  geom_point(size = 3) +
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.1) +
-  scale_color_paletteer_d("beyonce::X11") +
-  scale_linetype_manual(values = c("solid", "dashed")) +
-  scale_y_continuous(name = "Accuracy Rate", limits = c(0.0, 0.75)) +
-  xlab("Test Type") +
-  theme_minimal() +
-  theme(
-    text = element_text(size = 14),
-    plot.title = element_text(hjust = 0.5)
-  )
-
+library(visreg)
 ```
 
-@fig-han-ext is quite similar to the one presented in the author's code.
-The only addition in *what* is presented, is that @fig-han-ext contains so-called
-error bars above and below each point, which reflect the confidence
-intervals. Most differences lie in *how* the data is presented, where I
-changed the appearance a bit. I added the Beyonce palette, to give the
-two lines (that represent Learning Condition) some color. I still kept
-them solid vs. dashed, so that they can be told apart easily. Also, the
-legend for "Condition" is next to the plot, not above it, which I find
-more well-arranged.
+Now, I want to apply the `visreg()`function to the model `fit1.1`.
 
-While this reproduces the plot that the authors already provided in
-their code, I want to explain why using ggplot2 for this might be of
-advantage. ggplot2 is built on the "grammar of graphics", which makes it
-easy to add layers and extend the plot. There are many options to alter
-the appearance of the plot, like colors, themes etc. Furthermore, in
-this code, we can explicitly see what is plotted and how specific
-elements are modified. This makes the plot more reproducible and easier
-to update or change later on.
+```{r}
+
+visreg(fit1.1,
+       xvar = "Test", 
+       by = "Condition",
+       #overlay = TRUE,
+       scale = "response",
+       partial = TRUE,
+       gg = TRUE) + 
+  labs(x = "Test Type",
+       y = "Accuracy Rate") +
+  theme_bw()
+```
+
+Making use of the `partial = TRUE` argument, this plot displays partial residuals of the model `fit1.1`. Partial residuals are the left-over variance relative to the examined predictor after having subtracted off the contribution of all the other predictors in the model **Chapter 13.4.1**.
+Depending on what you find to be more well-arranged for interpretation, you can activate the `overlay = TRUE` argument in the code chunk. In any case, the solid lines represent the regression lines of the model, for both learning directions and each of the tests. The jittered dots represent the partial residuals, and show where the model under- or overestimated accuracy.
+
 
 ## Effects of Learning Directions and L2 Proficiency (RQ2)
 
