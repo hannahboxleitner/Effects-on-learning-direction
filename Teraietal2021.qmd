@@ -1368,7 +1368,7 @@ between the two lines is relatively small at each test type, which
 reflects the results that revealed no significant difference in learning
 effects between L2 to L1 learning and L1 to L2 learning.
 
-Generally, @2021 used base `R` plots in their original code. While there is nothing wrong with that, one could also use {gglpot2}, which provides many options to add layers, extend the plot, alter the appearance of the plot etc.
+Generally, @2021 used base `R` plots in their original code. While there is nothing wrong with that, one could also use {ggplot2}, which provides many options to extend the plot and alter its appearance. Also, it makes it easy to see what is plotted and how specific elements are modified, which contributes to the reproducibility of the code.
 
 ### Extension (Hannah)
 
