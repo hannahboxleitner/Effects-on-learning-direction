@@ -1746,8 +1746,11 @@ research, but it also sharpens our skills as future SLA researchers.
 ## Packages used in this chapter {.unnumbered}
 
 ```{r}
-#| eval: false
-grateful::cite_packages(out.dir = "packages")
+
+library(kableExtra)
+library(grateful)
+
+cite_packages(output = "paragraph", out.dir = ".")
 
 ```
 

@@ -1,0 +1,33 @@
+---
+title: "`grateful` citation report"
+bibliography: grateful-refs.bib
+#csl: null.csl
+---
+
+## R packages used
+
+|Package    |Version |Citation                                               |
+|:----------|:-------|:------------------------------------------------------|
+|base       |4.5.0   |@base                                                  |
+|beeswarm   |0.4.0   |@beeswarm                                              |
+|effects    |4.2.4   |@effects2003; @effects2009; @effects2018; @effects2019 |
+|emmeans    |1.11.2  |@emmeans                                               |
+|here       |1.0.1   |@here                                                  |
+|kableExtra |1.4.0   |@kableExtra                                            |
+|knitr      |1.50    |@knitr2014; @knitr2015; @knitr2025                     |
+|lme4       |1.1.37  |@lme4                                                  |
+|moments    |0.14.1  |@moments                                               |
+|phia       |0.3.2   |@phia                                                  |
+|psych      |2.5.6   |@psych                                                 |
+|remotes    |2.5.0   |@remotes                                               |
+|rmarkdown  |2.29    |@rmarkdown2018; @rmarkdown2020; @rmarkdown2024         |
+|scales     |1.4.0   |@scales                                                |
+|tidyverse  |2.0.0   |@tidyverse                                             |
+|visreg     |2.8.0   |@visreg                                                |
+
+**You can paste this paragraph directly in your report:**
+
+We used R v. 4.5.0 [@base] and the following R packages: beeswarm v. 0.4.0 [@beeswarm], effects v. 4.2.4 [@effects2003; @effects2009; @effects2018; @effects2019], emmeans v. 1.11.2 [@emmeans], here v. 1.0.1 [@here], kableExtra v. 1.4.0 [@kableExtra], knitr v. 1.50 [@knitr2014; @knitr2015; @knitr2025], lme4 v. 1.1.37 [@lme4], moments v. 0.14.1 [@moments], phia v. 0.3.2 [@phia], psych v. 2.5.6 [@psych], remotes v. 2.5.0 [@remotes], rmarkdown v. 2.29 [@rmarkdown2018; @rmarkdown2020; @rmarkdown2024], scales v. 1.4.0 [@scales], tidyverse v. 2.0.0 [@tidyverse], visreg v. 2.8.0 [@visreg].
+
+## Package citations
+
