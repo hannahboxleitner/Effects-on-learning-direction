@@ -18,7 +18,7 @@ execute:
 bibliography: 
 - references.bib
 - packages.bib
-csl: https://www.zotero.org/styles/apa-with-abstract
+csl: unified-style-sheet-for-linguistics.csl
 ---
 
 # Chapter overview {.unnumbered}
@@ -1074,8 +1074,8 @@ and last model also used L2 production test scores. The first model
 Generalized linear mixed-models are an extension of linear mixed models.
 Linear regression models form a kind of basis for more advanced modeling
 approaches, exactly ones such as generalized linear mixed-effects
-models, which are able to handle clustered or even non-continous data,
-for a more thorough explanation see \[Chapter 13\]
+models, which are able to handle clustered or even non-continuous data.
+For a more thorough explanation see \[Chapter 13\]
 (https://elenlefoll.github.io/RstatsTextbook/13_MultipleLinearRegression.html).
 
 ## Effects of Learning Condition (Research Question 1)
