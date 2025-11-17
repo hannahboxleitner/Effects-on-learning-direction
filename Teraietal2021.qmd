@@ -1386,12 +1386,10 @@ learn more about using {ggplot2}, check out [Chapter
 ### Extension (Hannah)
 
 To extend the work on this model, I want to plot the results in a way
-that also shows the model's residuals. They are the difference between
+that also shows the model's residuals. Residuals are the difference between
 the model’s predicted value and the real, observed value of the outcome
 variable.
-
-To extend the work on this model, I want to plot the results in a way
-that visualizes the model's residuals. For this task, I want to use the
+For this task, I want to use the
 `{visreg}` library, which serves the purpose of visualizing regression
 functions. As is explained in more detail in [Chapter
 13.6](https://elenlefoll.github.io/RstatsTextbook/13_MultipleLinearRegression.html#modelling-interactions-between-predictors),
@@ -1399,11 +1397,13 @@ we need to use an older version of this package, for which we need to
 load the `{remote}` library as well:
 
 ```{r}
+#| warning: false
+
 #install.packages("remotes")
 
 library(remotes)
 
-#install_version("visreg", "2.7.0"
+#install_version("visreg", "2.7.0")
 
 library(visreg)
 ```
@@ -1411,11 +1411,13 @@ library(visreg)
 Now, I want to apply the `visreg()`function to the model `fit1.1`.
 
 ```{r}
+#| label: fig-resid
+#| fig-cap: "Test Type & Learning Direction with partial residuals"
+#| fig-cap-location: bottom
 
 visreg(fit1.1,
        xvar = "Test", 
        by = "Condition",
-       #overlay = TRUE,
        scale = "response",
        partial = TRUE,
        gg = TRUE) + 
@@ -1424,14 +1426,12 @@ visreg(fit1.1,
   theme_bw()
 ```
 
-Making use of the `partial = TRUE` argument, this plot displays partial
+Making use of the `partial = TRUE` argument, @fig-resid displays partial
 residuals of the model `fit1.1`. Partial residuals are the left-over
 variance relative to the examined predictor after having subtracted off
 the contribution of all the other predictors in the model ([see Chapter
 13.4](https://elenlefoll.github.io/RstatsTextbook/13_MultipleLinearRegression.html#interpreting-a-model-summary)).
-Depending on what you find to be more well-arranged for interpretation,
-you can activate the `overlay = TRUE` argument in the code chunk. In any
-case, the solid lines represent the regression lines of the model, for
+The solid lines represent the regression lines of the model, for
 both learning directions and each of the tests. The jittered dots
 represent the partial residuals, and show where the model under- or
 overestimated accuracy.
