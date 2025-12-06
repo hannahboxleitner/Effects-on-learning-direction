@@ -1646,7 +1646,7 @@ language pair was tested in this study. Assuming that the
 above-mentioned results are generalisable L1-L2 effects may be a bit
 far-fetched.
 
-## Model Diagnostics
+## Checking multicollinearity
 
 Now, before interpreting these results too confidently, one should also
 check whether the predictors are highly correlated with one another,
@@ -1695,7 +1695,7 @@ such as true-false accuracy measures. They allow us to account for
 repeated measures across participants and items such as we encountered
 in this study by @2021. It is completely normal that at times GLMMs can
 feel intimidating: coding contrasts and interpreting the outcomes are
-not always straightforward. **But usually there is always a solution.**
+not always straightforward. But there is always a solution.
 The insights we can gain from a nicely fitted model make all this effort
 worthwhile.
 
