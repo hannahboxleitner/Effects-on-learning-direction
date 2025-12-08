@@ -69,7 +69,7 @@ The dataset (`dataset1_ssla_20210313.csv`) contains data for each participant an
 
 But more on that later.
 
-# Set-up and data import
+# Set-up and Data import
 
 Before importing the dataset and starting on our project, we need to load all the packages that we will need. You may have to first install some of these packages using the `install.packages()` command in your console.
 
@@ -81,7 +81,7 @@ library(here)
 library(tidyverse)
 ```
 
-Next, we import the data. In contrast to @2021's code, we used the {here} package for importing the data. This package creates paths relative to the top-level directory and therefore makes it easier to reference files in a reproducible manner (see @sec-ImportingDataCSV). Following the code in @2021, the test type (`Test`) and the learning direction (`Condition`) variables are converted to factor variables as they represent categories rather than numerical values. Converting the variables into factors now will also be useful for the statistical analysis such as an ANOVA (Analysis of Variance), which will be conducted later.
+Next, we import the data. In contrast to @2021's code, we used the {here} package for importing the data. This package creates paths relative to the top-level directory and therefore makes it easier to reference files in a reproducible manner (see @sec-ImportingDataCSV).
 
 **In a later step the command `trimws()` will be used, which removes space from the beginning and end of the text. This helps to prevent issues like "berth " vs. "berth" being treated as two different word forms.** ELF: Why is this mentioned here if the code is not here?
 
@@ -94,30 +94,9 @@ VocabularyB_L2production <- read.csv(file = here("data", "vocaB_L2pro_20210313.c
 # Loading the dataset
 dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
-# Converting the categorical variables to factors using the function as.factor()
-dat$Test <- as.factor(dat$Test)
-dat$Condition <- as.factor(dat$Condition)
 ```
 
-Before fitting the models, @2021 also apply **contrast coding**, also called **treatment coding** [@1992]. While it may look confusing and maybe intimidating, it is actually quite an important step. Basically, the study aims to compare two groups (L1 -\> L2 vs. L2 -\> L1). @2021 use **simple coding**, where the first Condition (L1 -\> L2) gets coded as -0.5 and the second Condition (L2 -\> L1) as +0.5. This makes interpretations easier when there are interactions since the intercept represents the overall mean across the two conditions [@2022]. Also, the `scale()` function is applied to the `Vocab` column to create a standardized version of the variable (by subtracting the mean and dividing by the standard deviation).
-
-```{r}
-c <- contr.treatment(2)
-my.coding <- matrix(rep(1/2, 2, ncol = 1))
-my.simple <- c-my.coding
-my.simple
-
-contrasts(dat$Test) <- my.simple
-contrasts(dat$Condition) <- my.simple
-
-# Standardizing vocabulary scores (centered and scaled)
-dat$s.vocab <- scale(dat$Vocab)
-
-```
-
-All these steps set up the dataset for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression.
-
-Standardizing variables can be useful when variables are measured on different scales. Also, some statistical models perform better when predictors are standardized **(ELF: ADD REF).**
+**As already mentioned, the dataset contains different information on items and participants. The other four files contain the vocabulary scores for each item, for both L1 and L2 production tests and both Vocabulary A and Vocabulary B items. Every cell contains either 1 (correct) or 0 (incorrect).**
 
 # Descriptive statistics
 
@@ -716,6 +695,31 @@ library(effects) # package for plotting model effects
 library(emmeans) # package for post-hoc comparisons
 library(phia) # similar to {emmeans}
 
+```
+
+Also, the data needs to be set up for modeling. Following the code in @2021, the test type (`Test`) and the learning direction (`Condition`) variables are converted to factor variables as they represent categories rather than numerical values. Converting the variables into factors now will also be useful for the statistical analysis such as an ANOVA (Analysis of Variance), which will be conducted later.
+
+```{r}
+# Converting the categorical variables to factors using the function as.factor()
+dat$Test <- as.factor(dat$Test)
+dat$Condition <- as.factor(dat$Condition)
+```
+
+Before fitting the models, @2021 also apply **contrast coding**, also called **treatment coding** [@1992]. While it may look confusing and maybe intimidating, it is actually quite an important step. Basically, the study aims to compare two groups (L1 -\> L2 vs. L2 -\> L1). @2021 use **simple coding**, where the first Condition (L1 -\> L2) gets coded as -0.5 and the second Condition (L2 -\> L1) as +0.5. This makes interpretations easier when there are interactions since the intercept represents the overall mean across the two conditions [@2022]. Also, the `scale()` function is applied to the `Vocab` column to create a standardized version of the variable (by subtracting the mean and dividing by the standard deviation).
+
+All these steps set up the dataset for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression.
+
+```{r}
+c <- contr.treatment(2)
+my.coding <- matrix(rep(1/2, 2, ncol = 1))
+my.simple <- c-my.coding
+my.simple
+
+contrasts(dat$Test) <- my.simple
+contrasts(dat$Condition) <- my.simple
+
+# Standardizing vocabulary scores (centered and scaled)
+dat$s.vocab <- scale(dat$Vocab)
 ```
 
 ### Model 1 without interaction
