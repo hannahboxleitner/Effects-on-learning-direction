@@ -99,7 +99,7 @@ dat$Test <- as.factor(dat$Test)
 dat$Condition <- as.factor(dat$Condition)
 ```
 
-Before fitting the models, @2021 also apply **contrast coding**, also called **treatment coding** [@1992]. While it may look confusing and maybe intimidating, it is actually quite an important step. Basically, the study aims to compare two groups (L1 -\> L2 vs. L2 -\> L1). @2021 use **simple coding**, where the first Condition (L1 -\> L2) gets coded as -0.5 and the second Condition (L2 -\> L1) as +0.5. This makes interpretations easier when there are interactions since the intercept represents the overall mean across the two conditions [@2022]. **ELF: Please add a sentence explaining what the scale() function does.**
+Before fitting the models, @2021 also apply **contrast coding**, also called **treatment coding** [@1992]. While it may look confusing and maybe intimidating, it is actually quite an important step. Basically, the study aims to compare two groups (L1 -\> L2 vs. L2 -\> L1). @2021 use **simple coding**, where the first Condition (L1 -\> L2) gets coded as -0.5 and the second Condition (L2 -\> L1) as +0.5. This makes interpretations easier when there are interactions since the intercept represents the overall mean across the two conditions [@2022]. Also, the `scale()` function is applied to the `Vocab` column to create a standardized version of the variable (by subtracting the mean and dividing by the standard deviation).
 
 ```{r}
 c <- contr.treatment(2)
@@ -115,7 +115,7 @@ dat$s.vocab <- scale(dat$Vocab)
 
 ```
 
-All these steps set up the dataset for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression. Scaling the vocabulary scores helps with interaction terms **(ELF: How? Either leave this sentence out if you don't understand it or explain what you mean so that everyone can understand)**.
+All these steps set up the dataset for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression.
 
 Standardizing variables can be useful when variables are measured on different scales. Also, some statistical models perform better when predictors are standardized **(ELF: ADD REF).**
 
