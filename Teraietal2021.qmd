@@ -364,7 +364,7 @@ alpha(VocabularyB_L1production[,-1], warnings = FALSE)
 alpha(VocabularyB_L2production[,-1], warnings = FALSE)
 ```
 
-These reliability analyses compute Cronbach’s α, a measure of internal consistency of tests. This measure indicates whether responses are consistent across items. Before interpreting these results, we will get to the descriptive statistics of the two types of post-tests, **which the reliability analyses are in regard to.**
+These reliability analyses compute Cronbach’s α, a measure of internal consistency of tests. This measure indicates whether responses are consistent across items. Before interpreting these results, we will get to the descriptive statistics of the two types of post-tests.
 
 ### Accuracy
 
