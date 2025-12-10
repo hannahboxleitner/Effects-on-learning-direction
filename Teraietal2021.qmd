@@ -118,8 +118,6 @@ Kurtosis then is a measure of peaks of a distribution. Basically, it is a descri
 
 In this section, our aim is to reproduce Table 3 from @2021, which displays the descriptive statistics of the target items of the study. Unfortunately, the code for all the tables shown in @2021 was not included in the shared `R` code. But as we have the data in the form of a `.csv` file, this is not a problem! We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step-by-step.
 
-**We have already loaded the data that we will need for this table, but just to be sure, we will do it again and also load all the necessary libraries for the two tables, so we have some kind of "toolbox" that contains every function we might need:**
-
 ```{r}
 #| warning: false
 # Load libraries (packages need to be installed if they aren't already)
@@ -127,9 +125,6 @@ In this section, our aim is to reproduce Table 3 from @2021, which displays the 
 library(moments) #for skewness and kurtosis
 library(knitr) #for nice tables
 library(kableExtra) #for nicer tables
-
-# Load data again which was provided in the IRIS repository
-dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 
 dat$ItemID <- trimws(dat$ItemID)
 ```
@@ -263,12 +258,9 @@ There are several possibilities why this is the case. There might be an outlier 
 
 **Table 3** displays a summary of many descriptive statistics (mean, SD, range, skewness, kurtosis) for the 40 target words, but these numbers are much easier to understand when they are visualized. Below we want to turn some key variables of Table 3 into quick histograms to visually connect the ideas of skewness and kurtosis to the actual items used in this study.
 
-**Please note that in this extension our reloading of the data may seem repetitive, but it simply ensures that this section can work on its own if needed, but to you it is optional.**
-
 ```{r}
 # {tidyverse} library needs to be loaded if you have not done it before.
 
-dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header = TRUE)
 dat$ItemID <- trimws(dat$ItemID)
 
 items <- dat |>
