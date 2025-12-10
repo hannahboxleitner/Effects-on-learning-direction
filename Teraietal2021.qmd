@@ -335,12 +335,11 @@ To conduct reliability analysis, the {psych} package needs to be installed and l
 library(psych)
 ```
 
-To calculate Cronbach's α, @2021 applied the `alpha()` function to the vocabulary scores of both **the L1 and L2 production sets**. Below, we only show the code and output of the reliability analysis for Vocabulary A scores of the L1 production dataset, as an example.
+To calculate Cronbach's α, @2021 applied the `alpha()` function to the vocabulary scores of both **the L1 and L2 production sets**. Below, we only show the code of the reliability analysis for Vocabulary A scores of the L1 production dataset, as an example:
 
 ```{r}
 #| warning: false
-
-# Vocabulary A (L1 production)
+#| results: false
 
 alpha(VocabularyA_L1production[,-1], warnings=FALSE)
 
