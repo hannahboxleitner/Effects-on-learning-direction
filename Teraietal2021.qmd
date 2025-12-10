@@ -373,6 +373,8 @@ To investigate accuracy, @2021 processed the collected results for each particip
 The following code chunk, which analyses data pertaining to L2 -\> L1 direction of the L1 production set, processes the results for each participant — their ID, answered items, correct answers — and puts them into a clean table. Therefore, it gives us the core numbers necessary to describe and analyze learners' vocabularly retrieval accuracy.
 
 ```{r}
+#| results: false
+
 # L2 → L1 (L1 production test)
 
 ids <- data.frame(unique(dat$ID))
@@ -459,7 +461,7 @@ describe(accu_L2L1_L1Pro$Score)
 describe(accu_L1L2_L1Pro$Score)
 ```
 
-To visualize descriptive statistics for the L1 production set, Terai et al. created a boxplot comparing the two learning directions. For this to work, the {beeswarm} package has to be installed and loaded. The authors assigned a data frame `L1pro` that contains the scores from both learning directions in the L1 production test. After changing the names of the columns to how they shall appear on the *x*-axis, the authors created a side-by-side boxplot for the two learning conditions. Finally, they added the `beeswarm()` function specifying `add = T`, which lets individual scores appear as jittered dots so that they don't overlap.
+To visualize descriptive statistics for the L1 production set, @2021 created a boxplot comparing the two learning directions. For this to work, the {beeswarm} package has to be installed and loaded. The authors assigned a data frame `L1pro` that contains the scores from both learning directions in the L1 production test. After changing the names of the columns to how they shall appear on the *x*-axis, the authors created a side-by-side boxplot for the two learning conditions. Finally, they added the `beeswarm()` function specifying `add = T`, which lets individual scores appear as jittered dots so that they don't overlap.
 
 ```{r}
 #| label: fig-L1-prod
@@ -481,6 +483,8 @@ Boxplots are a way to visualize both the central tendency (median) of a variable
 The same steps were applied to the L2 production set, using the L2 scores:
 
 ```{r}
+#| results: false
+
 # L2 → L1 (L2 production test)
 
 ids <- data.frame(unique(dat$ID))
@@ -507,6 +511,10 @@ accu_L2L1_L2Pro
 ```
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show code for L1 → L2 (L2 production test)"
+#| results: false
+
 # L1 → L2 (L2 production test)
 
 ids <- data.frame(unique(dat$ID))
