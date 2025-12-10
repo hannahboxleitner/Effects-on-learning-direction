@@ -564,7 +564,7 @@ beeswarm(L2pro, add = T)
 
 ```
 
-Median scores in the L2 production test are similar for both learning directions (L2 → L1 and L1 → L2), suggesting comparable **central performance**. L1 → L2 learning shows a slightly higher median. In the L2 → L1 group, values below the median are more spread out, indicating more variety. Comparing the L1 and L2 production tests, L1 production scores appear to be generally higher and more consistent across both learning directions.
+Median scores in the L2 production test are similar for both learning directions (L2 → L1 and L1 → L2), suggesting comparable performance in both groups. L1 → L2 learning shows a slightly higher median. In the L2 → L1 group, values below the median are more spread out, indicating more variety. Comparing the L1 and L2 production tests, L1 production scores appear to be generally higher and more consistent across both learning directions.
 
 ### Reproducing Table 4 and 5
 
@@ -669,9 +669,9 @@ As mentioned before, Cronbach's alpha indicates whether responses are consistent
 
 # Generalized linear mixed-effects models
 
-@2021 used generalized linear mixed-effect models (GLMMs) to analyze and **examine three variables**: Learning Condition (L2 to L1 and L1 to L2), Test Type (L1 production and L2 production), and Vocabulary Size (L2 Proficiency), as well as interaction between two variables. Generalized linear mixed-models are an extension of linear mixed models (see @sec-MLR).
+@2021 used generalized linear mixed-effect models (GLMMs), which are an extension of linear mixed models (see @sec-MLR). GLMM analysis was employed to examine three predictor variables: Learning Condition (L2 to L1 and L1 to L2), Test Type (L1 production and L2 production), and Vocabulary Size (L2 Proficiency), as well as the interaction between two variables. They tried to predict Accuracy (the outcome variable) as a function of these predictor variables. 
 
-Three GLMMs were chosen for this analysis, the first to analyze the relationship between learning conditions and production tests (RQ1) [@2021: 1125]. The second and third models analyze the effects of the two learning directions (L2 to L1 and L1 to L2) based on the results of the production tests (RQ2). They are pretty similar, except that the third and last model also make use L2 production test scores. The first model (RQ 1) will be elaborated in more detail.
+Three GLMMs were chosen for this analysis, the first to analyze the relationship between learning conditions and production tests (RQ1) [@2021: 1125]. The second and third models analyze the effects of the two learning directions (L2 to L1 and L1 to L2) based on the results of the production tests (RQ2). They are pretty similar, except that the third and last model also make use of L2 production test scores. The first model (RQ 1) will be elaborated in more detail.
 
 ## Effects of Learning Condition (Research Question 1)
 
@@ -847,44 +847,6 @@ plot(allEffects(fit1.1), multiline = T, ci.style = "bands", xlab = "Test Type", 
 @fig-testlearn-direc shows the interaction between Test Type and Learning Condition on accuracy rates, based on the generalized linear mixed-effects model (`fit1.1`). It is an effect plot generated with the `allEffects()` function. The solid line represents the L1 to L2 learning condition; the dotted line represents the L2 to L1 learning condition. The *y*-axis represents accuracy rates on both the L1 and L2 production tests. The *x*-axis represents the two test types. We can see that the accuracy rates differ across Test Types and Learning Conditions, with a clear interaction between the two: The non-parallel lines indicate that the effect of one variable changes depends on the level of the other variable. The distance between the two lines is relatively small at each test type, which reflects the results that revealed no significant difference in learning effects between L2 to L1 learning and L1 to L2 learning.
 
 Generally, @2021 used base `R` plots in their original code. While there is nothing wrong with that, one could also use {ggplot2}, which provides many options to customise the plot. Also, it makes it easy to see what is plotted and how specific elements are modified, which contributes to the reproducibility of the code. If you want to learn more about using {ggplot2}, check out @sec-DataViz.
-
-::: callout-tip
-## Extension by Hannah {.unnumbered}
-
-To extend the work on this model, I want to plot the results in a way that also shows the model's residuals. Residuals are the difference between the model’s predicted value and the real, observed value of the outcome variable. For this task, I want to use the `{visreg}` library, which serves the purpose of visualizing regression functions.
-
-As is explained in more detail in @sec-ModelPredictions, we currently need to use an older version of this package, for which we need to load the `{remote}` library as well:
-
-```{r}
-#| warning: false
-
-#install.packages("remotes")
-library(remotes)
-
-#install_version("visreg", "2.7.0")
-library(visreg)
-```
-
-Now, I want to apply the `visreg()`function to the model `fit1.1`.
-
-```{r}
-#| label: fig-resid
-#| fig-cap: "Test Type & Learning Direction with partial residuals"
-#| fig-cap-location: bottom
-
-visreg(fit1.1,
-       xvar = "Test", 
-       by = "Condition",
-       scale = "response",
-       partial = TRUE,
-       gg = TRUE) + 
-  labs(x = "Test Type",
-       y = "Accuracy Rate") +
-  theme_bw()
-```
-
-Making use of the `partial = TRUE` argument, @fig-resid displays partial residuals of the model `fit1.1`. Partial residuals are the left-over variance relative to the examined predictor after having subtracted off the contribution of all the other predictors in the model ([see Chapter 13.4](https://elenlefoll.github.io/RstatsTextbook/13_MultipleLinearRegression.html#interpreting-a-model-summary)). The solid lines represent the regression lines of the model, for both learning directions and each of the tests. The jittered dots represent the partial residuals, and show where the model under- or overestimated accuracy.
-:::
 
 ## Effects of Learning Directions and L2 Proficiency (RQ2)
 
