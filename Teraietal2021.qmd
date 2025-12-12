@@ -176,7 +176,7 @@ items <- dat |>
 
 ```
 
-A quick check before we continue, **we expect 40 items** in total so this command should print 40:
+A quick check before we continue. Did we correctly import all 40 target words from the study into our items dataframe? [@2021:1123]
 
 ```{r}
 nrow(items)
