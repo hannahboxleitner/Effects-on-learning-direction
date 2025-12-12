@@ -285,7 +285,7 @@ Do not be too confused by the numbers on the *y*-axis. The values can be read as
 
 ```{r}
 #| label: fig-plot1
-#| fig-cap: "Distribution of L2 frequencies"
+#| fig-cap: "Distribution of L2 word frequencies used in the study"
 #| fig-cap-location: bottom
 
 ggplot(items, aes(x = L2Frequency)) +
@@ -303,7 +303,7 @@ In @fig-plot1 we can clearly see a right-skewed distribution which we saw in the
 
 ```{r}
 #| label: fig-plot2
-#| fig-cap: "Distribution of L1 frequencies"
+#| fig-cap: "Distribution of L1 word frequencies used in the study"
 #| fig-cap-location: bottom
 
 ggplot(items, aes(x = L1Frequency)) +
@@ -465,7 +465,7 @@ To visualize descriptive statistics for the L1 production set, @2021 created a b
 
 ```{r}
 #| label: fig-L1-prod
-#| fig-cap: "L1 Production Test"
+#| fig-cap: "L1 Production Test scores across the two learning directions"
 #| fig-cap-location: bottom
  
 # Plot (L1 production)
@@ -559,7 +559,7 @@ describe(accu_L1L2_L2Pro$Score)
 
 ```{r}
 #| label: fig-L2-prod
-#| fig-cap: "L2 Production Test"
+#| fig-cap: "L2 Production Test scores across the two learning directions"
 #| fig-cap-location: bottom
 
 # Plot (L2 production)
@@ -600,7 +600,7 @@ Now we want to display the results in a clean, formatted table using the `kable(
 
 ```{r}
 #| label: tbl-desc-stats-scores
-#| tbl-cap: "Descriptive Statistics for Test Scores"
+#| tbl-cap: "Descriptive Statistics for the L1 and L2 production test scores"
 #| tbl-cap-location: top
 #| 
 kable(descriptive_stats_tests_trimmed, 
@@ -836,7 +836,7 @@ Finally, the authors presented the results of this model in a plot that visualiz
 
 ```{r}
 #| label: fig-testlearn-direc
-#| fig-cap: "Test & Learning Direction"
+#| fig-cap: "Interaction between Test Type and Learning Condition on accuracy rates"
 #| fig-cap-location: bottom
 # Setting graphical parameters for the plot
 
@@ -941,7 +941,7 @@ Visualizing model predictions is a very useful way to better understand complex 
 
 ```{r}
 #| label: fig-l1
-#| fig-cap: "L1 Production"
+#| fig-cap: "Predicted L1 Production accuracy across vocabulary sizes and learning directions"
 #| fig-cap-location: bottom
 
 plot(allEffects(fit2.1), multiline = T, ci.style = "bands",
@@ -1002,7 +1002,7 @@ As for the first research question, the authors calculated AICs for both version
 
 ```{r}
 #| label: fig-l2
-#| fig-cap: "L2 Production"
+#| fig-cap: "Predicted L2 Production accuracy across vocabulary size and learning direction"
 #| fig-cap-location: bottom
 
 plot(allEffects(fit3.1), multiline = T, ci.style = "bands", xlab = "Vocabulary Size", ylab = "Accuracy Rate",
