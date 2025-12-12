@@ -83,8 +83,6 @@ library(tidyverse)
 
 Next, we import the data. In contrast to @2021's code, we used the {here} package for importing the data. This package creates paths relative to the top-level directory and therefore makes it easier to reference files in a reproducible manner (see @sec-ImportingDataCSV).
 
-**In a later step the command `trimws()` will be used, which removes space from the beginning and end of the text. This helps to prevent issues like "berth " vs. "berth" being treated as two different word forms.** ELF: Why is this mentioned here if the code is not here?
-
 ```{r}
 VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
 VocabularyA_L2production <- read.csv(file = here("data", "vocaA_L2pro_20210313.csv"))
@@ -117,6 +115,8 @@ Kurtosis then is a measure of peaks of a distribution. Basically, it is a descri
 ## Reproduction of Table 3
 
 In this section, our aim is to reproduce Table 3 from @2021, which displays the descriptive statistics of the target items of the study. Unfortunately, the code for all the tables shown in @2021 was not included in the shared `R` code. But as we have the data in the form of a `.csv` file, this is not a problem! We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step-by-step.
+
+In the following chunk, we load some necessary libraries and use the `trimws()` function, which removes space from the beginning and end of the text. This helps to prevent issues like "berth " vs. "berth" being treated as two different word forms.
 
 ```{r}
 #| warning: false
