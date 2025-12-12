@@ -94,11 +94,11 @@ dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
 
 ```
 
-**As already mentioned, the dataset contains different information on items and participants. The other four files contain the vocabulary scores for each item, for both L1 and L2 production tests and both Vocabulary A and Vocabulary B items. Every cell contains either 1 (correct) or 0 (incorrect).**
+As already mentioned, the dataset contains different information on items and participants. The other four files contain the vocabulary scores for each item, for both L1 and L2 production tests and both Vocabulary A and Vocabulary B items. Every cell contains either 1 (correct) or 0 (incorrect).
 
 # Descriptive statistics
 
-Before we dive into the descriptive statistics conducted in @2021, we need to explain that one part of it will not be reproduced. While descriptive statistics about the participants (age, years of learning, etc.) are mentioned in @2021:1122-1123 **ELF: Add page number**, we were not able to find the data to reproduce these findings. That said, it is common for participant data not to be shared to protect their identities. Therefore, in this section, we will focus on reproducing the descriptive statistics of the target items (40 English words used in the study), test types and reliability testing. We'll start with the target items, which are found in Table 3 in the paper [@2021: 1123].
+Before we dive into the descriptive statistics conducted in @2021, we need to explain that one part of it will not be reproduced. While descriptive statistics about the participants (age, years of learning, etc.) are mentioned in @2021:1122-1123, we were not able to find the data to reproduce these findings. That said, it is common for participant data not to be shared to protect their identities. Therefore, in this section, we will focus on reproducing the descriptive statistics of the target items (40 English words used in the study), test types and reliability testing. We'll start with the target items, which are found in Table 3 in the paper [@2021: 1123].
 
 Most of the statistics reproduced here metrics already introduced in the textbook: the mean, median, maximum and minimum, as well as the standard deviation (SD) (see @sec-DescRiptiveStats). In addition, @2021 report skewness and kurtosis. **Skewness** and **kurtosis** are both measures of shapes and distribution of a variable. Skewness measures the asymmetry of distribution. Simply put, skewness describes the proportion of a distribution which differs from a completely symmetrical shape [@2023]:
 
@@ -176,7 +176,7 @@ items <- dat |>
 
 ```
 
-A quick check before we continue. Did we correctly import all 40 target words from the study into our items dataframe? [@2021:1123]
+We want to do a quick check before we continue: Did we correctly import all 40 target words from the study into our items dataframe? [@2021:1123]
 
 ```{r}
 nrow(items)
