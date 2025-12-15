@@ -114,7 +114,7 @@ Kurtosis then is a measure of peaks of a distribution. Basically, it is a descri
 
 ## Reproduction of Table 3
 
-In this section, our aim is to reproduce Table 3 from @2021, which displays the descriptive statistics of the target items of the study. Unfortunately, the code for all the tables shown in @2021 was not included in the shared `R` code. But as we have the data in the form of a `.csv` file, this is not a problem! We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step-by-step.
+In this section, our aim is to reproduce Table 3 from @2021:1123, which displays the descriptive statistics of the target items of the study. Unfortunately, the code for all the tables shown in @2021 was not included in the shared `R` code. But as we have the data in the form of a `.csv` file, this is not a problem! We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step-by-step.
 
 In the following chunk, we load some necessary libraries and use the `trimws()` function, which removes space from the beginning and end of the text. This helps to prevent issues like "berth " vs. "berth" being treated as two different word forms.
 
@@ -131,9 +131,8 @@ dat$ItemID <- trimws(dat$ItemID)
 
 In the paper by @2021 we can see that the variables used are, for L2-related variables: **Frequency, Syllables, and Letters. For L1-related variables: Frequency, Letters, and Mora (syllables) as well as** **Familiarity (Fami A)**. We were not able to reproduce **Fami (B)** as the data was not made public. **Also, important to note: "L1 frequency and L1 familiarity were retrieved from @2000" [@2021: 1123].**
 
-First, we need to take a look at the data that the authors have made available. The column names may differ from what we want to see in the table later on, which is why we briefly want to check them by having them printed in a nice table with descriptions of their meanings. In @tbl-descriptives we can see that there are eight variables included in the dataset which are all crucial for the study.
-
 ```{r}
+#| code-fold: true
 #| label: tbl-descriptives
 #| tbl-cap: "Description of the Dataset Variables"
 
@@ -147,7 +146,7 @@ var_info <- data.frame(
     "Frequency of the word in Japanese (Amano & Kondo, 1999)",
     "Number of letters in the Japanese orthographic form",
     "Number of mora (Japanese syllable-like units)",
-    "Familiarity ratings from current study (Fami (B))"
+    "Participants Familiarity ratings from current study (Fami (B))"
   )
 )
 
@@ -158,7 +157,7 @@ kable(var_info) %>%
 
 Basically, what we are doing next is reshaping our data from participant-focused to item-focused. The raw dataset has multiple rows per word because each participant contributed several responses and thus has their own row per word. For example, the word "weasel" appears many times, once for each participant. But for descriptive statistics of the items, we only want one row per word.
 
-To solve this issue we use the functions `group_by()` and `summarise()` to turn all those rows into just a single one per word. With `group_by(ItemID)`, we group all rows together that contain the same word. Combining the `summarise()` and `first()` functions then creates our new dataset by keeping only the first mention of each word's frequency, number of syllables, etc. Only for the familiarity ratings do we calculate the `mean()` across all participants as word familiarity differs across the participants. **ELF: what does the argument .groups = "drop" do?**
+To solve this issue we use the functions `group_by()` and `summarise()` to turn all those rows into just a single one per word. With `group_by(ItemID)`, we group all rows together that contain the same word. Combining the `summarise()` and `first()` functions then creates our new dataset by keeping only the first mention of each word's frequency, number of syllables, etc. Only for the familiarity ratings do we calculate the `mean()` across all participants as word familiarity differs across the participants. The last argument `.groups = "drop"` removes the grouping structure so that the resulting dataset is no longer grouped by ItemID**ELF: what does the argument .groups = "drop" do?**
 
 ```{r}
 items <- dat |>
@@ -173,13 +172,18 @@ items <- dat |>
     familiarity = mean(familiarity, na.rm = TRUE), 
     .groups = "drop"
   )
-
 ```
 
-We want to do a quick check before we continue: Did we correctly import all 40 target words from the study into our items dataframe? [@2021:1123]
+We want to do a quick check before we continue: Did we correctly import all 40 target words from the study into our items dataframe [@2021:1123]?
 
 ```{r}
 nrow(items)
+```
+
+With this command we can also see what kind of words the authors were examining:
+
+```{r}
+head(items, 5)
 ```
 
 In order to avoid repeating code (and because we are lazy), we created our own function that computes all the descriptive statistics (mean, SD, median, min, max, skew, kurtosis) we need for each variable. We write our own function to do so (which you can think of as a "small machine") that we will name `quick_stats()` and that will do the calculations for us. `quick_stats <- funcion(x)` creates this function with the input 'x' which represents whichever variable we want to analyze. Inside of our function, we use `data.frame()` to organize our statistics before we begin the calculations. Each function within our function takes our input variable 'x' and computes the statistics. The functions `skewness()` and `kurtosis()` come from the {moments} package that we loaded earlier.
@@ -246,7 +250,8 @@ Our reproduced tables @tbl-desc-stats1 and @tbl-desc-stats2 now closely match Ta
 Our skewness values match the original paper fairly closely, with only small differences. However, our kurtosis values differ quite a lot from the published results. This may seem like a huge issue at first, but is actually quite normal. Kurtosis calculations can vary between packages, for example the 'moments' package we used calculates excess kurtosis, while the authors of the original paper might have used a different method. We tried several methods to reproduce the kurtosis values from the original publication, but failed to produce the values reported in the original study. We calculated both the excess kurtosis and the pearson kurtosis (see code chunk below), but no numbers match the ones in the paper.
 
 ```{r}
-excess_kurt <- kurtosis(dat$mora, na.rm = TRUE) #instead of mora any other Variable of table 3 can be added to calculate kurtosis
+#instead of mora any other Variable of table 3 can be added to calculate kurtosis
+excess_kurt <- kurtosis(dat$mora, na.rm = TRUE) 
 pearson_kurt <- excess_kurt + 3
 round(c(excess = excess_kurt, pearson = pearson_kurt), 3)
 ```
@@ -260,8 +265,6 @@ There are several possibilities why this is the case. There might be an outlier 
 
 ```{r}
 # {tidyverse} library needs to be loaded if you have not done it before.
-
-dat$ItemID <- trimws(dat$ItemID)
 
 items <- dat |>
   group_by(ItemID) |>
