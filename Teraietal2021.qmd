@@ -18,8 +18,9 @@ csl: unified-style-sheet-for-linguistics.csl
 ::: {.callout-note collapse="true"}
 #### **About the authors of this chapter** {.unnumbered}
 
-**Hannah Boxleitner** is a first-year master’s student in linguistics at the University of Cologne. After completing her first bachelor's degree in Social Work in Regensburg, and mostly working in the field of family services, she studied linguistics and German studies at the University of Cologne, where she focused on metaphor studies and corpus linguistics. In addition to that, she has taken an interest in computational linguistics within the specialization of her master's.
+**Hannah Boxleitner** is a first-year master’s student in linguistics at the University of Cologne. After completing her first bachelor's degree in Social Work in Regensburg, and mostly working in the field of social services, she studied linguistics and German studies at the University of Cologne, where she focused on metaphor studies and corpus linguistics. In addition to that, she has taken an interest in computational linguistics within the specialization of her master's.
 
+**Beyhan Aliy** is a first-year master's student in linguistics at the University of Cologne, where she specializes in psycho- and neurolinguistics. She completed her bachelor's degree in linguistics and English studies at the University of Cologne. She is currently working as a student assistant at the Department of Linguistics.
 
 The authors made equal contributions to the chapter. An earlier version of this chapter was submitted as a term paper for Elen Le Foll's M.A. seminar "Introduction to Data Analysis in `R` for linguists and language education scholars" (University of Cologne, summer 2025). Elen supervised the project, provided feedback, and contributed to the present revised version of this chapter.
 :::
@@ -129,7 +130,7 @@ library(kableExtra) #for nicer tables
 dat$ItemID <- trimws(dat$ItemID)
 ```
 
-In the paper by @2021 we can see that the variables used are, for L2-related variables: **Frequency, Syllables, and Letters. For L1-related variables: Frequency, Letters, and Mora (syllables) as well as** **Familiarity (Fami A)**. We were not able to reproduce **Fami (B)** as the data was not made public. **Also, important to note: "L1 frequency and L1 familiarity were retrieved from @2000" [@2021: 1123].**
+In the paper by @2021 we can see that the variables used are, for L2-related variables: Frequency, Syllables, and Letters. For L1-related variables: Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami A). We were not able to reproduce Fami (B) as the data was not made public. Also, important to note: "L1 frequency and L1 familiarity were retrieved from @2000" [@2021: 1123].
 
 ```{r}
 #| code-fold: true
