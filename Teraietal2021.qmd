@@ -1049,7 +1049,7 @@ This is a case study chapter of the web version of the textbook "Data Analysis f
 Please cite the current version of this chapter as:
 
 > ::: {style="color: black"}
-> ?. 2025. Learning Direction Effects in Retrieval Practice on EFL Vocabulary Learning. In Elen Le Foll (Ed.), *Data Analysis for the Language Sciences: A very gentle introduction to statistics and data visualisation in R*. Open Educational Resource. <https://elenlefoll.github.io/RstatsTextbook/> (accessed DATE).
+> Boxleitner, Hannah and Beyhan Aliy. 2025. Learning Direction Effects in Retrieval Practice on EFL Vocabulary Learning. In Elen Le Foll (Ed.), *Data Analysis for the Language Sciences: A very gentle introduction to statistics and data visualisation in R*. Open Educational Resource. <https://elenlefoll.github.io/RstatsTextbook/> (accessed DATE).
 > :::
 :::
 
