@@ -157,7 +157,7 @@ kable(var_info) %>%
 
 Basically, what we are doing next is reshaping our data from participant-focused to item-focused. The raw dataset has multiple rows per word because each participant contributed several responses and thus has their own row per word. For example, the word "weasel" appears many times, once for each participant. But for descriptive statistics of the items, we only want one row per word.
 
-To solve this issue we use the functions `group_by()` and `summarise()` to turn all those rows into just a single one per word. With `group_by(ItemID)`, we group all rows together that contain the same word. Combining the `summarise()` and `first()` functions then creates our new dataset by keeping only the first mention of each word's frequency, number of syllables, etc. Only for the familiarity ratings do we calculate the `mean()` across all participants as word familiarity differs across the participants. The last argument `.groups = "drop"` removes the grouping structure so that the resulting dataset is no longer grouped by ItemID**ELF: what does the argument .groups = "drop" do?**
+To solve this issue we use the functions `group_by()` and `summarise()` to turn all those rows into just a single one per word. With `group_by(ItemID)`, we group all rows together that contain the same word. Combining the `summarise()` and `first()` functions then creates our new dataset by keeping only the first mention of each word's frequency, number of syllables, etc. Only for the familiarity ratings do we calculate the `mean()` across all participants as word familiarity differs across the participants. The last argument `.groups = "drop"` removes the grouping structure so that the resulting dataset is no longer grouped by ItemID.
 
 ```{r}
 items <- dat |>
@@ -245,12 +245,12 @@ kable(tab_L1,
   kable_classic(full_width = FALSE)
 ```
 
-Our reproduced tables @tbl-desc-stats1 and @tbl-desc-stats2 now closely match Table 3 [@2021:1123 **Add page number**]! The L2 frequency has a mean of about **1025** with a quite large SD (\~852), which shows us that some English words were quite frequent while others were much rarer. The skewness **here** is positive (\~1.51), although slightly different than the one reported in the paper (\~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. English words are, on average, 2 syllables, and range from 1 to 5 syllables with only a slight positive skewness which means that most words are short and only a few are longer. Again we note a small difference in our skewness metric compared to the one reported in the original study. On average, words are 6.2 letters long, again with a positive skewness. For the L1 variables, the frequency distribution also shows a strong positive skew, which means that few Japanese words are very common, but many are quite rare. Fami (A) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the **words were mostly familiar**, meaning participants generally recognized these Japanese words easily.
+Our reproduced tables @tbl-desc-stats1 and @tbl-desc-stats2 now closely match Table 3 [@2021:1123]! The L2 frequency has a mean of about **1025** with a quite large SD (\~852), which shows us that some English words were quite frequent while others were much rarer. The skewness **here** is positive (\~1.51), although slightly different than the one reported in the paper (\~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. English words are, on average, 2 syllables, and range from 1 to 5 syllables with only a slight positive skewness which means that most words are short and only a few are longer. Again we note a small difference in our skewness metric compared to the one reported in the original study. On average, words are 6.2 letters long, again with a positive skewness. For the L1 variables, the frequency distribution also shows a strong positive skew, which means that few Japanese words are very common, but many are quite rare. Fami (A) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the **words were mostly familiar**, meaning participants generally recognized these Japanese words easily.
 
 Our skewness values match the original paper fairly closely, with only small differences. However, our kurtosis values differ quite a lot from the published results. This may seem like a huge issue at first, but is actually quite normal. Kurtosis calculations can vary between packages, for example the 'moments' package we used calculates excess kurtosis, while the authors of the original paper might have used a different method. We tried several methods to reproduce the kurtosis values from the original publication, but failed to produce the values reported in the original study. We calculated both the excess kurtosis and the pearson kurtosis (see code chunk below), but no numbers match the ones in the paper.
 
 ```{r}
-#instead of mora any other Variable of table 3 can be added to calculate kurtosis
+# Instead of mora any other variable of Table 3 can be added to calculate kurtosis
 excess_kurt <- kurtosis(dat$mora, na.rm = TRUE) 
 pearson_kurt <- excess_kurt + 3
 round(c(excess = excess_kurt, pearson = pearson_kurt), 3)
@@ -380,11 +380,6 @@ The following code chunk, which analyses data pertaining to L2 -\> L1 direction 
 
 # L2 → L1 (L1 production test)
 
-ids <- data.frame(unique(dat$ID))
-names(ids) <- ("id")
-z <- ids$id
-
-# ELF: The three lines of code above is an overly complicated way of doing:
 z <- unique(dat$ID)
 
 Score <- c()
@@ -408,7 +403,8 @@ names(accu_L2L1_L1Pro) <- c("ID", "Try", "Score")
 accu_L2L1_L1Pro
 ```
 
-We want to take the time to explain this part of Terai et al.'s code in detail. The first line takes unique IDs from `dat` and wraps them into a data frame called `ids`. The column is then named `id` using the `names()` function. In the next step, it is extracted as a vector, meaning that `z` is a vector of unique IDs. Further, a `for` loop is used to iterate over elements of this vector and assigning the IDs to the variable `i`. Inside this loop, for each `i` (a unique ID) the data is filtered for that participant under certain conditions, and then the Answer column is selected. The result is stored as the object `acc_recT`, which is further converted into a vector `a`. With `b` and `c`, the processed answers are computed and lastly, these results are appended into three vectors: `Score`, `IDes`, and `try`. These three vectors are combined into a final data frame `accu_L2L1_L1Pro`, where each vector becomes a column in a table, each row corresponding to one participant. These columns are renamed and the table is printed. If we want to properly see the table outside of the console, we can use the `View()` function:
+We want to take the time to explain this code chunk in detail. The first line takes unique IDs from `dat` and saves it as `z`, `z` therefore being a vector of unique IDs. This part was slightly changed in comparison to @2021's code, which used three lines of code for this step. 
+Further, a `for` loop is used to iterate over elements of this vector and assigning the IDs to the variable `i`. Inside this loop, for each `i` (a unique ID) the data is filtered for that participant under certain conditions, and then the Answer column is selected. The result is stored as the object `acc_recT`, which is further converted into a vector `a`. With `b` and `c`, the processed answers are computed and lastly, these results are appended into three vectors: `Score`, `IDes`, and `try`. These three vectors are combined into a final data frame `accu_L2L1_L1Pro`, where each vector becomes a column in a table, each row corresponding to one participant. These columns are renamed and the table is printed. If we want to properly see the table outside of the console, we can use the `View()` function:
 
 ```{r}
 #| eval: false
@@ -426,9 +422,8 @@ For L1 -\> L2 of the L1 production set, we follow the same steps.
 
 # L1 → L2 (L1 production test)
 
-ids <- data.frame(unique(dat$ID))
-names(ids) <- ("id")
-z <- ids$id
+z <- unique(dat$ID)
+
 Score <- c()
 IDes <- c()
 try <- c()
@@ -490,9 +485,8 @@ The same steps were applied to the L2 production set, using the L2 scores:
 
 # L2 → L1 (L2 production test)
 
-ids <- data.frame(unique(dat$ID))
-names(ids) <- ("id")
-z <- ids$id
+z <- unique(dat$ID)
+
 Score <- c()
 IDes <- c()
 try <- c()
@@ -520,9 +514,8 @@ accu_L2L1_L2Pro
 
 # L1 → L2 (L2 production test)
 
-ids <- data.frame(unique(dat$ID))
-names(ids) <- ("id")
-z <- ids$id
+z <- unique(dat$ID)
+
 Score <- c()
 IDes <- c()
 try <- c()
@@ -953,7 +946,7 @@ plot(allEffects(fit2.1), multiline = T, ci.style = "bands",
     rescale.axis = F, ylim = c(0, 1), colors = "black", asp = 1)
 ```
 
-@fig-l1 shows a solid line representing the L1 -\> L2 learning condition, and a dotted line representing the L2 -\> L1 learning condition. The *y*-axis shows L1 production accuracy rates of the test, and the *x*-axis the scaled scores of the vocabulary size tests [@2021: 1128]. Looking at @fig-l1 you can see a nearly flat line for L2 -\> L1 and a positive, steeper line for L1 -\> L2 which cross at intermediate proficiency (\~5.419 as reported in the paper, p. 1127). The crossover point at \~5.419 suggests that for learners in the L1 -\> L2 direction a score of over \~5.419 on the test for vocabulary size was more beneficial than for L2 -\> L1 learners. The fact that the line for L2 -\> L1 learning is nearly flat shows that proficiency in L2 did not have a big influence. Basically, the plot tells us that, for lower proficiency learners, L2 -\> L1 is better, and for higher proficiency learners, L1 -\> L2 is more beneficial [@2021:1128 **ELF: Add page number**].
+@fig-l1 shows a solid line representing the L1 -\> L2 learning condition, and a dotted line representing the L2 -\> L1 learning condition. The *y*-axis shows L1 production accuracy rates of the test, and the *x*-axis the scaled scores of the vocabulary size tests [@2021: 1128]. Looking at @fig-l1 you can see a nearly flat line for L2 -\> L1 and a positive, steeper line for L1 -\> L2 which cross at intermediate proficiency (\~5.419 as reported in the paper, p. 1127). The crossover point at \~5.419 suggests that for learners in the L1 -\> L2 direction a score of over \~5.419 on the test for vocabulary size was more beneficial than for L2 -\> L1 learners. The fact that the line for L2 -\> L1 learning is nearly flat shows that proficiency in L2 did not have a big influence. Basically, the plot tells us that, for lower proficiency learners, L2 -\> L1 is better, and for higher proficiency learners, L1 -\> L2 is more beneficial [@2021:1128].
 
 ### L2 Production Test
 
