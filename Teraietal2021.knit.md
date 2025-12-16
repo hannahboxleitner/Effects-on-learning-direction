@@ -74,17 +74,22 @@ But more on that later.
 
 Before importing the dataset and starting on our project, we need to load all the packages that we will need. You may have to first install some of these packages using the `install.packages()` command in your console.
 
-```{r}
-#| label: setup
-#| warning: false
 
+::: {.cell}
+
+```{.r .cell-code}
 library(here) 
 library(tidyverse)
 ```
+:::
+
 
 Next, we import the data. In contrast to @2021's code, we used the {here} package for importing the data. This package creates paths relative to the top-level directory and therefore makes it easier to reference files in a reproducible manner (see @sec-ImportingDataCSV).
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 VocabularyA_L1production <- read.csv(file = here("data", "vocaA_L1pro_20210313.csv"))
 VocabularyA_L2production <- read.csv(file = here("data", "vocaA_L2pro_20210313.csv"))
 VocabularyB_L1production <- read.csv(file = here("data", "vocaB_L1pro_20210313.csv"))
@@ -92,8 +97,9 @@ VocabularyB_L2production <- read.csv(file = here("data", "vocaB_L2pro_20210313.c
 
 # Loading the dataset
 dat <- read.csv(file = here("data", "dataset1_ssla_20210313.csv"), header=T)
-
 ```
+:::
+
 
 As already mentioned, the dataset contains different information on items and participants. The other four files contain the vocabulary scores for each item, for both L1 and L2 production tests and both Vocabulary A and Vocabulary B items. Every cell contains either 1 (correct) or 0 (incorrect).
 
@@ -119,8 +125,10 @@ In this section, our aim is to reproduce Table 3 from @2021:1123, which displays
 
 In the following chunk, we load some necessary libraries and use the `trimws()` function, which removes space from the beginning and end of the text. This helps to prevent issues like "berth " vs. "berth" being treated as two different word forms.
 
-```{r}
-#| warning: false
+
+::: {.cell}
+
+```{.r .cell-code}
 # Load libraries (packages need to be installed if they aren't already)
 
 library(moments) #for skewness and kurtosis
@@ -129,14 +137,15 @@ library(kableExtra) #for nicer tables
 
 dat$ItemID <- trimws(dat$ItemID)
 ```
+:::
 
-In the paper by @2021 we can see that the variables for the English (**L2-related variables)** words they used are: Frequency, Syllables, and Letters. For Japanese (**L1-related variables**): Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami A). Fami (A) refers to familiarity ratings taken from the large database by @2000 as the authors explain (p.1123). These ratings showed how familiar each Japanese word is to the general population. The second familiarity ratings (Fami (B)), represents the participants' own familiarity ratings collected for this study. We were not able to reproduce Fami (B) as the data was not made public.
 
-```{r}
-#| code-fold: true
-#| label: tbl-descriptives
-#| tbl-cap: "Description of the Dataset Variables"
+In the paper by @2021 we can see that the variables used are, for L2-related variables: Frequency, Syllables, and Letters. For L1-related variables: Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami A). We were not able to reproduce Fami (B) as the data was not made public. Also, important to note: "L1 frequency and L1 familiarity were retrieved from @2000" [@2021: 1123].
 
+
+::: {#tbl-descriptives .cell tbl-cap='Description of the Dataset Variables'}
+
+```{.r .cell-code  code-fold="true"}
 var_info <- data.frame(
   Column = c("ItemID", "L2Frequency", "Syllables", "Alphabet", "L1Frequency", "WordLength", "mora", "Familiarity"),
   Description = c(
@@ -153,14 +162,66 @@ var_info <- data.frame(
 
 kable(var_info) %>%
   kable_styling(full_width = FALSE, position = "center")
-
 ```
+
+::: {.cell-output-display}
+`````{=html}
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Column </th>
+   <th style="text-align:left;"> Description </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> ItemID </td>
+   <td style="text-align:left;"> English target word (40 items) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> L2Frequency </td>
+   <td style="text-align:left;"> Frequency of the word in English (COCA: Corpus of Contemporary American English) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Syllables </td>
+   <td style="text-align:left;"> Number of syllables in the English word </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Alphabet </td>
+   <td style="text-align:left;"> Number of letters in the English word ('Letters' in the L2 table) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> L1Frequency </td>
+   <td style="text-align:left;"> Frequency of the word in Japanese (Amano &amp; Kondo, 1999) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> WordLength </td>
+   <td style="text-align:left;"> Number of letters in the Japanese orthographic form </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> mora </td>
+   <td style="text-align:left;"> Number of mora (Japanese syllable-like units) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Familiarity </td>
+   <td style="text-align:left;"> Participants Familiarity ratings from current study (Fami (B)) </td>
+  </tr>
+</tbody>
+</table>
+
+`````
+:::
+:::
+
 
 Basically, what we are doing next is reshaping our data from participant-focused to item-focused. The raw dataset has multiple rows per word because each participant contributed several responses and thus has their own row per word. For example, the word "weasel" appears many times, once for each participant. But for descriptive statistics of the items, we only want one row per word.
 
 To solve this issue we use the functions `group_by()` and `summarise()` to turn all those rows into just a single one per word. With `group_by(ItemID)`, we group all rows together that contain the same word. Combining the `summarise()` and `first()` functions then creates our new dataset by keeping only the first mention of each word's frequency, number of syllables, etc. Only for the familiarity ratings do we calculate the `mean()` across all participants as word familiarity differs across the participants. The last argument `.groups = "drop"` removes the grouping structure so that the resulting dataset is no longer grouped by ItemID.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 items <- dat |>
   group_by(ItemID) |>
   summarise(
@@ -174,22 +235,62 @@ items <- dat |>
     .groups = "drop"
   )
 ```
+:::
+
 
 We want to do a quick check before we continue: Did we correctly import all 40 target words from the study into our items dataframe [@2021:1123]?
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 nrow(items)
 ```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 40
+```
+
+
+:::
+:::
+
+
 With this command we can also see what kind of words the authors were examining:
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 head(items, 5)
 ```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 5 × 8
+  ItemID L2Frequency Syllables Alphabet L1Frequency WordLength  mora familiarity
+  <chr>        <int>     <int>    <int>       <int>      <int> <int>       <dbl>
+1 alcove         932         2        6         178          4     4        5.53
+2 azalea         450         3        6         230          3     3        5.81
+3 badger         818         2        6           6          4     4        3.94
+4 berth         1851         1        5         245          4     4        5.53
+5 billow         231         2        6         362          4     4        5.16
+```
+
+
+:::
+:::
+
+
 In order to avoid repeating code (and because we are lazy), we created our own function that computes all the descriptive statistics (mean, SD, median, min, max, skew, kurtosis) we need for each variable. We write our own function to do so (which you can think of as a "small machine") that we will name `quick_stats()` and that will do the calculations for us. `quick_stats <- funcion(x)` creates this function with the input 'x' which represents whichever variable we want to analyze. Inside of our function, we use `data.frame()` to organize our statistics before we begin the calculations. Each function within our function takes our input variable 'x' and computes the statistics. The functions `skewness()` and `kurtosis()` come from the {moments} package that we loaded earlier.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 quick_stats <- function(x) {
   data.frame(
     Mean = mean(x, na.rm = TRUE),
@@ -202,12 +303,17 @@ quick_stats <- function(x) {
     )
 }
 ```
+:::
+
 
 Now that we have most of what we need for the tables, we can start to build them up! We need to create two subtables.
 
 The code below does this with two important functions: `rbind()` which stacks the rows we want to create on top of each other to build the final table which we will print in the next step. And `cbind()` which creates columns that stick together side by side. For example `cbind(Variable = "Frequency", desc(items$L2Frequency)` creates a column with the name "Variable" with the value "Frequency" next to the summary of the output of `quick_stats()`. With our helper function `desc()` we then insert the statistics from our data, in this case it is the "L2Frequency". Basically, we are creating here three rows stacked on top of each other for tab_L2, and four rows for tab_L1. As you see we only have to run our helper function `quick_stats()` seven times!
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 tab_L2 <- rbind(
   cbind(Variable = "Frequency", quick_stats(items$L2Frequency)),
   cbind(Variable = "Syllables", quick_stats(items$Syllables)),
@@ -220,42 +326,177 @@ tab_L1 <- rbind(
   cbind(Variable = "Mora (syllables)", quick_stats(items$mora)),
   cbind(Variable = "Fami (A)", quick_stats(items$familiarity))
 )
-
 ```
+:::
+
 
 Perfect, the next and easiest part of building up our two subtables is captioning them and then finally printing them. Here we need the `kable()` and the `kable_classic()` function. We use these functions to make the tables look easy to read. The `kable()` function is quite nice because it helps to make the `R` code output look a little more professional. The function comes from the {knitr} package. `kable(tab_L2, ...)` takes our tab_2 data frame and converts it into a formatted table which we then caption with the argument `caption = "..."`. With the argument `align = "lrrrrrr"` we control the way the text is aligned in each column. the 'l' means left-aligned, while every added "r" means the remaining columns should be right-aligned. With the argument `digits = 2` we display all numeric values to a maximum of two decimal places.
 
 The `kable_classics()` function comes from the {kableExtra} package we loaded earlier. It is also another function to tidy up our table style. The command `full_width = FALSE` makes sure that the table does not stretch too wide. When you run this code, you will see a nice table with clear structure and formatting which will make it easier to read and interpret, it also looks ready to be published.
 
-```{r}
-#| label: tbl-desc-stats1
-#| tbl-cap: "Table 3a. Descriptive statistics for L2 (English) item properties."
+
+::: {#tbl-desc-stats1 .cell tbl-cap='Table 3a. Descriptive statistics for L2 (English) item properties.'}
+
+```{.r .cell-code}
 kable(tab_L2,
       align = "lrrrrrrr",
       digits = 2) |>
   kable_classic(full_width = FALSE)
 ```
 
-```{r}
-#| label: tbl-desc-stats2
-#| tbl-cap: "Table 3b. Descriptive statistics for L1 (Japanese) item properties."
+::: {.cell-output-display}
+`````{=html}
+<table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Variable </th>
+   <th style="text-align:right;"> Mean </th>
+   <th style="text-align:right;"> SD </th>
+   <th style="text-align:right;"> Median </th>
+   <th style="text-align:right;"> Minimum </th>
+   <th style="text-align:right;"> Maximum </th>
+   <th style="text-align:right;"> Skew </th>
+   <th style="text-align:right;"> Kurtosis </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Frequency </td>
+   <td style="text-align:right;"> 1025.33 </td>
+   <td style="text-align:right;"> 851.93 </td>
+   <td style="text-align:right;"> 813.5 </td>
+   <td style="text-align:right;"> 51 </td>
+   <td style="text-align:right;"> 3930 </td>
+   <td style="text-align:right;"> 1.51 </td>
+   <td style="text-align:right;"> 5.21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Syllables </td>
+   <td style="text-align:right;"> 2.00 </td>
+   <td style="text-align:right;"> 0.91 </td>
+   <td style="text-align:right;"> 2.0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.84 </td>
+   <td style="text-align:right;"> 4.06 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Letters </td>
+   <td style="text-align:right;"> 6.22 </td>
+   <td style="text-align:right;"> 1.75 </td>
+   <td style="text-align:right;"> 6.0 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 12 </td>
+   <td style="text-align:right;"> 0.97 </td>
+   <td style="text-align:right;"> 4.52 </td>
+  </tr>
+</tbody>
+</table>
 
+`````
+:::
+:::
+
+
+
+::: {#tbl-desc-stats2 .cell tbl-cap='Table 3b. Descriptive statistics for L1 (Japanese) item properties.'}
+
+```{.r .cell-code}
 kable(tab_L1,
       align = "lrrrrrrr",
       digits = 2) |>
   kable_classic(full_width = FALSE)
 ```
 
+::: {.cell-output-display}
+`````{=html}
+<table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Variable </th>
+   <th style="text-align:right;"> Mean </th>
+   <th style="text-align:right;"> SD </th>
+   <th style="text-align:right;"> Median </th>
+   <th style="text-align:right;"> Minimum </th>
+   <th style="text-align:right;"> Maximum </th>
+   <th style="text-align:right;"> Skew </th>
+   <th style="text-align:right;"> Kurtosis </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Frequency </td>
+   <td style="text-align:right;"> 596.90 </td>
+   <td style="text-align:right;"> 885.49 </td>
+   <td style="text-align:right;"> 275.00 </td>
+   <td style="text-align:right;"> 6.00 </td>
+   <td style="text-align:right;"> 5109.00 </td>
+   <td style="text-align:right;"> 3.59 </td>
+   <td style="text-align:right;"> 18.10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Letters </td>
+   <td style="text-align:right;"> 3.67 </td>
+   <td style="text-align:right;"> 1.07 </td>
+   <td style="text-align:right;"> 4.00 </td>
+   <td style="text-align:right;"> 1.00 </td>
+   <td style="text-align:right;"> 6.00 </td>
+   <td style="text-align:right;"> 0.17 </td>
+   <td style="text-align:right;"> 3.48 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mora (syllables) </td>
+   <td style="text-align:right;"> 3.52 </td>
+   <td style="text-align:right;"> 0.96 </td>
+   <td style="text-align:right;"> 4.00 </td>
+   <td style="text-align:right;"> 1.00 </td>
+   <td style="text-align:right;"> 6.00 </td>
+   <td style="text-align:right;"> 0.19 </td>
+   <td style="text-align:right;"> 4.29 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Fami (A) </td>
+   <td style="text-align:right;"> 5.22 </td>
+   <td style="text-align:right;"> 0.64 </td>
+   <td style="text-align:right;"> 5.36 </td>
+   <td style="text-align:right;"> 3.72 </td>
+   <td style="text-align:right;"> 6.38 </td>
+   <td style="text-align:right;"> -0.63 </td>
+   <td style="text-align:right;"> 2.83 </td>
+  </tr>
+</tbody>
+</table>
+
+`````
+:::
+:::
+
+
 Our reproduced tables @tbl-desc-stats1 and @tbl-desc-stats2 now closely match Table 3 [@2021:1123]! The L2 frequency has a mean of about **1025** with a quite large SD (\~852), which shows us that some English words were quite frequent while others were much rarer. The skewness is positive (\~1.51), although slightly different than the one reported in the paper (\~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. English words are, on average, 2 syllables, and range from 1 to 5 syllables with only a slight positive skewness which means that most words are short and only a few are longer. Again we note a small difference in our skewness metric compared to the one reported in the original study. On average, words are 6.2 letters long, again with a positive skewness. For the L1 variables, the frequency distribution also shows a strong positive skew, which means that few Japanese words are very common, but many are quite rare. Fami (A) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar, meaning participants generally recognized these Japanese words easily.
 
 Our skewness values match the original paper fairly closely, with only small differences. However, our kurtosis values differ quite a lot from the published results. This may seem like a huge issue at first, but is actually quite normal. Kurtosis calculations can vary between packages, for example the 'moments' package we used calculates excess kurtosis, while the authors of the original paper might have used a different method. We tried several methods to reproduce the kurtosis values from the original publication, but failed to produce the values reported in the original study. We calculated both the excess kurtosis and the pearson kurtosis (see code chunk below), but no numbers match the ones in the paper.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Instead of mora any other variable of Table 3 can be added to calculate kurtosis
 excess_kurt <- kurtosis(dat$mora, na.rm = TRUE) 
 pearson_kurt <- excess_kurt + 3
 round(c(excess = excess_kurt, pearson = pearson_kurt), 3)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+ excess pearson 
+  4.285   7.285 
+```
+
+
+:::
+:::
+
 
 There are several possibilities why this is the case. There might be an outlier that may have been removed, or maybe the authors used another method. The issue with the differences in our numbers and the ones by @2021 is that the differences are so big the graphs are going to look quite different, especially for the Fami (A) variable. In the original paper, the kurtosis shows -0.02 which would be a slightly flatter graph, while our kurtosis number 4.29 would be sharper. This is why, in an extension, we have added some graphs to show the importance of skewness and kurtosis and what exactly these numbers show.
 
@@ -264,7 +505,10 @@ There are several possibilities why this is the case. There might be an outlier 
 
 **Table 3** displays a summary of many descriptive statistics (mean, SD, range, skewness, kurtosis) for the 40 target words, but these numbers are much easier to understand when they are visualized. Below we want to turn some key variables of Table 3 into quick histograms to visually connect the ideas of skewness and kurtosis to the actual items used in this study.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # {tidyverse} library needs to be loaded if you have not done it before.
 
 items <- dat |>
@@ -282,16 +526,17 @@ items <- dat |>
 
 ##if you want you can quickly check the item number with 'nrow(items)' it should be 40 for our 40 target items!
 ```
+:::
+
 
 We will start with a graph of L2 Frequencies. To do this we use the `ggplot()` command. The first line of code here `ggplot(data = items, aes(x = L2Frequency))` tells ggplot to basically use the "items" dataset and put the L2 frequencies of each word onto the x-axis. `geom_density(...)` creates the actual density plot. To fully understand where the numbers in the table come from, we add reference lines: `geom_vline(xintercept = mean(...))` for the mean value, and `geom_vline(xintercept = median(...), linetype = "dashed"...)` for a dashed line at the median.
 
 Do not be too confused by the numbers on the *y*-axis. The values can be read as a kind of probability, a higher peak means more words are around that frequency, while a lower peak means fewer words around that frequency.
 
-```{r}
-#| label: fig-plot1
-#| fig-cap: "Distribution of L2 word frequencies used in the study"
-#| fig-cap-location: bottom
 
+::: {.cell .fig-cap-location-bottom}
+
+```{.r .cell-code}
 ggplot(items, aes(x = L2Frequency)) +
   geom_density(fill = "lightblue") +
   geom_vline(xintercept = mean(items$L2Frequency), linewidth = 0.7) +
@@ -303,13 +548,18 @@ ggplot(items, aes(x = L2Frequency)) +
 theme_minimal()
 ```
 
+::: {.cell-output-display}
+![Distribution of L2 word frequencies used in the study](Teraietal2021_files/figure-html/fig-plot1-1.png){#fig-plot1 width=672}
+:::
+:::
+
+
 In @fig-plot1 we can clearly see a right-skewed distribution which we saw in the table with the positive skewness values (\~1.51). As you may recall, a normally distributed graph would look like a symmetric bell curve. By contrast, here, we see that most words have lower or medium frequency with only a few really high-frequency words (see the long right tail). The mean sits to the right of the median which is another characteristic of positive skew. Our kurtosis value (\~5.21) shows us the sharpness or peakedness of our curve which you can see quite nicely when you compare the graph for L2 frequency to the one for L1 frequency (see @fig-plot2).
 
-```{r}
-#| label: fig-plot2
-#| fig-cap: "Distribution of L1 word frequencies used in the study"
-#| fig-cap-location: bottom
 
+::: {.cell .fig-cap-location-bottom}
+
+```{.r .cell-code}
 ggplot(items, aes(x = L1Frequency)) +
   geom_density(fill = "lightblue") +
   geom_vline(xintercept = mean(items$L1Frequency), linewidth = 0.7) +
@@ -322,6 +572,12 @@ ggplot(items, aes(x = L1Frequency)) +
 theme_minimal()
 ```
 
+::: {.cell-output-display}
+![Distribution of L1 word frequencies used in the study](Teraietal2021_files/figure-html/fig-plot2-1.png){#fig-plot2 width=672}
+:::
+:::
+
+
 @fig-plot2 shows that a right-skew that is even stronger than for L2 word frequencies (skew \~3.59). This shows once again that most words are lower-frequency, there are only very few high-frequency words. Here, with a kurtosis value of \~18.10 we can see that with higher positive numbers the peak becomes sharper and sharper.
 :::
 
@@ -333,28 +589,30 @@ In this section, we will attempt to reproduce the authors' descriptive statistic
 
 To conduct reliability analysis, the {psych} package needs to be installed and loaded.
 
-```{r}
-#| warning: false
 
+::: {.cell}
+
+```{.r .cell-code}
 library(psych)
 ```
+:::
+
 
 To calculate Cronbach's α, @2021 applied the `alpha()` function to the vocabulary scores of both **the L1 and L2 production sets**. Below, we only show the code of the reliability analysis for Vocabulary A scores of the L1 production dataset, as an example:
 
-```{r}
-#| warning: false
-#| results: false
 
+::: {.cell}
+
+```{.r .cell-code}
 alpha(VocabularyA_L1production[,-1], warnings=FALSE)
-
 ```
+:::
 
-```{r}
-#| code-fold: true
-#| code-summary: "Show code for reliability analysis for the rest of the dataset"
-#| results: false
-#| warning: false
 
+
+::: {.cell}
+
+```{.r .cell-code  code-fold="true" code-summary="Show code for reliability analysis for the rest of the dataset"}
 # Vocabulary A (L2 production)
 
 alpha(VocabularyA_L2production[,-1], warnings = FALSE)
@@ -367,6 +625,8 @@ alpha(VocabularyB_L1production[,-1], warnings = FALSE)
 
 alpha(VocabularyB_L2production[,-1], warnings = FALSE)
 ```
+:::
+
 
 These reliability analyses compute Cronbach’s α, a measure of internal consistency of tests. This measure indicates whether responses are consistent across items. Before interpreting these results, we will get to the descriptive statistics of the two types of post-tests.
 
@@ -376,9 +636,10 @@ To investigate accuracy, @2021 processed the collected results for each particip
 
 The following code chunk, which analyses data pertaining to L2 -\> L1 direction of the L1 production set, processes the results for each participant — their ID, answered items, correct answers — and puts them into a clean table. Therefore, it gives us the core numbers necessary to describe and analyze learners' vocabularly retrieval accuracy.
 
-```{r}
-#| results: false
 
+::: {.cell}
+
+```{.r .cell-code}
 # L2 → L1 (L1 production test)
 
 z <- unique(dat$ID)
@@ -403,23 +664,27 @@ accu_L2L1_L1Pro <- data.frame(IDes, try, Score)
 names(accu_L2L1_L1Pro) <- c("ID", "Try", "Score")
 accu_L2L1_L1Pro
 ```
+:::
 
-We want to take the time to explain this code chunk in detail. The first line takes unique IDs from `dat` and saves it as `z`, `z` therefore being a vector of unique IDs. This part was slightly changed in comparison to @2021's code, which used three lines of code for this step. Further, a `for` loop is used to iterate over elements of this vector and assigning the IDs to the variable `i`. Inside this loop, for each `i` (a unique ID) the data is filtered for that participant under certain conditions, and then the Answer column is selected. The result is stored as the object `acc_recT`, which is further converted into a vector `a`. With `b` and `c`, the processed answers are computed and lastly, these results are appended into three vectors: `Score`, `IDes`, and `try`. These three vectors are combined into a final data frame `accu_L2L1_L1Pro`, where each vector becomes a column in a table, each row corresponding to one participant. These columns are renamed and the table is printed. If we want to properly see the table outside of the console, we can use the `View()` function:
 
-```{r}
-#| eval: false
+We want to take the time to explain this code chunk in detail. The first line takes unique IDs from `dat` and saves it as `z`, `z` therefore being a vector of unique IDs. This part was slightly changed in comparison to @2021's code, which used three lines of code for this step. 
+Further, a `for` loop is used to iterate over elements of this vector and assigning the IDs to the variable `i`. Inside this loop, for each `i` (a unique ID) the data is filtered for that participant under certain conditions, and then the Answer column is selected. The result is stored as the object `acc_recT`, which is further converted into a vector `a`. With `b` and `c`, the processed answers are computed and lastly, these results are appended into three vectors: `Score`, `IDes`, and `try`. These three vectors are combined into a final data frame `accu_L2L1_L1Pro`, where each vector becomes a column in a table, each row corresponding to one participant. These columns are renamed and the table is printed. If we want to properly see the table outside of the console, we can use the `View()` function:
 
+
+::: {.cell}
+
+```{.r .cell-code}
 View(accu_L2L1_L1Pro)
 ```
+:::
+
 
 For L1 -\> L2 of the L1 production set, we follow the same steps.
 
-```{r}
-#| warning: false
-#| code-fold: true
-#| code-summary: "Show code for L1 -> L2 (L1 production test)"
-#| results: false
 
+::: {.cell}
+
+```{.r .cell-code  code-fold="true" code-summary="Show code for L1 -> L2 (L1 production test)"}
 # L1 → L2 (L1 production test)
 
 z <- unique(dat$ID)
@@ -443,29 +708,30 @@ accu_L1L2_L1Pro <- data.frame(IDes, try, Score)
 names(accu_L1L2_L1Pro) <- c("ID", "Try", "Score")
 accu_L1L2_L1Pro
 ```
+:::
+
 
 While accuracy did not play a very big role in @2021, the authors did a bit more with it in their code. Aside from using the `describe()` function on the final data frames, which returns a rich set of descriptive statistics, they visualized the results in a boxplot. Since we found them to be quite nice for understanding the descriptive statistics of the tests, we decided to include these in this chapter.
 
-```{r}
-#| warning: false
-#| code-fold: true
-#| code-summary: "Show use of `describe()` function on `Score` column to provide descriptive statistics for L1 production"
-#| results: false
 
+::: {.cell}
+
+```{.r .cell-code  code-fold="true" code-summary="Show use of `describe()` function on `Score` column to provide descriptive statistics for L1 production"}
 # L2 → L1 learning
 describe(accu_L2L1_L1Pro$Score)
 
 # L1 → L2 learning
 describe(accu_L1L2_L1Pro$Score)
 ```
+:::
+
 
 To visualize descriptive statistics for the L1 production set, @2021 created a boxplot comparing the two learning directions. For this to work, the {beeswarm} package has to be installed and loaded. The authors assigned a data frame `L1pro` that contains the scores from both learning directions in the L1 production test. After changing the names of the columns to how they shall appear on the *x*-axis, the authors created a side-by-side boxplot for the two learning conditions. Finally, they added the `beeswarm()` function specifying `add = T`, which lets individual scores appear as jittered dots so that they don't overlap.
 
-```{r}
-#| label: fig-L1-prod
-#| fig-cap: "L1 Production Test scores across the two learning directions"
-#| fig-cap-location: bottom
- 
+
+::: {.cell .fig-cap-location-bottom}
+
+```{.r .cell-code}
 # Plot (L1 production)
 
 library(beeswarm)
@@ -476,13 +742,20 @@ boxplot(L1pro, col = "grey91", outline = T)
 beeswarm(L1pro, add = T)
 ```
 
+::: {.cell-output-display}
+![L1 Production Test scores across the two learning directions](Teraietal2021_files/figure-html/fig-L1-prod-1.png){#fig-L1-prod width=672}
+:::
+:::
+
+
 Boxplots are a way to visualize both the central tendency (median) of a variable and the spread around this central tendency (IQR) (see @sec-IQR). The median is represented by the thick line inside the box, while the box represents interquartile range, meaning the range of the middle 50% of the data. The whiskers outside the box extend to the highest and smallest values, and the jittered dots represent **individual data points**. As we can see here, the median is similar in both learning directions. **L2 → L1** displays slightly greater variability and a higher concentration of upper outliers. Overall, performance appears comparable between the two groups.
 
 The same steps were applied to the L2 production set, using the L2 scores:
 
-```{r}
-#| results: false
 
+::: {.cell}
+
+```{.r .cell-code}
 # L2 → L1 (L2 production test)
 
 z <- unique(dat$ID)
@@ -506,12 +779,13 @@ accu_L2L1_L2Pro <- data.frame(IDes, try, Score)
 names(accu_L2L1_L2Pro) <- c("ID", "Try", "Score")
 accu_L2L1_L2Pro
 ```
+:::
 
-```{r}
-#| code-fold: true
-#| code-summary: "Show code for L1 → L2 (L2 production test)"
-#| results: false
 
+
+::: {.cell}
+
+```{.r .cell-code  code-fold="true" code-summary="Show code for L1 → L2 (L2 production test)"}
 # L1 → L2 (L2 production test)
 
 z <- unique(dat$ID)
@@ -535,13 +809,13 @@ accu_L1L2_L2Pro <- data.frame(IDes,try, Score)
 names(accu_L1L2_L2Pro) <- c("ID", "Try", "Score")
 accu_L1L2_L2Pro
 ```
+:::
 
-```{r}
-#| warning: false
-#| code-fold: true
-#| code-summary: "Show use of `describe()` function on `Score` column to provide descriptive statistics for L2 production"
-#| results: false
 
+
+::: {.cell}
+
+```{.r .cell-code  code-fold="true" code-summary="Show use of `describe()` function on `Score` column to provide descriptive statistics for L2 production"}
 # L2 -> L1 learning
 
 describe(accu_L2L1_L2Pro$Score)
@@ -550,22 +824,28 @@ describe(accu_L2L1_L2Pro$Score)
 
 describe(accu_L1L2_L2Pro$Score)
 ```
+:::
+
 
 **As with L1,** @2021 created a similar boxplot comparing the two learning directions in L2 production using the beeswarm package.
 
-```{r}
-#| label: fig-L2-prod
-#| fig-cap: "L2 Production Test scores across the two learning directions"
-#| fig-cap-location: bottom
 
+::: {.cell .fig-cap-location-bottom}
+
+```{.r .cell-code}
 # Plot (L2 production)
 
 L2pro <- data.frame(accu_L2L1_L2Pro$Score, accu_L1L2_L2Pro$Score)
 names(L2pro) <- c("L2 → L1 learning", "L1 → L2 learning")
 boxplot(L2pro, col = "grey91", outline = T)
 beeswarm(L2pro, add = T)
-
 ```
+
+::: {.cell-output-display}
+![L2 Production Test scores across the two learning directions](Teraietal2021_files/figure-html/fig-L2-prod-1.png){#fig-L2-prod width=672}
+:::
+:::
+
 
 Median scores in the L2 production test are similar for both learning directions (L2 → L1 and L1 → L2), suggesting comparable performance in both groups. L1 → L2 learning shows a slightly higher median. In the L2 → L1 group, values below the median are more spread out, indicating more variety. Comparing the L1 and L2 production tests, L1 production scores appear to be generally higher and more consistent across both learning directions.
 
@@ -575,52 +855,130 @@ After conducting reliability testing and descriptive statistics for the tests, w
 
 First, we want to create a table that summarizes results of descriptive statistics of tests, similar to Table 4 [@2021: 1126]. The {knitr} and {kableExtra} packages have to be loaded to proceed. As a first step, we assign a variable that contains the scores for both datasets (L1 and L2 production) and use the `describe()` function to get all the important measures.
 
-```{r}
-#| warning: false
 
+::: {.cell}
+
+```{.r .cell-code}
 descriptive_stats_tests <- data.frame(L1pro, L2pro) |> 
   describe()
 ```
+:::
+
 
 To reproduce the original table, the first two columns (`vars` and `n`) are removed. Also, the rows are renamed to be more readable.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 descriptive_stats_tests_trimmed <- descriptive_stats_tests |> 
   select(-n, -vars, -trimmed, -mad, -range, -se)
 
 rownames(descriptive_stats_tests_trimmed) <- c("L2 → L1 (L1pro)", "L1 → L2 (L1pro)", "L2 → L1 (L2pro)", "L1 → L2 (L2pro)")
-
 ```
+:::
+
 
 Now we want to display the results in a clean, formatted table using the `kable()` function.
 
-```{r}
-#| label: tbl-desc-stats-scores
-#| tbl-cap: "Descriptive Statistics for the L1 and L2 production test scores"
-#| tbl-cap-location: top
-#| 
+
+::: {#tbl-desc-stats-scores .cell .tbl-cap-location-top tbl-cap='Descriptive Statistics for the L1 and L2 production test scores'}
+
+```{.r .cell-code}
 kable(descriptive_stats_tests_trimmed, 
       digits = 2) |> 
   pack_rows(index = c("L1 production test" = 2, "L2 production test" = 2)) |> 
   kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 ```
 
+::: {.cell-output-display}
+`````{=html}
+<table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;">  </th>
+   <th style="text-align:right;"> mean </th>
+   <th style="text-align:right;"> sd </th>
+   <th style="text-align:right;"> median </th>
+   <th style="text-align:right;"> min </th>
+   <th style="text-align:right;"> max </th>
+   <th style="text-align:right;"> skew </th>
+   <th style="text-align:right;"> kurtosis </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr grouplength="2"><td colspan="8" style="border-bottom: 1px solid;"><strong>L1 production test</strong></td></tr>
+<tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> L2 → L1 (L1pro) </td>
+   <td style="text-align:right;"> 9.71 </td>
+   <td style="text-align:right;"> 4.16 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 18 </td>
+   <td style="text-align:right;"> 0.44 </td>
+   <td style="text-align:right;"> -0.92 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> L1 → L2 (L1pro) </td>
+   <td style="text-align:right;"> 9.00 </td>
+   <td style="text-align:right;"> 3.85 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 16 </td>
+   <td style="text-align:right;"> -0.15 </td>
+   <td style="text-align:right;"> -0.30 </td>
+  </tr>
+  <tr grouplength="2"><td colspan="8" style="border-bottom: 1px solid;"><strong>L2 production test</strong></td></tr>
+<tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> L2 → L1 (L2pro) </td>
+   <td style="text-align:right;"> 5.64 </td>
+   <td style="text-align:right;"> 3.49 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 13 </td>
+   <td style="text-align:right;"> 0.40 </td>
+   <td style="text-align:right;"> -0.92 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> L1 → L2 (L2pro) </td>
+   <td style="text-align:right;"> 6.39 </td>
+   <td style="text-align:right;"> 3.52 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 13 </td>
+   <td style="text-align:right;"> -0.01 </td>
+   <td style="text-align:right;"> -0.80 </td>
+  </tr>
+</tbody>
+</table>
+
+`````
+:::
+:::
+
+
 We have created @tbl-desc-stats-scores, a table that summarizes the descriptive statistics of the two types of post-tests, where the measures of scores in the two production tests can be easily compared. In the L1 production test, scores were shown to be generally higher than in L2 production test.
 
 Now we want to do the same with the results of reliability testing, namely the alpha coefficients. To display these results, we want to create a table similar to Table 5 in the paper [@2021: 1126]. To accomplish this, we first need to apply the `alpha()` function to calculate Cronbach’s alpha and 95% confidence intervals for two vocabulary tests (A and B) at two proficiency levels (L1 and L2).
 
-```{r}
-#| warning: false
 
+::: {.cell}
+
+```{.r .cell-code}
 alpha_A_L1 <- alpha(VocabularyA_L1production[,-1], warnings = FALSE)
 alpha_A_L2 <- alpha(VocabularyA_L2production[,-1], warnings = FALSE)
 alpha_B_L1 <- alpha(VocabularyB_L1production[,-1], warnings = FALSE)
 alpha_B_L2 <- alpha(VocabularyB_L2production[,-1], warnings = FALSE)
 ```
+:::
+
 
 Then we use `sprintf()` to create a summary table showing the reliability estimates and 95% confidence intervals (CIs) for each test and level, and format strings for the table.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 alpha_table <- data.frame(
   Vocabulary = c("Vocabulary A", "Vocabulary B"),
   
@@ -645,26 +1003,72 @@ alpha_table <- data.frame(
   stringsAsFactors = FALSE
 )
 ```
+:::
+
 
 To rename the column headers, we use the `colnames()` function.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Rename column headers (use empty string for "Vocabulary")
 
 colnames(alpha_table) <- c("", "Alpha", "95% CI", "Alpha", "95% CI")
 ```
+:::
+
 
 Lastly, we want to display the results in a clean, formatted table similarly to the authors, for which we use the `kable()` function.
 
-```{r}
-#| label: tbl-alph-co-L1L2
-#| tbl-cap: "Alpha coefficients for L1 and L2 production test"
-#| tbl-cap-location: top
 
+::: {#tbl-alph-co-L1L2 .cell .tbl-cap-location-top tbl-cap='Alpha coefficients for L1 and L2 production test'}
+
+```{.r .cell-code}
 alpha_table |> 
   kable(align = "lcccc") %>%
   add_header_above(c(" " = 1, "L1 production" = 2, "L2 production" = 2))
 ```
+
+::: {.cell-output-display}
+`````{=html}
+<table>
+ <thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">L1 production</div></th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">L2 production</div></th>
+</tr>
+  <tr>
+   <th style="text-align:left;">  </th>
+   <th style="text-align:center;"> Alpha </th>
+   <th style="text-align:center;"> 95% CI </th>
+   <th style="text-align:center;"> Alpha </th>
+   <th style="text-align:center;"> 95% CI </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Vocabulary A </td>
+   <td style="text-align:center;"> 0.84 </td>
+   <td style="text-align:center;"> [0.73 - 0.91] </td>
+   <td style="text-align:center;"> 0.82 </td>
+   <td style="text-align:center;"> [0.71 - 0.91] </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Vocabulary B </td>
+   <td style="text-align:center;"> 0.74 </td>
+   <td style="text-align:center;"> [0.58 - 0.86] </td>
+   <td style="text-align:center;"> 0.73 </td>
+   <td style="text-align:center;"> [0.56 - 0.86] </td>
+  </tr>
+</tbody>
+</table>
+
+`````
+:::
+:::
+
 
 If we compare @tbl-alph-co-L1L2 about alpha coefficients with the one in the paper [@2021: 1126], we notice a difference in confidence intervals, specifically in the hundredths place. If we look at the output of `alpha()`, we see that it outputs out two kinds of confidence intervals: Feldt and Duhachek. Reading up in the help file of the `alpha()` function, it becomes clear that `alpha.ci` (used to access CIs from alpha function) finds CIs using the Feldt procedure, which is based on the mean covariance, while Duhachek procedure considers the variance of the covariances. In the help file it is stated that in March, 2022, `alpha.ci` was fixed to follow the Feldt procedure. Since the original publication was published in 2021, this might explain the deviating CIs here. If one would like to look at Duhachek's CI instead, it can either be seen in the output of `alpha()`, or one might install an earlier version of the package. Since we want to use the current {psych} package for our project and the differences don't change the main outcome, we decided to stick with Feldt's CI and simply wanted to note why this difference occurs here.
 
@@ -672,7 +1076,7 @@ As mentioned before, Cronbach's alpha indicates whether responses are consistent
 
 # Generalized linear mixed-effects models
 
-@2021 used generalized linear mixed-effect models (GLMMs), which are an extension of linear mixed models (see @sec-MLR). GLMM analysis was employed to examine three predictor variables: Learning Condition (L2 to L1 and L1 to L2), Test Type (L1 production and L2 production), and Vocabulary Size (L2 Proficiency), as well as the interaction between two variables. They tried to predict Accuracy (the outcome variable) as a function of these predictor variables.
+@2021 used generalized linear mixed-effect models (GLMMs), which are an extension of linear mixed models (see @sec-MLR). GLMM analysis was employed to examine three predictor variables: Learning Condition (L2 to L1 and L1 to L2), Test Type (L1 production and L2 production), and Vocabulary Size (L2 Proficiency), as well as the interaction between two variables. They tried to predict Accuracy (the outcome variable) as a function of these predictor variables. 
 
 Three GLMMs were chosen for this analysis, the first to analyze the relationship between learning conditions and production tests (RQ1) [@2021: 1125]. The second and third models analyze the effects of the two learning directions (L2 to L1 and L1 to L2) based on the results of the production tests (RQ2). They are pretty similar, except that the third and last model also make use of L2 production test scores. The first model (RQ 1) will be elaborated in more detail.
 
@@ -682,40 +1086,65 @@ As we recall from the introduction, the first research question of the study was
 
 Before getting started on the model, several packages have to be installed and loaded:
 
-```{r}
-#| warning: false
 
+::: {.cell}
+
+```{.r .cell-code}
 library(lme4) # package for mixed models
 library(effects) # package for plotting model effects
 library(emmeans) # package for post-hoc comparisons
 library(phia) # similar to {emmeans}
-
 ```
+:::
+
 
 Also, the data needs to be set up for modeling. Following the code in @2021, the test type (`Test`) and the learning direction (`Condition`) variables are converted to factor variables as they represent categories rather than numerical values. Converting the variables into factors now will also be useful for the statistical analysis such as an ANOVA (Analysis of Variance), which will be conducted later.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Converting the categorical variables to factors using the function as.factor()
 dat$Test <- as.factor(dat$Test)
 dat$Condition <- as.factor(dat$Condition)
 ```
+:::
+
 
 Before fitting the models, @2021 also apply **contrast coding**, also called **treatment coding** [@1992]. While it may look confusing and maybe intimidating, it is actually quite an important step. Basically, the study aims to compare two groups (L1 -\> L2 vs. L2 -\> L1). @2021 use **simple coding**, where the first Condition (L1 -\> L2) gets coded as -0.5 and the second Condition (L2 -\> L1) as +0.5. This makes interpretations easier when there are interactions since the intercept represents the overall mean across the two conditions [@2022]. Also, the `scale()` function is applied to the `Vocab` column to create a standardized version of the variable (by subtracting the mean and dividing by the standard deviation).
 
 All these steps set up the dataset for modeling. Converting variables to factors and coding them with contrast ensures that they are interpreted correctly in the regression.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 c <- contr.treatment(2)
 my.coding <- matrix(rep(1/2, 2, ncol = 1))
 my.simple <- c-my.coding
 my.simple
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+     2
+1 -0.5
+2  0.5
+```
+
+
+:::
+
+```{.r .cell-code}
 contrasts(dat$Test) <- my.simple
 contrasts(dat$Condition) <- my.simple
 
 # Standardizing vocabulary scores (centered and scaled)
 dat$s.vocab <- scale(dat$Vocab)
 ```
+:::
+
 
 ### Model 1 without interaction
 
@@ -723,7 +1152,10 @@ dat$s.vocab <- scale(dat$Vocab)
 
 The following code chunk shows how Terai et al. fit the model without interaction `fit1`. Subsequently, the authors calculated the AIC (Akike Information Criterion) for their model. We will explain more about this criterion later.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Model without interaction
 fit1 <- glmer(Answer ~ Test + Condition + (1|ID) + (1|ItemID), 
               family = binomial, 
@@ -732,10 +1164,63 @@ fit1 <- glmer(Answer ~ Test + Condition + (1|ID) + (1|ItemID),
 
 # Produce result summary
 summary(fit1)
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: Answer ~ Test + Condition + (1 | ID) + (1 | ItemID)
+   Data: dat
+Control: glmerControl(optimizer = "bobyqa")
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   2429.8    2458.1   -1209.9    2419.8      2145 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.4028 -0.6501 -0.3270  0.7222  5.6099 
+
+Random effects:
+ Groups Name        Variance Std.Dev.
+ ItemID (Intercept) 0.9467   0.9730  
+ ID     (Intercept) 0.8176   0.9042  
+Number of obs: 2150, groups:  ItemID, 40; ID, 28
+
+Fixed effects:
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -0.53260    0.23603  -2.257    0.024 *  
+Test2       -0.97215    0.10458  -9.296   <2e-16 ***
+Condition2  -0.02364    0.10247  -0.231    0.818    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+           (Intr) Test2
+Test2      0.022       
+Condition2 0.002  0.003
+```
+
+
+:::
+
+```{.r .cell-code}
 # Calculating AIC
 AIC(fit1)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 2429.771
+```
+
+
+:::
+:::
+
 
 Since it is so important for our study, we want to take a closer look at this step. @2021 fit a GLLM using the `glmer()` function. In the model formula, both fixed effects (Test answers and learning condition) and random effects (ID and ItemID) are specified. Specifying `(1 | ID)` allows for a random intercept for each level of the variable `ID` (participants) and `(1 | ItemID)` does the same for each level of the variable `ItemID` (test items). This accounts for repeated measures and inter-individual and inter-item variability. By specifying `family = binomial`, we can tell the `glmer()` function that the outcome variable is binary (correct answer = 1, incorrect answer = 0). The last argument specifies an optimizing algorithm, which helps the model to converge. The authors used the `summary()` function to examine the output of the model.
 
@@ -749,20 +1234,104 @@ Next, the authors fit a model similar to the first one, except that it also mode
 
 For this model `fit1.1`, the `glmer()` function was used as well, but with a change in the formula: the predictors are connected with `*` instead of `+`. In addition to the model's coefficient estimates and the AIC, @2021 also calculated confidence intervals for the model using the function `confint()`.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Model with interaction
 fit1.1 <- glmer(Answer ~ Test * Condition + (1|ID) + (1|ItemID), 
                 family = binomial, 
                 data = dat, 
                 glmerControl(optimizer = "bobyqa"))
 summary(fit1.1)
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: Answer ~ Test * Condition + (1 | ID) + (1 | ItemID)
+   Data: dat
+Control: glmerControl(optimizer = "bobyqa")
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   2427.1    2461.1   -1207.6    2415.1      2144 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.2386 -0.6340 -0.3341  0.7195  5.3153 
+
+Random effects:
+ Groups Name        Variance Std.Dev.
+ ItemID (Intercept) 0.9518   0.9756  
+ ID     (Intercept) 0.8222   0.9067  
+Number of obs: 2150, groups:  ItemID, 40; ID, 28
+
+Fixed effects:
+                 Estimate Std. Error z value Pr(>|z|)    
+(Intercept)      -0.53392    0.23667  -2.256   0.0241 *  
+Test2            -0.97597    0.10477  -9.315   <2e-16 ***
+Condition2       -0.03763    0.10283  -0.366   0.7144    
+Test2:Condition2 -0.44597    0.20557  -2.169   0.0300 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) Test2 Cndtn2
+Test2       0.022              
+Condition2  0.005  0.019       
+Tst2:Cndtn2 0.005  0.029 0.063 
+```
+
+
+:::
+
+```{.r .cell-code}
 # Computing confidence intervals
 confint(fit1.1)
+```
 
+::: {.cell-output .cell-output-stderr}
+
+```
+Computing profile confidence intervals ...
+```
+
+
+:::
+
+::: {.cell-output .cell-output-stdout}
+
+```
+                      2.5 %      97.5 %
+.sig01            0.7629507  1.27445594
+.sig02            0.6849006  1.24190402
+(Intercept)      -1.0087438 -0.06326544
+Test2            -1.1843879 -0.77093946
+Condition2       -0.2405335  0.16501237
+Test2:Condition2 -0.8521078 -0.04121349
+```
+
+
+:::
+
+```{.r .cell-code}
 # Setting number of digits and calculating AIC
 AIC(fit1.1)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 2427.102
+```
+
+
+:::
+:::
+
 
 Now after calculating AICs for both versions of the model, it becomes apparent that the model *with* interaction has a lower AIC (with interaction: 2427.102; without interaction: 2429.771), indicating that the model fits the data better.
 
@@ -774,9 +1343,31 @@ Moving on to **Learning Condition**, the authors found no statistically signific
 
 @2021 conducted further analysis and comparisons of the two models, using the function `anova()`, which is an analysis of variance (a statistical method which compares the variance across the means of different groups), and `testInteractions()`, which makes it possible to perform simple main effects analysis. First, the authors conducted a comparison of the models with and without the interaction term using the `anova()` function.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 anova(fit1, fit1.1)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Data: dat
+Models:
+fit1: Answer ~ Test + Condition + (1 | ID) + (1 | ItemID)
+fit1.1: Answer ~ Test * Condition + (1 | ID) + (1 | ItemID)
+       npar    AIC    BIC  logLik -2*log(L) Chisq Df Pr(>Chisq)  
+fit1      5 2429.8 2458.1 -1209.9    2419.8                      
+fit1.1    6 2427.1 2461.1 -1207.5    2415.1 4.669  1    0.03071 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+:::
+:::
+
 
 @2021 compared the two models with the `anova()` function to test if the interaction term improved the model. The test outputs a *p*-value of 0.03071. Being smaller than 0.05, the effect is statistically significant, which is also symbolized by the \* specified in the significance codes in the output. It tells us that `fit1.1` (model with interaction) fits the data significantly better than `fit1` (without interaction).
 
@@ -786,41 +1377,246 @@ After comparing the models and testing the interaction, @2021 conducted pairwise
 
 For this, the authors used the `emmeans()` function, which computes estimated marginal means. First, they conducted pairwise comparisons of Condition levels within each level of Test, and assigned it to a variable `a`. This object is then printed.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Computing estimated marginal means using the `emmeans()` function
 
 a <- emmeans(fit1.1, pairwise ~ Condition|Test, adjust = "tukey")
 a
 ```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+$emmeans
+Test = L1 Production:
+ Condition  emmean    SE  df asymp.LCL asymp.UCL
+ L1L2      -0.1386 0.251 Inf    -0.631     0.354
+ L2L1       0.0467 0.251 Inf    -0.446     0.540
+
+Test = L2 Production:
+ Condition  emmean    SE  df asymp.LCL asymp.UCL
+ L1L2      -0.8916 0.254 Inf    -1.389    -0.394
+ L2L1      -1.1522 0.256 Inf    -1.654    -0.651
+
+Results are given on the logit (not the response) scale. 
+Confidence level used: 0.95 
+
+$contrasts
+Test = L1 Production:
+ contrast    estimate    SE  df z.ratio p.value
+ L1L2 - L2L1   -0.185 0.141 Inf  -1.317  0.1878
+
+Test = L2 Production:
+ contrast    estimate    SE  df z.ratio p.value
+ L1L2 - L2L1    0.261 0.150 Inf   1.738  0.0821
+
+Results are given on the log odds ratio (not the response) scale. 
+```
+
+
+:::
+:::
+
+
 Additionally, @2021 calculated confidence intervals and effect sizes for this object `a`.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Computing confidence intervals for emmeans object a
 
 confint(a, parm, level = 0.95)
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+$emmeans
+Test = L1 Production:
+ Condition  emmean    SE  df asymp.LCL asymp.UCL
+ L1L2      -0.1386 0.251 Inf    -0.631     0.354
+ L2L1       0.0467 0.251 Inf    -0.446     0.540
+
+Test = L2 Production:
+ Condition  emmean    SE  df asymp.LCL asymp.UCL
+ L1L2      -0.8916 0.254 Inf    -1.389    -0.394
+ L2L1      -1.1522 0.256 Inf    -1.654    -0.651
+
+Results are given on the logit (not the response) scale. 
+Confidence level used: 0.95 
+
+$contrasts
+Test = L1 Production:
+ contrast    estimate    SE  df asymp.LCL asymp.UCL
+ L1L2 - L2L1   -0.185 0.141 Inf   -0.4612    0.0905
+
+Test = L2 Production:
+ contrast    estimate    SE  df asymp.LCL asymp.UCL
+ L1L2 - L2L1    0.261 0.150 Inf   -0.0332    0.5544
+
+Results are given on the log odds ratio (not the response) scale. 
+Confidence level used: 0.95 
+```
+
+
+:::
+
+```{.r .cell-code}
 # Calculating effect sizes
 
 eff_size(a, sigma = sigma(fit1.1), edf = Inf)
 ```
 
+::: {.cell-output .cell-output-stderr}
+
+```
+Since 'object' is a list, we are using the contrasts already present.
+```
+
+
+:::
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Test = L1 Production:
+ contrast      effect.size    SE  df asymp.LCL asymp.UCL
+ (L1L2 - L2L1)      -0.185 0.141 Inf   -0.4612    0.0905
+
+Test = L2 Production:
+ contrast      effect.size    SE  df asymp.LCL asymp.UCL
+ (L1L2 - L2L1)       0.261 0.150 Inf   -0.0332    0.5544
+
+sigma used for effect sizes: 1 
+Confidence level used: 0.95 
+```
+
+
+:::
+:::
+
+
 The same procedure was applied in the other direction: While with variable `a`, `emmeans()` was told to do pairwise comparisons of Condition levels within each level of Test, @2021 also computed all comparisons of Test levels within each level of Condition, and saved this object as the variable `b`.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Computing EMMs
 
 b <- emmeans(fit1.1, pairwise ~ Test|Condition, adjust = "tukey")
 b
-  
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+$emmeans
+Condition = L1L2:
+ Test           emmean    SE  df asymp.LCL asymp.UCL
+ L1 Production -0.1386 0.251 Inf    -0.631     0.354
+ L2 Production -0.8916 0.254 Inf    -1.389    -0.394
+
+Condition = L2L1:
+ Test           emmean    SE  df asymp.LCL asymp.UCL
+ L1 Production  0.0467 0.251 Inf    -0.446     0.540
+ L2 Production -1.1522 0.256 Inf    -1.654    -0.651
+
+Results are given on the logit (not the response) scale. 
+Confidence level used: 0.95 
+
+$contrasts
+Condition = L1L2:
+ contrast                      estimate    SE  df z.ratio p.value
+ L1 Production - L2 Production    0.753 0.145 Inf   5.206  <.0001
+
+Condition = L2L1:
+ contrast                      estimate    SE  df z.ratio p.value
+ L1 Production - L2 Production    1.199 0.149 Inf   8.054  <.0001
+
+Results are given on the log odds ratio (not the response) scale. 
+```
+
+
+:::
+
+```{.r .cell-code}
 # Computing confidence intervals for emmeans object b
   
 confint(b, parm, level = 0.95)
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+$emmeans
+Condition = L1L2:
+ Test           emmean    SE  df asymp.LCL asymp.UCL
+ L1 Production -0.1386 0.251 Inf    -0.631     0.354
+ L2 Production -0.8916 0.254 Inf    -1.389    -0.394
+
+Condition = L2L1:
+ Test           emmean    SE  df asymp.LCL asymp.UCL
+ L1 Production  0.0467 0.251 Inf    -0.446     0.540
+ L2 Production -1.1522 0.256 Inf    -1.654    -0.651
+
+Results are given on the logit (not the response) scale. 
+Confidence level used: 0.95 
+
+$contrasts
+Condition = L1L2:
+ contrast                      estimate    SE  df asymp.LCL asymp.UCL
+ L1 Production - L2 Production    0.753 0.145 Inf     0.469      1.04
+
+Condition = L2L1:
+ contrast                      estimate    SE  df asymp.LCL asymp.UCL
+ L1 Production - L2 Production    1.199 0.149 Inf     0.907      1.49
+
+Results are given on the log odds ratio (not the response) scale. 
+Confidence level used: 0.95 
+```
+
+
+:::
+
+```{.r .cell-code}
 # Calculating effect sizes
 
 eff_size(b, sigma = sigma(fit1.1), edf = Inf)
 ```
+
+::: {.cell-output .cell-output-stderr}
+
+```
+Since 'object' is a list, we are using the contrasts already present.
+```
+
+
+:::
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Condition = L1L2:
+ contrast                        effect.size    SE  df asymp.LCL asymp.UCL
+ (L1 Production - L2 Production)       0.753 0.145 Inf     0.469      1.04
+
+Condition = L2L1:
+ contrast                        effect.size    SE  df asymp.LCL asymp.UCL
+ (L1 Production - L2 Production)       1.199 0.149 Inf     0.907      1.49
+
+sigma used for effect sizes: 1 
+Confidence level used: 0.95 
+```
+
+
+:::
+:::
+
 
 The analysis conducted in the code chunk above provides the most important information for the interpretation of this model as reported in @2021. We want to go through the authors' statements and connect them with the code we reproduced. In the paper, the authors claim there was a statistically significant difference between the scores of the two tests, suggesting that L1 production test scores were higher than L2 production test scores in both learning conditions (**L2 to L1 learning:** *p* \< .001, *d* = 1.20, 95% CI \[0.91, 1.49\]; **L1 to L2 learning:** *p* \< .001, *d* = 0.75, \[0.47, 1.04\]) [@2021: 1126]. Now, we want to take a close look at these numbers and what they mean. We can find the numbers stated here in the object `b` output by the `emmeans()` function. The *p*-values show up when printing `b`, and lie \< .001 for both learning conditions. A small *p*-value tells us that an effect is unlikely due to chance, but does not inform us about how large the effect is. This is where effect size comes into play: The function `eff_size()` computes the estimated effect sizes for both conditions, which are referred to as *d* in the paper. They both demonstrate a large (larger for L2 to L1) effect size, and indicate that the difference (different levels of `Test` within each `Condition`) is not just statistically significant, but also sizeable. Lastly, the `confint()` function applied to `b` computes the 95% confidence intervals for both learning directions, which means that, if the study were to be repeated many times, in 95% of the repetitions, the 95% confidence interval would contain the true standardized effect size.
 
@@ -830,22 +1626,39 @@ The authors also mention that results showed no main effects of **Learning Condi
 
 Finally, the authors presented the results of this model in a plot that visualizes all important information regarding research question 1 [@2021: 1127]. In the following code chunk, you can see how they set graphical parameters and then created a base `R` plot.
 
-```{r}
-#| label: fig-testlearn-direc
-#| fig-cap: "Interaction between Test Type and Learning Condition on accuracy rates"
-#| fig-cap-location: bottom
+
+::: {.cell .fig-cap-location-bottom}
+
+```{.r .cell-code}
 # Setting graphical parameters for the plot
 
 par(pty = "s") # sets the shape: square
 par(pin =c(10, 10)) # sets the plot size
 par("ps") # font size
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 12
+```
+
+
+:::
+
+```{.r .cell-code}
 # Plot
 
 plot(allEffects(fit1.1), multiline = T, ci.style = "bands", xlab = "Test Type", ylab = "Accuracy Rate",
        main = "", lty = c(1,2), rescale.axis = F, ylim = c(0, 1),
        colors = "black", asp = 1)
 ```
+
+::: {.cell-output-display}
+![Interaction between Test Type and Learning Condition on accuracy rates](Teraietal2021_files/figure-html/fig-testlearn-direc-1.png){#fig-testlearn-direc width=672}
+:::
+:::
+
 
 @fig-testlearn-direc shows the interaction between Test Type and Learning Condition on accuracy rates, based on the generalized linear mixed-effects model (`fit1.1`). It is an effect plot generated with the `allEffects()` function. The solid line represents the L1 to L2 learning condition; the dotted line represents the L2 to L1 learning condition. The *y*-axis represents accuracy rates on both the L1 and L2 production tests. The *x*-axis represents the two test types. We can see that the accuracy rates differ across Test Types and Learning Conditions, with a clear interaction between the two: The non-parallel lines indicate that the effect of one variable changes depends on the level of the other variable. The distance between the two lines is relatively small at each test type, which reflects the results that revealed no significant difference in learning effects between L2 to L1 learning and L1 to L2 learning.
 
@@ -861,21 +1674,34 @@ To answer and test this question, the authors once again fit two separate genera
 
 We begin by focusing only on the L1 production data. @2021 loaded the data again for this part and saved it under another variable. However, we will continue to use `dat` instead to reproduce the code. @2021 used the function `filter()`, which only keeps the rows for the L1 Production test. This data is filtered because, while each participant took both L1 and L2 production tests, the authors of this study found different patterns for both test types, which is why they chose to analyze them separately [@2021: 1126]. This is the part where participants of the study had to produce the L1 (Japanese) word when shown the L2 (English) word.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 dat.L1 <- filter(dat, Test == "L1 Production")
 ```
+:::
+
 
 Next, the learning directions (Condition) were converted to a factor. @2021 converted the categories (L1 -\> L2 vs. L2 -\> L1) into two factor levels so that `R` treats it as a categorical binary variable.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Setting Condition (Learning direction) as a factor
 
 dat.L1$Condition <- as.factor(dat.L1$Condition)
 ```
+:::
+
 
 Here, too, the authors make use of contrast coding once more and standardised vocabulary scores:
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 c <- contr.treatment(2)
 my.coding <- matrix(rep(1/2, 2, ncol = 1))
 my.simple <- c-my.coding
@@ -886,12 +1712,17 @@ contrasts(dat.L1$Condition) <- my.simple
 
 dat.L1$s.vocab <- scale(dat.L1$Vocab)
 ```
+:::
+
 
 ### Model without interaction
 
 This model without interaction assumes that learning direction and L2 proficiency each have independent effects on test accuracy.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 #Answer~Condition+s.vocab: includes main effects of learning condition and proficiency plus their interaction
 #(1|ID) + (1|ItemID): random intercepts for participants and items (to account for repeated measures)
 #family = binominal: because our outcome is binary (correct/incorrect)
@@ -904,13 +1735,67 @@ fit2 <- glmer(Answer ~ s.vocab + Condition + (1|ID) + (1|ItemID),
 summary(fit2)
 ```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: Answer ~ s.vocab + Condition + (1 | ID) + (1 | ItemID)
+   Data: dat.L1
+Control: glmerControl(optimizer = "bobyqa")
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   1316.3    1341.2    -653.1    1306.3      1070 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.7382 -0.7161 -0.2849  0.7304  3.1811 
+
+Random effects:
+ Groups Name        Variance Std.Dev.
+ ItemID (Intercept) 0.9085   0.9531  
+ ID     (Intercept) 0.8452   0.9194  
+Number of obs: 1075, groups:  ItemID, 40; ID, 28
+
+Fixed effects:
+            Estimate Std. Error z value Pr(>|z|)
+(Intercept)  -0.0468     0.2409  -0.194    0.846
+s.vocab       0.1047     0.1846   0.567    0.571
+Condition2    0.1874     0.1406   1.333    0.183
+
+Correlation of Fixed Effects:
+           (Intr) s.vocb
+s.vocab    -0.025       
+Condition2  0.002  0.006
+```
+
+
+:::
+:::
+
+
 Further, @2021 computed the model's AIC.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Calculating AIC
 
 AIC(fit2) 
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 1316.26
+```
+
+
+:::
+:::
+
 
 The model predicts the probability of a correct response (`Answer`). The random intercepts (`1|ID`) and (`1|ItemID`) account for individual differences between participants and for the unique difficulty of individual vocabulary items. The summary output of this model without interaction shows that "s.vocab" is not significant with *p* = .57, this suggests that English proficiency by itself does not make a statistically significant contribution to the prediction of participants' L1 Production accuracy. The model also suggests that the test `Condition` does not make a statistically significant contribution to the model (*p* = .18), meaning that learning direction alone also does not explain differences. So if we look at each predictor separately, there seems to be no clear effect.
 
@@ -918,16 +1803,102 @@ The model predicts the probability of a correct response (`Answer`). The random 
 
 What if English proficiency only matters in one of the two learning directions? To figure this out, @2021 added an interaction term to the model: `s.vocab * Condition`.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 fit2.1 <- glmer(Answer ~ s.vocab * Condition + (1|ID) + (1|ItemID),
               family = binomial, 
               data = dat.L1, 
               glmerControl(optimizer = "bobyqa"))
 
 summary(fit2.1)
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: Answer ~ s.vocab * Condition + (1 | ID) + (1 | ItemID)
+   Data: dat.L1
+Control: glmerControl(optimizer = "bobyqa")
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   1311.6    1341.4    -649.8    1299.6      1069 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.3577 -0.7070 -0.2723  0.7294  3.0368 
+
+Random effects:
+ Groups Name        Variance Std.Dev.
+ ItemID (Intercept) 0.9314   0.9651  
+ ID     (Intercept) 0.8583   0.9265  
+Number of obs: 1075, groups:  ItemID, 40; ID, 28
+
+Fixed effects:
+                   Estimate Std. Error z value Pr(>|z|)   
+(Intercept)        -0.04872    0.24313  -0.200  0.84117   
+s.vocab             0.10336    0.18596   0.556  0.57834   
+Condition2          0.18358    0.14125   1.300  0.19368   
+s.vocab:Condition2 -0.36734    0.14148  -2.596  0.00942 **
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) s.vocb Cndtn2
+s.vocab     -0.026              
+Condition2   0.000  0.001       
+s.vcb:Cndt2  0.001 -0.003  0.006
+```
+
+
+:::
+
+```{.r .cell-code}
 confint(fit2.1)
+```
+
+::: {.cell-output .cell-output-stderr}
+
+```
+Computing profile confidence intervals ...
+```
+
+
+:::
+
+::: {.cell-output .cell-output-stdout}
+
+```
+                         2.5 %      97.5 %
+.sig01              0.73079653  1.28734674
+.sig02              0.67541189  1.29854303
+(Intercept)        -0.53661194  0.43865902
+s.vocab            -0.27346323  0.48467861
+Condition2         -0.09542201  0.46370241
+s.vocab:Condition2 -0.64914673 -0.08900216
+```
+
+
+:::
+
+```{.r .cell-code}
 AIC(fit2.1)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 1311.563
+```
+
+
+:::
+:::
+
 
 This model tests whether **the effect of vocabulary** differs between the learning conditions. As @2021 stated in their paper, the interaction of Learning Condition and Vocabulary Size is significant with a coefficient estimate of about -0.37, SE = 0.141, *z* = -2.596, *p* = .009, which means that the effect of vocabulary proficiency depends on the learning direction.
 
@@ -935,16 +1906,31 @@ This model tests whether **the effect of vocabulary** differs between the learni
 
 Visualizing model predictions is a very useful way to better understand complex models like this one. @2021 visualized the model `fit2.1` using a base `R` plot.
 
-```{r}
-#| label: fig-l1
-#| fig-cap: "Predicted L1 Production accuracy across vocabulary sizes and learning directions"
-#| fig-cap-location: bottom
 
+::: {.cell .fig-cap-location-bottom}
+
+```{.r .cell-code}
 plot(allEffects(fit2.1), multiline = T, ci.style = "bands",
     xlab = "Vocabulary Size", ylab = "Accuracy Rate",
     main = "", lty = c(1, 2),
     rescale.axis = F, ylim = c(0, 1), colors = "black", asp = 1)
 ```
+
+::: {.cell-output .cell-output-stderr}
+
+```
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, : the
+predictor s.vocab is a one-column matrix that was converted to a vector
+```
+
+
+:::
+
+::: {.cell-output-display}
+![Predicted L1 Production accuracy across vocabulary sizes and learning directions](Teraietal2021_files/figure-html/fig-l1-1.png){#fig-l1 width=672}
+:::
+:::
+
 
 @fig-l1 shows a solid line representing the L1 -\> L2 learning condition, and a dotted line representing the L2 -\> L1 learning condition. The *y*-axis shows L1 production accuracy rates of the test, and the *x*-axis the scaled scores of the vocabulary size tests [@2021: 1128]. Looking at @fig-l1 you can see a nearly flat line for L2 -\> L1 and a positive, steeper line for L1 -\> L2 which cross at intermediate proficiency (\~5.419 as reported in the paper, p. 1127). The crossover point at \~5.419 suggests that for learners in the L1 -\> L2 direction a score of over \~5.419 on the test for vocabulary size was more beneficial than for L2 -\> L1 learners. The fact that the line for L2 -\> L1 learning is nearly flat shows that proficiency in L2 did not have a big influence. Basically, the plot tells us that, for lower proficiency learners, L2 -\> L1 is better, and for higher proficiency learners, L1 -\> L2 is more beneficial [@2021:1128].
 
@@ -952,7 +1938,10 @@ plot(allEffects(fit2.1), multiline = T, ci.style = "bands",
 
 @2021 repeated all the same steps for the L2 production test, now predicting accuracy for when the participants had to produce English words after learning Japanese-English pairs.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 # Filtering the data we need
 dat.L2 <- filter(dat, Test == "L2 Production")
 
@@ -968,42 +1957,200 @@ contrasts(dat.L2$Condition) <- my.simple
 # Scaling Vocab scores
 dat.L2$s.vocab <- scale(dat.L2$Vocab)
 ```
+:::
 
-```{r}
+
+
+::: {.cell}
+
+```{.r .cell-code}
 # Model without interaction
 fit3 <- glmer(Answer ~ s.vocab+Condition + (1|ID) + (1|ItemID),
               family = binomial, 
               data = dat.L2, 
               glmerControl(optimizer = "bobyqa"))
 summary(fit3)
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: Answer ~ s.vocab + Condition + (1 | ID) + (1 | ItemID)
+   Data: dat.L2
+Control: glmerControl(optimizer = "bobyqa")
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   1146.5    1171.4    -568.3    1136.5      1070 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.2217 -0.5586 -0.3314  0.6289  5.0300 
+
+Random effects:
+ Groups Name        Variance Std.Dev.
+ ItemID (Intercept) 1.5602   1.249   
+ ID     (Intercept) 0.8818   0.939   
+Number of obs: 1075, groups:  ItemID, 40; ID, 28
+
+Fixed effects:
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  -1.1134     0.2799  -3.978 6.95e-05 ***
+s.vocab       0.2293     0.1913   1.199   0.2306    
+Condition2   -0.2759     0.1538  -1.793   0.0729 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+           (Intr) s.vocb
+s.vocab    -0.037       
+Condition2  0.017 -0.001
+```
+
+
+:::
+
+```{.r .cell-code}
 AIC(fit3)
 ```
 
-```{r}
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 1146.519
+```
+
+
+:::
+:::
+
+
+
+::: {.cell}
+
+```{.r .cell-code}
 # Model with interaction
 fit3.1 <- glmer(Answer ~ s.vocab * Condition + (1|ID) + (1|ItemID),
                 family = binomial,
                 data = dat.L2, 
                 glmerControl(optimizer = "bobyqa"))
 summary(fit3.1)
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: Answer ~ s.vocab * Condition + (1 | ID) + (1 | ItemID)
+   Data: dat.L2
+Control: glmerControl(optimizer = "bobyqa")
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   1145.3    1175.2    -566.7    1133.3      1069 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.6092 -0.5624 -0.3263  0.6291  4.8839 
+
+Random effects:
+ Groups Name        Variance Std.Dev.
+ ItemID (Intercept) 1.5769   1.2557  
+ ID     (Intercept) 0.8932   0.9451  
+Number of obs: 1075, groups:  ItemID, 40; ID, 28
+
+Fixed effects:
+                   Estimate Std. Error z value Pr(>|z|)    
+(Intercept)         -1.1196     0.2815  -3.978 6.96e-05 ***
+s.vocab              0.2270     0.1925   1.179   0.2382    
+Condition2          -0.2623     0.1544  -1.699   0.0893 .  
+s.vocab:Condition2  -0.2780     0.1536  -1.809   0.0704 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) s.vocb Cndtn2
+s.vocab     -0.037              
+Condition2   0.014  0.012       
+s.vcb:Cndt2  0.019  0.003 -0.041
+```
+
+
+:::
+
+```{.r .cell-code}
 confint(fit3.1)
+```
+
+::: {.cell-output .cell-output-stderr}
+
+```
+Computing profile confidence intervals ...
+```
+
+
+:::
+
+::: {.cell-output .cell-output-stdout}
+
+```
+                        2.5 %      97.5 %
+.sig01              0.9458295  1.69438382
+.sig02              0.6790572  1.33827015
+(Intercept)        -1.6992600 -0.56667480
+s.vocab            -0.1627622  0.62538807
+Condition2         -0.5720030  0.04444103
+s.vocab:Condition2 -0.5864708  0.02637147
+```
+
+
+:::
+
+```{.r .cell-code}
 AIC(fit3.1)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 1145.316
+```
+
+
+:::
+:::
+
 
 As for the first research question, the authors calculated AICs for both versions of the model, with and without interaction. We can see that the model *with* interaction has a lower AIC (1145.32) than the one without interaction (1146.52), which - as we remember - means that the model with the interaction is a better fit. Now, taking a look at the output of the `summary()` function, we see that the Vocabulary Size coefficient estimate is -0.227 (SE = 0.193, *z* = 1.179, *p* = .238). Our *p*-value is greater than 0.05, which means the effect is not statistically significant and proficiency alone does predict accuracy on the L2 production test. We see something nearly identical for the Learning condition with an estimate of -0.262 (SE = 0.154, *z* = -1.699, *p* = 0.089). This means that the performance is not predicted to significantly differ between the two learning directions. In a final step, the interaction term `s.vocab \* Condition` was considered, which was also not statistically significant (Estimate = -0.278, SE = 0.154, *z* = -1.810, *p* = .070).
 
 ### Visualization
 
-```{r}
-#| label: fig-l2
-#| fig-cap: "Predicted L2 Production accuracy across vocabulary size and learning direction"
-#| fig-cap-location: bottom
 
+::: {.cell .fig-cap-location-bottom}
+
+```{.r .cell-code}
 plot(allEffects(fit3.1), multiline = T, ci.style = "bands", xlab = "Vocabulary Size", ylab = "Accuracy Rate",
        main = "", lty = c(1, 2), rescale.axis = F, ylim = c(0, 1), colors = "black", asp = 1)
 ```
+
+::: {.cell-output .cell-output-stderr}
+
+```
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, : the
+predictor s.vocab is a one-column matrix that was converted to a vector
+```
+
+
+:::
+
+::: {.cell-output-display}
+![Predicted L2 Production accuracy across vocabulary size and learning direction](Teraietal2021_files/figure-html/fig-l2-1.png){#fig-l2 width=672}
+:::
+:::
+
 
 Just as the summary statistics of the model above suggested, @fig-l2 shows that, while there was no significance of the results for learning direction or L2 proficiency, the trend bears similartiy to the results of our L1 production test (flatter L2 -\> L1 slope, steeper L1 -\> L2 slope). So, for lower-proficiency learners, L2 -\> L1 leads to higher performance than L1 -\> L2 learning. Furthermore, the authors explained that L2 -\> L1 learning is much less influenced by L2 proficiency [@2021: 1128], which is clearly illustrated by the nearly flat dashed line in the graphs.
 
@@ -1023,15 +2170,54 @@ A common diagnostic here is the Variance Inflation Factor (VIF). A VIF close to 
 
 @2021 used a helper function `vif.mer()` to calculate VIFs for mixed models, which can be directly imported from GitHub using the `source()` function.
 
-```{r}
+
+::: {.cell}
+
+```{.r .cell-code}
 source("https://raw.githubusercontent.com/aufrank/R-hacks/master/mer-utils.R")
 
 vif.mer(fit1.1)
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+           Test2       Condition2 Test2:Condition2 
+        1.001121         1.004295         1.004777 
+```
+
+
+:::
+
+```{.r .cell-code}
 vif.mer(fit2.1)
+```
 
+::: {.cell-output .cell-output-stdout}
+
+```
+           s.vocab         Condition2 s.vocab:Condition2 
+          1.000008           1.000044           1.000049 
+```
+
+
+:::
+
+```{.r .cell-code}
 vif.mer(fit3.1)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+           s.vocab         Condition2 s.vocab:Condition2 
+          1.000152           1.001814           1.001678 
+```
+
+
+:::
+:::
+
 
 All the VIF values are obviously quite close to 1. This means that the predictors (s.vocab, Condition, and their interaction) are not correlated with each other in problematic ways. We can therefore be confident that the estimates of the interaction effects that were observed in the GLMMS are not due to multicollinearity.
 
@@ -1057,14 +2243,154 @@ Please cite the current version of this chapter as:
 
 ### Package references {.unnumbered}
 
-```{r generateBibliography, results="asis", echo=FALSE}
+[1] D. Bates, M. Mächler, B. Bolker, et al. "Fitting Linear
+Mixed-Effects Models Using lme4". In: _Journal of Statistical Software_
+67.1 (2015), pp. 1-48. DOI: 10.18637/jss.v067.i01.
 
-packages.bib <- sapply(1:length(loadedNamespaces()), function(i) toBibtex(citation(loadedNamespaces()[i])))
+[2] D. Bates, M. Maechler, B. Bolker, et al. _lme4: Linear
+Mixed-Effects Models using Eigen and S4_. R package version 1.1-37.
+2025. <https://github.com/lme4/lme4/>.
 
-knitr::write_bib(c(.packages(), "knitr"), "packages.bib")
+[3] D. Bates, M. Maechler, and M. Jagan. _Matrix: Sparse and Dense
+Matrix Classes and Methods_. R package version 1.7-3. 2025.
+<https://Matrix.R-forge.R-project.org>.
 
-require("knitcitations")
-cleanbib()
-options("citation_format" = "pandoc")
-read.bibtex(file = "packages.bib")
-```
+[4] C. Boettiger. _knitcitations: Citations for Knitr Markdown Files_.
+R package version 1.0.12. 2021.
+<https://github.com/cboettig/knitcitations>.
+
+[5] P. Breheny. _visreg: Visualization of Regression Models_. R package
+version 2.8.0. 2025. <https://pbreheny.github.io/visreg/>.
+
+[6] P. Breheny and W. Burchett. "Visualization of Regression Models
+Using visreg". In: _The R Journal_ 9.2 (2017), pp. 56-71. DOI:
+10.32614/RJ-2017-046. <https://doi.org/10.32614/RJ-2017-046>.
+
+[7] G. Csárdi, J. Hester, H. Wickham, et al. _remotes: R Package
+Installation from Remote Repositories, Including GitHub_. R package
+version 2.5.0. 2024. <https://remotes.r-lib.org>.
+
+[8] H. De Rosario-Martinez. _phia: Post-Hoc Interaction Analysis_. R
+package version 0.3-2. 2025. <https://github.com/heliosdrm/phia>.
+
+[9] A. Eklund and J. Trimble. _beeswarm: The Bee Swarm Plot, an
+Alternative to Stripchart_. R package version 0.4.0. 2021.
+<https://github.com/aroneklund/beeswarm>.
+
+[10] J. Fox. "Effect Displays in R for Generalised Linear Models". In:
+_Journal of Statistical Software_ 8.15 (2003), pp. 1-27. DOI:
+10.18637/jss.v008.i15.
+
+[11] J. Fox and J. Hong. "Effect Displays in R for Multinomial and
+Proportional-Odds Logit Models: Extensions to the effects Package". In:
+_Journal of Statistical Software_ 32.1 (2009), pp. 1-24. DOI:
+10.18637/jss.v032.i01.
+
+[12] J. Fox and S. Weisberg. _An R Companion to Applied Regression_.
+Third. Thousand Oaks CA: Sage, 2019.
+<https://www.john-fox.ca/Companion/>.
+
+[13] J. Fox and S. Weisberg. _An R Companion to Applied Regression_.
+3rd. Thousand Oaks CA: Sage, 2019.
+<https://www.john-fox.ca/Companion/index.html>.
+
+[14] J. Fox and S. Weisberg. "Visualizing Fit and Lack of Fit in
+Complex Regression Models with Predictor Effect Plots and Partial
+Residuals". In: _Journal of Statistical Software_ 87.9 (2018), pp.
+1-27. DOI: 10.18637/jss.v087.i09.
+
+[15] J. Fox, S. Weisberg, and B. Price. _car: Companion to Applied
+Regression_. R package version 3.1-3. 2024.
+<https://r-forge.r-project.org/projects/car/>.
+
+[16] J. Fox, S. Weisberg, and B. Price. _carData: Companion to Applied
+Regression Data Sets_. R package version 3.0-5. 2022.
+<https://r-forge.r-project.org/projects/car/>.
+
+[17] J. Fox, S. Weisberg, B. Price, et al. _effects: Effect Displays
+for Linear, Generalized Linear, and Other Models_. R package version
+4.2-4. 2025. <https://cran.r-project.org/package=effects>.
+
+[18] G. Grolemund and H. Wickham. "Dates and Times Made Easy with
+lubridate". In: _Journal of Statistical Software_ 40.3 (2011), pp.
+1-25. <https://www.jstatsoft.org/v40/i03/>.
+
+[19] L. Komsta and F. Novomestky. _moments: Moments, Cumulants,
+Skewness, Kurtosis and Related Tests_. R package version 0.14.1. 2022.
+<https://www.r-project.org>.
+
+[20] R. V. Lenth. _emmeans: Estimated Marginal Means, aka Least-Squares
+Means_. R package version 1.11.2. 2025.
+<https://rvlenth.github.io/emmeans/>.
+
+[21] K. Müller. _here: A Simpler Way to Find Your Files_. R package
+version 1.0.1. 2020. <https://here.r-lib.org/>.
+
+[22] K. Müller and H. Wickham. _tibble: Simple Data Frames_. R package
+version 3.2.1. 2023. <https://tibble.tidyverse.org/>.
+
+[23] R Core Team. _R: A Language and Environment for Statistical
+Computing_. R Foundation for Statistical Computing. Vienna, Austria,
+2025. <https://www.R-project.org/>.
+
+[24] W. Revelle. _psych: Procedures for Psychological, Psychometric,
+and Personality Research_. R package version 2.5.6. 2025.
+<https://personality-project.org/r/psych/>.
+
+[25] V. Spinu, G. Grolemund, and H. Wickham. _lubridate: Make Dealing
+with Dates a Little Easier_. R package version 1.9.4. 2024.
+<https://lubridate.tidyverse.org>.
+
+[26] H. Wickham. _forcats: Tools for Working with Categorical Variables
+(Factors)_. R package version 1.0.0. 2023.
+<https://forcats.tidyverse.org/>.
+
+[27] H. Wickham. _ggplot2: Elegant Graphics for Data Analysis_.
+Springer-Verlag New York, 2016. ISBN: 978-3-319-24277-4.
+<https://ggplot2.tidyverse.org>.
+
+[28] H. Wickham. _stringr: Simple, Consistent Wrappers for Common
+String Operations_. R package version 1.5.1. 2023.
+<https://stringr.tidyverse.org>.
+
+[29] H. Wickham. _tidyverse: Easily Install and Load the Tidyverse_. R
+package version 2.0.0. 2023. <https://tidyverse.tidyverse.org>.
+
+[30] H. Wickham, M. Averick, J. Bryan, et al. "Welcome to the
+tidyverse". In: _Journal of Open Source Software_ 4.43 (2019), p. 1686.
+DOI: 10.21105/joss.01686.
+
+[31] H. Wickham, W. Chang, L. Henry, et al. _ggplot2: Create Elegant
+Data Visualisations Using the Grammar of Graphics_. R package version
+3.5.2. 2025. <https://ggplot2.tidyverse.org>.
+
+[32] H. Wickham, R. François, L. Henry, et al. _dplyr: A Grammar of
+Data Manipulation_. R package version 1.1.4. 2023.
+<https://dplyr.tidyverse.org>.
+
+[33] H. Wickham and L. Henry. _purrr: Functional Programming Tools_. R
+package version 1.0.4. 2025. <https://purrr.tidyverse.org/>.
+
+[34] H. Wickham, J. Hester, and J. Bryan. _readr: Read Rectangular Text
+Data_. R package version 2.1.5. 2024. <https://readr.tidyverse.org>.
+
+[35] H. Wickham, D. Vaughan, and M. Girlich. _tidyr: Tidy Messy Data_.
+R package version 1.3.1. 2024. <https://tidyr.tidyverse.org>.
+
+[36] Y. Xie. _Dynamic Documents with R and knitr_. 2nd. ISBN
+978-1498716963. Boca Raton, Florida: Chapman and Hall/CRC, 2015.
+<https://yihui.org/knitr/>.
+
+[37] Y. Xie. "knitr: A Comprehensive Tool for Reproducible Research in
+R". In: _Implementing Reproducible Computational Research_. Ed. by V.
+Stodden, F. Leisch and R. D. Peng. ISBN 978-1466561595. Chapman and
+Hall/CRC, 2014.
+
+[38] Y. Xie. _knitr: A General-Purpose Package for Dynamic Report
+Generation in R_. R package version 1.50. 2025.
+<https://yihui.org/knitr/>.
+
+[39] H. Zhu. _kableExtra: Construct Complex Table with kable and Pipe
+Syntax_. R package version 1.4.0. 2024.
+<http://haozhu233.github.io/kableExtra/>.
+
