@@ -18,7 +18,7 @@ csl: unified-style-sheet-for-linguistics.csl
 ::: {.callout-note collapse="true"}
 #### **About the authors of this chapter** {.unnumbered}
 
-**Hannah Boxleitner** is a first-year master’s student in linguistics at the University of Cologne. After completing her first bachelor's degree in Social Work in Regensburg, and mostly working in the field of social services, she studied linguistics and German studies at the University of Cologne, where she focused on metaphor studies and corpus linguistics. In addition to that, she has taken an interest in computational linguistics within the specialization of her master's.
+**Hannah Boxleitner** is a first-year master’s student in linguistics at the University of Cologne. After completing her first bachelor's degree in social work in Regensburg, and mostly working in the field of social services, she studied linguistics and German studies at the University of Cologne, where she focused on metaphor studies and corpus linguistics. In addition to that, she has taken an interest in computational linguistics within the specialization of her master's.
 
 **Beyhan Aliy** is a first-year master's student in linguistics at the University of Cologne, where she specializes in psycho- and neurolinguistics. She completed her bachelor's degree in linguistics and English studies at the University of Cologne. She is currently working as a student assistant at the Department of Linguistics.
 
@@ -99,7 +99,7 @@ As already mentioned, the dataset contains different information on items and pa
 
 # Descriptive statistics
 
-Before we dive into the descriptive statistics conducted in @2021, we need to explain that one part of it will not be reproduced. While descriptive statistics about the participants (age, years of learning, etc.) are mentioned in @2021:1122-1123, we were not able to find the data to reproduce these findings. That said, it is common for participant data not to be shared to protect their identities. Therefore, in this section, we will focus on reproducing the descriptive statistics of the target items (40 English words used in the study), test types and reliability testing. We'll start with the target items, which are found in Table 3 in the paper [@2021: 1123].
+Before we dive into the descriptive statistics conducted in @2021, we need to explain that one part of it will not be reproduced. While descriptive statistics about the participants (age, years of learning, etc.) are mentioned in @2021: 1122-1123, we were not able to find the data to reproduce these findings. That said, it is common for participant data not to be shared to protect their identities. Therefore, in this section, we will focus on reproducing the descriptive statistics of the target items (40 English words used in the study), test types and reliability testing. We'll start with the target items, which are found in Table 3 in the paper [@2021: 1123].
 
 Most of the statistics reproduced here metrics already introduced in the textbook: the mean, median, maximum and minimum, as well as the standard deviation (SD) (see @sec-DescRiptiveStats). In addition, @2021 report skewness and kurtosis. **Skewness** and **kurtosis** are both measures of shapes and distribution of a variable. Skewness measures the asymmetry of distribution. Simply put, skewness describes the proportion of a distribution which differs from a completely symmetrical shape [@2023]:
 
@@ -115,7 +115,7 @@ Kurtosis then is a measure of peaks of a distribution. Basically, it is a descri
 
 ## Reproduction of Table 3
 
-In this section, our aim is to reproduce Table 3 from @2021:1123, which displays the descriptive statistics of the target items of the study. Unfortunately, the code for all the tables shown in @2021 was not included in the shared `R` code. But as we have the data in the form of a `.csv` file, this is not a problem! We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step-by-step.
+In this section, our aim is to reproduce Table 3 from @2021: 1123, which displays the descriptive statistics of the target items of the study. Unfortunately, the code for all the tables shown in @2021 was not included in the shared `R` code. But as we have the data in the form of a `.csv` file, this is not a problem! We have the organized data ready for us to analyze. Thus, we will learn how to reproduce the data of Table 3 step-by-step.
 
 In the following chunk, we load some necessary libraries and use the `trimws()` function, which removes space from the beginning and end of the text. This helps to prevent issues like "berth " vs. "berth" being treated as two different word forms.
 
@@ -130,7 +130,7 @@ library(kableExtra) #for nicer tables
 dat$ItemID <- trimws(dat$ItemID)
 ```
 
-In the paper by @2021 we can see that the variables for the English (**L2-related variables)** words they used are: Frequency, Syllables, and Letters. For Japanese (**L1-related variables**): Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami A). Fami (A) refers to familiarity ratings taken from the large database by @2000 as the authors explain (p.1123). These ratings showed how familiar each Japanese word is to the general population. The second familiarity ratings (Fami (B)), represents the participants' own familiarity ratings collected for this study. We were not able to reproduce Fami (B) as the data was not made public.
+In the paper by @2021 we can see that the variables for the English (**L2-related variables**) words they used are: Frequency, Syllables, and Letters. For Japanese (**L1-related variables**): Frequency, Letters, and Mora (syllables) as well as Familiarity (Fami A). Fami (A) refers to familiarity ratings taken from the large database by @2000 as the authors explain @2021: 1123. These ratings showed how familiar each Japanese word is to the general population. The second familiarity ratings (Fami (B)), represents the participants' own familiarity ratings collected for this study. We were not able to reproduce Fami (B) as the data was not made public.
 
 ```{r}
 #| code-fold: true
@@ -175,7 +175,7 @@ items <- dat |>
   )
 ```
 
-We want to do a quick check before we continue: Did we correctly import all 40 target words from the study into our items dataframe [@2021:1123]?
+We want to do a quick check before we continue: Did we correctly import all 40 target words from the study into our items dataframe [@2021: 1123]?
 
 ```{r}
 nrow(items)
@@ -246,7 +246,7 @@ kable(tab_L1,
   kable_classic(full_width = FALSE)
 ```
 
-Our reproduced tables @tbl-desc-stats1 and @tbl-desc-stats2 now closely match Table 3 [@2021:1123]! The L2 frequency has a mean of about **1025** with a quite large SD (\~852), which shows us that some English words were quite frequent while others were much rarer. The skewness is positive (\~1.51), although slightly different than the one reported in the paper (\~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. English words are, on average, 2 syllables, and range from 1 to 5 syllables with only a slight positive skewness which means that most words are short and only a few are longer. Again we note a small difference in our skewness metric compared to the one reported in the original study. On average, words are 6.2 letters long, again with a positive skewness. For the L1 variables, the frequency distribution also shows a strong positive skew, which means that few Japanese words are very common, but many are quite rare. Fami (A) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar, meaning participants generally recognized these Japanese words easily.
+Our reproduced tables @tbl-desc-stats1 and @tbl-desc-stats2 now closely match Table 3 [@2021: 1123]! The L2 frequency has a mean of about **1025** with a quite large SD (\~852), which shows us that some English words were quite frequent while others were much rarer. The skewness is positive (\~1.51), although slightly different than the one reported in the paper (\~1.57). The difference is only small and still shows that the distribution has a "long tail" of very high-frequency words. English words are, on average, 2 syllables, and range from 1 to 5 syllables with only a slight positive skewness which means that most words are short and only a few are longer. Again we note a small difference in our skewness metric compared to the one reported in the original study. On average, words are 6.2 letters long, again with a positive skewness. For the L1 variables, the frequency distribution also shows a strong positive skew, which means that few Japanese words are very common, but many are quite rare. Fami (A) averages about 5.2 on a 7-point scale, with a pretty low SD, suggesting that the words were mostly familiar, meaning participants generally recognized these Japanese words easily.
 
 Our skewness values match the original paper fairly closely, with only small differences. However, our kurtosis values differ quite a lot from the published results. This may seem like a huge issue at first, but is actually quite normal. Kurtosis calculations can vary between packages, for example the 'moments' package we used calculates excess kurtosis, while the authors of the original paper might have used a different method. We tried several methods to reproduce the kurtosis values from the original publication, but failed to produce the values reported in the original study. We calculated both the excess kurtosis and the pearson kurtosis (see code chunk below), but no numbers match the ones in the paper.
 
@@ -946,7 +946,7 @@ plot(allEffects(fit2.1), multiline = T, ci.style = "bands",
     rescale.axis = F, ylim = c(0, 1), colors = "black", asp = 1)
 ```
 
-@fig-l1 shows a solid line representing the L1 -\> L2 learning condition, and a dotted line representing the L2 -\> L1 learning condition. The *y*-axis shows L1 production accuracy rates of the test, and the *x*-axis the scaled scores of the vocabulary size tests [@2021: 1128]. Looking at @fig-l1 you can see a nearly flat line for L2 -\> L1 and a positive, steeper line for L1 -\> L2 which cross at intermediate proficiency (\~5.419 as reported in the paper, p. 1127). The crossover point at \~5.419 suggests that for learners in the L1 -\> L2 direction a score of over \~5.419 on the test for vocabulary size was more beneficial than for L2 -\> L1 learners. The fact that the line for L2 -\> L1 learning is nearly flat shows that proficiency in L2 did not have a big influence. Basically, the plot tells us that, for lower proficiency learners, L2 -\> L1 is better, and for higher proficiency learners, L1 -\> L2 is more beneficial [@2021:1128].
+@fig-l1 shows a solid line representing the L1 -\> L2 learning condition, and a dotted line representing the L2 -\> L1 learning condition. The *y*-axis shows L1 production accuracy rates of the test, and the *x*-axis the scaled scores of the vocabulary size tests [@2021: 1128]. Looking at @fig-l1 you can see a nearly flat line for L2 -\> L1 and a positive, steeper line for L1 -\> L2 which cross at intermediate proficiency (\~5.419 as reported in the paper, p. 1127). The crossover point at \~5.419 suggests that for learners in the L1 -\> L2 direction a score of over \~5.419 on the test for vocabulary size was more beneficial than for L2 -\> L1 learners. The fact that the line for L2 -\> L1 learning is nearly flat shows that proficiency in L2 did not have a big influence. Basically, the plot tells us that, for lower proficiency learners, L2 -\> L1 is better, and for higher proficiency learners, L1 -\> L2 is more beneficial [@2021: 1128].
 
 ### L2 Production Test
 
